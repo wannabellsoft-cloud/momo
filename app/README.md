@@ -45,13 +45,17 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 
 Limitation: there is no push server, so reminders only fire while Momo is open or still alive in the background. On iPhone the app must be added to the Home Screen first (iOS 16.4+). Reliable delivery to a fully closed app needs Web Push: VAPID keys, a small server that stores the subscription and sends on a schedule, and a `push` handler in `sw.js`.
 
-## Mascot (2.5D Momo)
+## Mascot (Momo, floppy-ear bunny)
 
-Momo is a soft cream mochi bunny with long floppy ears (the "Floppy Ears" board). There is one character master, `src/components/momo/momo-character.ts`. It is a layered SVG string builder with no React, used by both the app and `npm run icons`. The board is a flat raster that could not be rigged, and the SVGs in the asset pack were rough approximations, so Momo is redrawn as vectors to match the board. Each part is its own group, so CSS can move it:
+Momo's look comes from a rendered pose sheet, `assets-src/momo-sheet.png` (a transparent PNG with 10 poses). `npm run mascot` runs `scripts/slice-mascot.py`, which needs Pillow:
 
-`m-shadow` · `m-feet` · `m-arm(-l/-r/-up-l/-up-r)` · `m-body` + shade + highlight · `m-cheeks` · `m-ears` (`m-ear-l/-r`) · `m-eyes`/`m-blink` · `m-brows` · `m-mouth` · props (`m-prop`, `m-beat`, `m-ring`, `m-zz`, `m-spark`, `m-conf`, `m-dot`).
+- It cuts each pose into `public/mascot/<state>.webp` (440×440, each about 18 KB), plus `icon.webp` and `avatar.webp`.
+- Every pose keeps the same scale and the feet sit on the same line, so Momo never changes size between states.
+- It then re-renders the app icons and the notification art.
 
-Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` · brown `#59443D` · background `#FFFAF6`.
+To change Momo's look, replace the sheet (same pose order: idle, squint (unused), reminder, happy, missed, sleeping, refill, loading, success, icon) and re-run.
+
+`MomoMascot` draws the pose image plus animated SVG effects from `src/components/momo/momo-character.ts`: bell, hearts, "…" bubble, Zz and moon, "!", confetti, sparkles and loading dots. If an image fails to load, it falls back to the drawn vector Momo from the same file.
 
 ```tsx
 <MomoMascot state="reminder" size="md" />   // idle · reminder · happy · missed · sleeping · refill · loading · success
@@ -61,13 +65,13 @@ Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` 
 
 - **Sizes:** `xs` 40 · `sm` 64 · `md` 120 · `lg` 200 · `xl` 320, or `px`.
 - **Accessibility:** the alt text is a Thai description of the state. Pass `alt=""` when nearby text carries the meaning.
-- **Motion:** CSS only, animating `transform` and `opacity` ("Momo 2.5D" block in `globals.css`). States:
-  - idle: breathing, blinking, ear flop
-  - reminder: hugs the capsule, pill bob, ringing bell
+- **Motion:** CSS only, animating `transform` and `opacity` on the whole pose and on each effect ("Momo 2.5D" block in `globals.css`). States:
+  - idle: breathing
+  - reminder: hugs the capsule, gentle rock, ringing bell
   - happy: hop and heartbeat
   - missed: slow sway and "…" dots
   - sleeping: slow breathing and drifting Zz
-  - refill: note tilt
+  - refill: gentle rock with a "!" badge
   - loading: float
   - success: jump with arms up and confetti
 - **No wasted rendering:** motion only runs on `data-animated="true"`. The component turns it off when `animated={false}`, when Momo is offscreen (IntersectionObserver) and for avatars. "ลดการเคลื่อนไหว" and `prefers-reduced-motion` stop all of it.
@@ -80,7 +84,8 @@ Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` 
   - night with nothing pending → sleeping
   - otherwise → idle
 - **Old state names:** `MomoBunny` maps the app's situation names (taken, nostock, error…) onto these states.
-- **Icons:** the app icon is winking Momo hugging a capsule on peach-pink, as on the board. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from the same master.
+- **Icons:** the app icon is the winking capsule-hug pose on peach-pink. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from `public/mascot/`.
+- **Limits:** a pose is one image, so ears and arms can't move on their own, and there is no blink (the squint pose doesn't line up with idle). Rigged limbs would need the art split into layers, e.g. in Rive.
 
 ## Sounds
 

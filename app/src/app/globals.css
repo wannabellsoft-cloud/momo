@@ -156,7 +156,7 @@
 /* ─── Momo 2.5D (src/components/momo/momo-character.ts) ──────────────────
    Motion runs only on .momo25[data-animated="true"]: MomoMascot sets it to "false" when animated={false},
    offscreen (IntersectionObserver) or for avatars. Only transform + opacity are animated. */
-.momo25 { display: block; overflow: visible; }
+svg.momo25 { display: block; overflow: visible; }
 .momo25[data-animated="true"] {
   --br: 3.6s;
   .m-breathe { animation: m-breathe var(--br) ease-in-out infinite; }
@@ -217,6 +217,14 @@
 @keyframes m-sway { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-2deg); } 70% { transform: rotate(2deg); } }
 .momo25 .m-all { transform-origin: 100px 182px; }
 [data-reduce-motion="true"] .momo25 * { animation: none !important; }
+/* Rendered Momo (MomoMascot): pose image + SVG effects. Same state animations, applied to the whole image. */
+.momo-pic { display: inline-block; }
+.momo-pic :is(.m-all, .m-breathe) { position: absolute; inset: 0; display: block; transform-origin: 50% 96%; }
+.momo-pic img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.momo-pic .m-shadow { position: absolute; left: 22%; right: 22%; bottom: 1.5%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(160, 112, 100, .3), transparent); transform-origin: 50% 50%; }
+.momo-pic .m-fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.momo-pic[data-animated="true"]:is([data-state="reminder"], [data-state="refill"]) .m-all { animation: m-rock 2.8s ease-in-out infinite; }
+@keyframes m-rock { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-2.5deg); } 70% { transform: rotate(2.5deg); } }
 
 /* ─── Home Momo + notification motion ──────────────────────────────────── */
 .momo-enter { animation: momo-enter 650ms var(--ease-spring) both; transform-origin: 50% 90%; }

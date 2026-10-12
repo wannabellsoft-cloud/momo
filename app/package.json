@@ -8,6 +8,7 @@
     "start": "npx serve@14 out",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "mascot": "python3 scripts/slice-mascot.py && npm run icons",
     "icons": "node scripts/gen-icons.mts",
     "ios:sync": "next build && cap sync ios",
     "ios:open": "cap open ios",

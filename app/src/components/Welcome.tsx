@@ -43,7 +43,7 @@ export function Welcome() {
         <div className="absolute top-[120px] left-10 h-[34px] w-[90px] rounded-[20px] bg-(--bg-subtle) opacity-80" />
         <div className="absolute top-[180px] right-[30px] h-[26px] w-[70px] rounded-[20px] bg-(--bg-subtle) opacity-70" />
         <span className="momo-enter block">
-          <MomoMascot state="idle" px={220} alt="โมโม่ยิ้มทักทาย" />
+          <MomoMascot state="idle" px={220} alt="โมโม่ยิ้มทักทาย" priority />
         </span>
         <div className="mt-2 flex items-start gap-[2px] text-[56px] leading-[60px] font-extrabold tracking-[-1.5px]">
           momo<span className="text-[22px] leading-[30px] text-(--pink-400)">♥</span>

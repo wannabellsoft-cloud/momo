@@ -224,3 +224,10 @@ export function momoSvg(state: MascotState, id: string, opts: { props?: boolean;
 }
 
 export const momoViewBox = (crop?: "head") => (crop === "head" ? "20 28 160 160" : "0 0 200 200");
+
+/** Only the floating effects of a state (bell, Zz, sparkles, bubbles, confetti…), drawn over the
+    rendered Momo images in the same 0 0 200 200 box. */
+export function momoFx(state: MascotState, id: string) {
+  const p = POSES[state];
+  return p.props ? `${defs(id)}<g class="m-props">${p.props(id)}</g>` : "";
+}
