@@ -24,11 +24,13 @@ type Props = {
   talks?: boolean;
   priority?: boolean;
   className?: string;
+  /** Extra bubble classes; with `bubbleCustom` they replace the default bubble look entirely. */
   bubbleClassName?: string;
+  bubbleCustom?: boolean;
 };
 
 /** Momo that reacts: pops in, hops now and then, floating hearts; tap → happy jump, heart burst and a line. */
-export function ReactiveMomo({ state, bubble, size = 170, lines = TAP_LINES, greet = false, talks = false, priority, className, bubbleClassName }: Props) {
+export function ReactiveMomo({ state, bubble, size = 170, lines = TAP_LINES, greet = false, talks = false, priority, className, bubbleClassName, bubbleCustom = false }: Props) {
   const greetEv = useUI((u) => u.greet);
   const [override, setOverride] = useState<{ line: string; momo?: MascotState; until: number } | null>(null);
   const [jump, setJump] = useState(0);
@@ -122,7 +124,7 @@ export function ReactiveMomo({ state, bubble, size = 170, lines = TAP_LINES, gre
       {button}
       <div
         key={line}
-        className={cx("bubble-pop relative self-start rounded-[20px_20px_20px_6px] bg-(--surface-card) px-[14px] py-3 text-[15px] leading-[23px] font-extrabold text-pretty shadow-(--shadow-soft)", bubbleClassName)}
+        className={cx("bubble-pop relative text-pretty", !bubbleCustom && "self-start rounded-[20px_20px_20px_6px] bg-(--surface-card) px-[14px] py-3 text-[15px] leading-[23px] font-extrabold shadow-(--shadow-soft)", bubbleClassName)}
         aria-live="polite"
       >
         <KeepName text={line ?? ""} />

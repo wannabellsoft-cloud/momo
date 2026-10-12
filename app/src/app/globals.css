@@ -33,6 +33,14 @@
   --action-secondary:var(--lavender-600); --action-secondary-hover:var(--lavender-700);
   --action-soft:var(--pink-100); --action-soft-text:var(--pink-700);
   --flame-a:#FFB59C; --flame-b:var(--pink-400); --flame-core:#FFE3D6;
+  /* Inventory cards (Stock Cards Momo v3) */
+  --inv-sky-top:#9FD6FF; --inv-sky-bot:#FFF0E2; --inv-hill:#FFD9E4; --inv-bubble:#FFFFFF; --inv-bubble-fg:#2A1F45; --inv-bubble-shadow:0 6px 18px rgba(60,80,140,.18);
+  --inv-pack-bg:#E6F6EC; --inv-pack-title:#1D6E45; --inv-pack-num:#14302A; --inv-pack-meta:#3B6552; --inv-pack-track:#CDE7D8; --inv-pack-fill:#3FAE72;
+  --inv-pack-row:#FFFFFF; --inv-pack-row-fg:#1C2B24; --inv-pack-row-sub:#5B7468; --inv-seg:#D3ECDD; --inv-seg-on:#1D6E45; --inv-seg-on-fg:#FFFFFF; --inv-seg-off-fg:#2F5A46;
+  --inv-bl-plate:#FFFFFF; --inv-bl-slot:#D9EFE2; --inv-bl-pill:#FFFFFF; --inv-bl-shade:#E4DDFB; --inv-bl-ring:#7C5CF0; --inv-bl-ok:#3FAE72; --inv-bl-gone:#C9BDEB;
+  --inv-box-bg:#EFEAFF; --inv-box-title:#5A44A6; --inv-box-num:#231A40; --inv-box-meta:#5D5280; --inv-step:#FFFFFF; --inv-minus:#ECE6FF; --inv-minus-fg:#4A3A86; --inv-plus:#7C5CF0; --inv-plus-fg:#FFFFFF;
+  --inv-carton:#E9B98A; --inv-carton-top:#D6A170; --inv-tape:#FFF1D6; --inv-shelf:#DDD3FA; --inv-dash:#9A8BD6;
+
   --action-disabled-bg:#F1E7EB; --action-disabled-text:var(--rose-400);
 
   --success-bg:var(--mint-100); --success-fg:var(--mint-700);
@@ -98,6 +106,13 @@
   --action-secondary:#9F8BF0; --action-secondary-hover:#B3A2F5;
   --action-soft:#2C2248; --action-soft-text:#D7C8FF;
   --flame-a:#FFB3CF; --flame-b:#B79CFF; --flame-core:#FFE6F1;
+  --inv-sky-top:#141130; --inv-sky-bot:#3A2C66; --inv-hill:#2A2152; --inv-bubble:#2A2246; --inv-bubble-fg:#F3EEFC; --inv-bubble-shadow:0 6px 18px rgba(0,0,0,.35);
+  --inv-pack-bg:#18352B; --inv-pack-title:#8FE0B0; --inv-pack-num:#F3EEFC; --inv-pack-meta:#A8D8BB; --inv-pack-track:rgba(0,0,0,.35); --inv-pack-fill:#5FC28A;
+  --inv-pack-row:#12291F; --inv-pack-row-fg:#F3EEFC; --inv-pack-row-sub:#9FB5AA; --inv-seg:rgba(0,0,0,.3); --inv-seg-on:#C9B6FF; --inv-seg-on-fg:#1A1430; --inv-seg-off-fg:#CFE9DA;
+  --inv-bl-plate:#21503E; --inv-bl-slot:#163A2D; --inv-bl-pill:#F3F0FF; --inv-bl-shade:#CFC7EE; --inv-bl-ring:#C9B6FF; --inv-bl-ok:#5FC28A; --inv-bl-gone:#6F5FA8;
+  --inv-box-bg:#2A2244; --inv-box-title:#D4C6FF; --inv-box-num:#F3EEFC; --inv-box-meta:#B5A8D6; --inv-step:rgba(20,15,34,.6); --inv-minus:#3A3060; --inv-minus-fg:#CFC3F0; --inv-plus:#C9B6FF; --inv-plus-fg:#1A1430;
+  --inv-carton:#C09068; --inv-carton-top:#A87A55; --inv-tape:#F0D9B5; --inv-shelf:#3A3060; --inv-dash:#8F7FC0;
+
   --action-disabled-bg:#241E38; --action-disabled-text:#6E6490;
   --success-bg:#1B3330; --success-fg:#9EE3C5; --warning-bg:#352C1A; --warning-fg:#FFD98A;
   --error-bg:#3A1F2E; --error-fg:#FFB3C8; --info-bg:#1D2540; --info-fg:#AFC8FF;
@@ -234,6 +249,40 @@ svg.momo25 { display: block; overflow: visible; }
 .momo-pic .m-shadow { position: absolute; left: 22%; right: 22%; bottom: 1.5%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(160, 112, 100, .3), transparent); transform-origin: 50% 50%; }
 .momo-pic .m-fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .momo-pic[data-animated="true"]:is([data-state="reminder"], [data-state="refill"]) .m-all { animation: m-rock 2.8s ease-in-out infinite; }
+
+.open-box-cta { animation: open-box-cta 2.8s ease-in-out infinite; }
+@keyframes open-box-cta { 0%, 100% { transform: translateY(0); box-shadow: var(--shadow-button-secondary); } 50% { transform: translateY(-2px); box-shadow: var(--shadow-button-secondary), 0 0 0 5px color-mix(in srgb, var(--action-secondary) 22%, transparent); } }
+.open-box-cta:active { animation: none; transform: scale(.98); }
+[data-reduce-motion="true"] .open-box-cta { animation: none; }
+@media (prefers-reduced-motion: reduce) { .open-box-cta { animation: none; } }
+/* Inventory illustrations (Stock Cards Momo v3) */
+.inv-day { display: block; } .inv-night { display: none; }
+[data-theme="dark"] .inv-day { display: none; } [data-theme="dark"] .inv-night { display: block; }
+.inv-drift { animation: inv-drift var(--d, 30s) linear var(--dl, 0s) infinite; }
+.inv-spin { transform-box: fill-box; transform-origin: center; animation: inv-spin 18s linear infinite; }
+.inv-twinkle { animation: inv-twinkle var(--d, 3s) ease-in-out var(--dl, 0s) infinite; }
+.inv-comet { opacity: 0; animation: inv-comet var(--d, 8s) ease-in var(--dl, 0s) infinite; }
+.inv-wind { stroke-dasharray: 60 260; animation: inv-wind 4s linear var(--dl, 0s) infinite; }
+.inv-moon { animation: inv-bob 6s ease-in-out infinite; }
+.inv-pulse { transform-box: fill-box; transform-origin: center; animation: inv-pulse 1.8s ease-out infinite; }
+.inv-bob { animation: inv-bob 2.6s ease-in-out var(--dl, 0s) infinite; }
+.inv-drop { animation: inv-drop .7s cubic-bezier(.3, 1.5, .5, 1) var(--dl, 0s) both; }
+.inv-squish { transform-box: fill-box; transform-origin: 50% 100%; animation: inv-squish 3.2s ease-in-out var(--dl, 0s) infinite; }
+.inv-breath { transform-box: fill-box; transform-origin: center; animation: inv-breath 2.4s ease-in-out infinite; }
+.inv-sparkle { transform-box: fill-box; transform-origin: center; animation: inv-twinkle var(--d, 2.4s) ease-in-out var(--dl, 0s) infinite; }
+@keyframes inv-drift { from { transform: translateX(-160px); } to { transform: translateX(560px); } }
+@keyframes inv-spin { to { transform: rotate(360deg); } }
+@keyframes inv-twinkle { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+@keyframes inv-comet { 0% { transform: translate(0, 0); opacity: 0; } 6% { opacity: 1; } 30% { transform: translate(-320px, 160px); opacity: 0; } 100% { transform: translate(-320px, 160px); opacity: 0; } }
+@keyframes inv-wind { from { stroke-dashoffset: 160; } to { stroke-dashoffset: -160; } }
+@keyframes inv-pulse { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes inv-drop { 0% { transform: translateY(-130px); opacity: 0; } 60% { opacity: 1; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes inv-squish { 0%, 100% { transform: scale(1, 1); } 50% { transform: scale(1.03, .97); } }
+@keyframes inv-breath { 0%, 100% { opacity: .45; transform: scale(.96); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes inv-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+[data-reduce-motion="true"] [class*="inv-"] { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { [class*="inv-"] { animation: none !important; } }
+[data-reduce-motion="true"] .inv-comet { opacity: 0; }
 .alarm-wiggle { animation: alarm-wiggle 4s ease-in-out infinite; transform-origin: 50% 80%; }
 @keyframes alarm-wiggle { 0%, 82%, 100% { transform: rotate(0); } 85% { transform: rotate(-10deg); } 88% { transform: rotate(9deg); } 91% { transform: rotate(-7deg); } 94% { transform: rotate(5deg); } }
 .pill-next { animation: pill-next 2s ease-in-out infinite; }

@@ -2,12 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/momo/Icon";
+import { BoxStack, MiniBlister, SkyHeader, type Slot } from "@/components/inventory/InventoryArt";
 import { ReactiveMomo } from "@/components/ReactiveMomo";
-import { Card, ScreenTitle, Segmented, cx } from "@/components/ui";
+import { Card, ScreenTitle, cx } from "@/components/ui";
 import { thStamp } from "@/lib/date";
 import { derive } from "@/lib/derive";
 import { useNow } from "@/lib/hooks";
-import { LOCS, TABLETS_PER_BOX, TABLETS_PER_PACK, left, useMomo } from "@/lib/store";
+import { LOCS, TABLETS_PER_PACK, left, nextIdx, useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
 // What Momo says when tapped on Stock.
@@ -29,63 +30,113 @@ export default function InventoryPage() {
     : d.low ? (s.reserve > 0 ? "เหลือไม่ถึง 7 เม็ดแล้วน้า เตรียมเปิดกล่องใหม่ได้เลย ♡" : "ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้ไปรับยาเพิ่มนะ")
     : "ยายังพอนะ โมโม่นับไว้ให้แล้ว ♡";
   const canOpen = s.reserve > 0;
+  const capacity = Math.max(1, active.length) * TABLETS_PER_PACK;
+  // the pack Momo is counting from (active one, else the first with tablets left), drawn in the mini blister
+  const cur = s.packs.find((p) => p.id === s.activePackId && left(p) > 0) ?? active[0];
+  const next = cur ? nextIdx(cur) : -1;
+  const slots: Slot[] = cur
+    ? cur.tablets.map((t, i) => (t.removed ? (t.doseId ? "taken" : "removed") : i === next ? "next" : "in"))
+    : Array.from({ length: TABLETS_PER_PACK }, () => "in");
 
   return (
     <div className="flex flex-col gap-4">
       <ScreenTitle eyebrow="INVENTORY" title="สต็อกยา" />
 
-      <div className="rounded-[28px] bg-(--surface-soft) pt-2 pr-4 pb-1 pl-1">
-        <ReactiveMomo state={invMomo} bubble={invBubble} size={112} lines={STOCK_LINES} className="items-center" bubbleClassName="self-center rounded-[18px_18px_18px_6px] px-3 py-[10px] text-[14px] leading-[21px]" />
+      {/* Header: sky scene (day/night) + Momo + her line */}
+      <div className="relative h-[150px] overflow-hidden rounded-[28px]">
+        <SkyHeader />
+        <ReactiveMomo
+          state={invMomo}
+          bubble={invBubble}
+          size={124}
+          lines={STOCK_LINES}
+          bubbleCustom
+          className="absolute inset-0 items-end pr-[18px] pl-[6px] [&>button]:-mb-[14px]"
+          bubbleClassName="mt-[20px] flex-1 self-start rounded-[18px_18px_18px_4px] bg-(--inv-bubble) px-[15px] py-[10px] text-[15px] leading-[22px] font-extrabold text-(--inv-bubble-fg) shadow-(--inv-bubble-shadow)"
+        />
       </div>
 
-      {/* InventorySummaryCard */}
-      <div className="flex flex-col gap-[10px] rounded-[24px] bg-(--success-bg) p-4">
-        <div className="flex items-baseline justify-between">
-          <span className="text-[13px] font-extrabold text-(--success-fg)">ยาในแผงที่เปิดแล้ว</span>
-          <span className="text-[12px] text-(--success-fg)">รวมสำรอง ≈ {d.supplyDays} วัน</span>
-        </div>
-        <div className="tnum text-[40px] leading-[44px] font-extrabold">{d.opened} <span className="text-[18px]">เม็ด</span></div>
-        <div className="h-[10px] overflow-hidden rounded-full bg-(--surface-card)" role="progressbar" aria-valuemin={0} aria-valuemax={TABLETS_PER_BOX} aria-valuenow={d.opened} aria-label="ยาในแผงที่เปิดแล้ว">
-          <div className="h-full rounded-full transition-[width] duration-[350ms] ease-(--ease-out)" style={{ width: `${Math.min(100, (d.opened / TABLETS_PER_BOX) * 100)}%`, background: d.low ? "var(--bar-low)" : "var(--bar-ok)" }} />
-        </div>
-        {active.map((p) => (
-          <div key={p.id} className="flex items-center gap-[10px] rounded-[14px] bg-(--surface-glass) px-3 py-2 text-[14px]">
-            <span className="font-extrabold">แผง {p.label}</span>
-            <span className="flex-1 text-(--text-secondary)">{LOCS[p.location]}</span>
-            <span className="tnum font-extrabold">{left(p)}/{TABLETS_PER_PACK}</span>
+      {/* Opened packs: live mini blister, count, progress, packs, storage mode */}
+      <div className="relative overflow-hidden rounded-[28px] bg-(--inv-pack-bg)">
+        <div className="relative h-[138px]">
+          <MiniBlister slots={slots} />
+          <div className="relative flex flex-col px-[22px] py-[18px]">
+            <span className="text-[15px] font-extrabold text-(--inv-pack-title)">ยาในแผงที่เปิดแล้ว</span>
+            <span className="tnum flex items-baseline gap-[10px] text-(--inv-pack-num)">
+              <span className="text-[56px] leading-[1.1] font-extrabold">{d.opened}</span>
+              <span className="text-[22px] font-extrabold">เม็ด</span>
+            </span>
           </div>
-        ))}
-        <div className="flex items-center justify-between gap-2 pt-1">
-          <span className="text-[13px] font-extrabold text-(--success-fg)">การเก็บยา</span>
-          <Segmented
-            compact
-            track="card"
-            label="การเก็บยา"
-            value={s.settings.storageMode}
-            options={[["separate", "แยกที่เก็บ"], ["combined", "รวมที่เดียว"]]}
-            onChange={(m) => {
-              s.setStorageMode(m);
-              if (m === "combined") showToast("รวมแผงไว้ที่เดียวกันแล้ว", "idle");
-            }}
-          />
+        </div>
+        <div className="flex flex-col gap-[14px] px-[22px] pt-4 pb-[22px]">
+          <div className="flex justify-between gap-3 text-[14px] text-(--inv-pack-meta)">
+            <span>เหลือ {d.opened} จาก {capacity} เม็ด</span>
+            <span>รวมสำรอง ≈ {d.supplyDays} วัน</span>
+          </div>
+          <div className="h-3 overflow-hidden rounded-full bg-(--inv-pack-track)" role="progressbar" aria-valuemin={0} aria-valuemax={capacity} aria-valuenow={d.opened} aria-label="ยาในแผงที่เปิดแล้ว">
+            <div className="h-full rounded-full transition-[width] duration-[350ms] ease-(--ease-out)" style={{ width: `${Math.min(100, (d.opened / capacity) * 100)}%`, background: d.low ? "var(--bar-low)" : "var(--inv-pack-fill)" }} />
+          </div>
+          {active.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {active.map((p) => (
+                <div key={p.id} className="flex items-center gap-3 rounded-[16px] bg-(--inv-pack-row) px-4 py-[13px] text-(--inv-pack-row-fg)">
+                  <span className="font-extrabold">แผง {p.label}</span>
+                  <span className="flex-1 text-(--inv-pack-row-sub)">{LOCS[p.location]}</span>
+                  <span className="tnum font-extrabold">{left(p)}/{TABLETS_PER_PACK}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-[15px] font-extrabold text-(--inv-pack-title)">การเก็บยา</span>
+            <div role="radiogroup" aria-label="การเก็บยา" className="flex gap-1 rounded-full bg-(--inv-seg) p-1">
+              {([["separate", "แยกที่เก็บ"], ["combined", "รวมที่เดียว"]] as const).map(([m, label]) => {
+                const on = s.settings.storageMode === m;
+                return (
+                  <button
+                    key={m}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => {
+                      if (on) return;
+                      s.setStorageMode(m);
+                      if (m === "combined") showToast("รวมแผงไว้ที่เดียวกันแล้ว", "idle");
+                    }}
+                    className={cx("cursor-pointer rounded-full border-0 px-4 py-[9px] text-[14px] font-extrabold transition-colors", on ? "bg-(--inv-seg-on) text-(--inv-seg-on-fg)" : "bg-transparent text-(--inv-seg-off-fg)")}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Reserve boxes + NumberStepper */}
-      <div className="flex items-center gap-3 rounded-[24px] bg-(--surface-secondary) p-4">
-        <div className="flex-1">
-          <div className="text-[13px] font-extrabold text-(--dose-missed-fg)">กล่องสำรอง (ยังไม่เปิด)</div>
-          <div className="tnum text-[40px] leading-[44px] font-extrabold">{s.reserve} <span className="text-[18px]">กล่อง</span></div>
-          <div className="text-[12px] text-(--dose-missed-fg)">1 กล่อง = 2 แผง × 15 เม็ด</div>
+      {/* Reserve boxes: stacked cartons + stepper */}
+      <div className="relative overflow-hidden rounded-[28px] bg-(--inv-box-bg)">
+        <div className="relative h-[124px]">
+          <BoxStack n={s.reserve} />
         </div>
-        <div className="flex items-center gap-[6px] rounded-full bg-(--surface-card) p-1">
-          <button type="button" onClick={() => s.changeReserve(-1)} disabled={s.reserve === 0} aria-label="ลดกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--stepper-bg) text-(--dose-missed-fg) disabled:cursor-not-allowed disabled:opacity-40">
-            <Icon name="minus" size={18} stroke={2.6} />
-          </button>
-          <span className="min-w-[22px] text-center text-[18px] font-extrabold" aria-live="polite">{s.reserve}</span>
-          <button type="button" onClick={() => s.changeReserve(1)} aria-label="เพิ่มกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--stepper-bg) text-(--dose-missed-fg)">
-            <Icon name="plus" size={18} stroke={2.6} />
-          </button>
+        <div className="flex items-center justify-between gap-3 px-[22px] pt-[14px] pb-[22px]">
+          <div className="flex flex-col gap-[2px]">
+            <span className="text-[15px] font-extrabold text-(--inv-box-title)">กล่องสำรอง (ยังไม่เปิด)</span>
+            <span className="tnum flex items-baseline gap-[10px] text-(--inv-box-num)">
+              <span className="text-[56px] leading-[1.1] font-extrabold">{s.reserve}</span>
+              <span className="text-[22px] font-extrabold">กล่อง</span>
+            </span>
+            <span className="text-[13px] text-(--inv-box-meta)">1 กล่อง = 2 แผง × 15 เม็ด</span>
+          </div>
+          <div className="flex items-center gap-[10px] rounded-full bg-(--inv-step) p-[6px]">
+            <button type="button" onClick={() => s.changeReserve(-1)} disabled={s.reserve === 0} aria-label="ลดกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--inv-minus) text-(--inv-minus-fg) disabled:cursor-not-allowed disabled:opacity-40">
+              <Icon name="minus" size={18} stroke={2.6} />
+            </button>
+            <span className="tnum min-w-5 text-center text-[18px] font-extrabold text-(--inv-box-num)" aria-live="polite">{s.reserve}</span>
+            <button type="button" onClick={() => s.changeReserve(1)} aria-label="เพิ่มกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--inv-plus) text-(--inv-plus-fg)">
+              <Icon name="plus" size={18} stroke={2.6} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -94,12 +145,18 @@ export default function InventoryPage() {
         onClick={() => (canOpen ? router.push("/inventory/open-box/") : showToast("ยังไม่มีกล่องสำรอง เพิ่มกล่องก่อนนะ", "nostock"))}
         aria-disabled={!canOpen}
         className={cx(
-          "press flex h-16 items-center justify-center gap-3 rounded-[22px] border-0",
-          canOpen ? "cursor-pointer bg-(--action-secondary) text-(--text-on-action) shadow-(--shadow-button-secondary)" : "cursor-not-allowed bg-(--action-disabled-bg) text-(--action-disabled-text)",
+          "press relative flex h-16 items-center justify-center overflow-hidden rounded-[22px] border-0",
+          canOpen ? "open-box-cta cursor-pointer bg-(--action-secondary) text-(--text-on-action) shadow-(--shadow-button-secondary)" : "cursor-not-allowed bg-(--action-disabled-bg) text-(--action-disabled-text)",
         )}
       >
-        <Icon name="box" size={22} />
-        <span className="flex flex-col items-start">
+        {canOpen && (
+          <>
+            <span aria-hidden="true" className="taken-shine pointer-events-none absolute inset-y-0 left-0 w-1/3" style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent)" }} />
+            <span aria-hidden="true" className="twinkle absolute top-[10px] left-[22%] text-[10px]">✦</span>
+            <span aria-hidden="true" className="twinkle absolute right-[20%] bottom-[10px] text-[9px] [animation-delay:1.1s]">✦</span>
+          </>
+        )}
+        <span className="relative flex flex-col items-center">
           <span className="text-[17px] leading-[24px] font-extrabold">เปิดกล่องใหม่</span>
           <span className="text-[12px] leading-4 opacity-90">เพิ่ม 2 แผง × 15 เม็ด</span>
         </span>
