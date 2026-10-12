@@ -30,7 +30,7 @@ export default function ProfilePage() {
         <div className="text-[28px] leading-[36px] font-extrabold">
           โมโม่ <span className="text-[15px] text-(--action-soft-text)">Momo</span>
         </div>
-        <div className="text-[14px] leading-[22px]">กระต่ายโมจิตัวเล็กของ{call} ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย</div>
+        <div className="text-[14px] leading-[22px] text-balance">กระต่ายโมจิตัวเล็ก ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย ที่คุณเบลส่งมาช่วยดูแลพี่แพรวางับ</div>
       </div>
 
       <LevelCard />
