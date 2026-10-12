@@ -2,13 +2,16 @@
 
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/momo/Icon";
-import { MomoBunny } from "@/components/momo/MomoBunny";
+import { ReactiveMomo } from "@/components/ReactiveMomo";
 import { Card, ScreenTitle, Segmented, cx } from "@/components/ui";
 import { thStamp } from "@/lib/date";
 import { derive } from "@/lib/derive";
 import { useNow } from "@/lib/hooks";
 import { LOCS, TABLETS_PER_BOX, TABLETS_PER_PACK, left, useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
+
+// What Momo says when tapped on Stock.
+const STOCK_LINES = ["โมโม่นับยาให้ทุกเม็ดเลยน้า ✎", "ยาอยู่ครบ โมโม่ดูแลให้ ♡", "เปิดกล่องใหม่เมื่อไหร่ บอกโมโม่ด้วยนะ", "นับยาทีไร โมโม่ตั้งใจสุด ๆ เลย ✦", "ปุ๊กปิ๊ก ♡"];
 
 /** Screen 07 — opened packs, reserve boxes, storage mode, refill alert, stock log. */
 export default function InventoryPage() {
@@ -31,11 +34,8 @@ export default function InventoryPage() {
     <div className="flex flex-col gap-4">
       <ScreenTitle eyebrow="INVENTORY" title="สต็อกยา" />
 
-      <div className="relative flex min-h-[120px] items-center rounded-[28px] bg-(--surface-soft) py-4 pr-4 pl-[120px]">
-        <div className="absolute bottom-1 left-[6px]">
-          <MomoBunny state={invMomo} size={112} />
-        </div>
-        <div className="rounded-[18px_18px_18px_6px] bg-(--surface-card) px-3 py-[10px] text-[14px] leading-[21px] font-extrabold text-pretty" aria-live="polite">{invBubble}</div>
+      <div className="rounded-[28px] bg-(--surface-soft) pt-2 pr-4 pb-1 pl-1">
+        <ReactiveMomo state={invMomo} bubble={invBubble} size={112} lines={STOCK_LINES} className="items-center" bubbleClassName="self-center rounded-[18px_18px_18px_6px] px-3 py-[10px] text-[14px] leading-[21px]" />
       </div>
 
       {/* InventorySummaryCard */}

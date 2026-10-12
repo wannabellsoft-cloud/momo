@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { EMPTY, EmptyState } from "@/components/EmptyState";
 import { Icon, type IconName } from "@/components/momo/Icon";
-import { MomoBunny, type MomoState } from "@/components/momo/MomoBunny";
+import { type MomoState } from "@/components/momo/MomoBunny";
+import { ReactiveMomo } from "@/components/ReactiveMomo";
 import { Card, OutlineButton, PrimaryButton, ScreenTitle, cx } from "@/components/ui";
 import { TH_MONTHS, TH_WEEKDAYS_SHORT, dayKey, parseDayKey } from "@/lib/date";
 import { dayStatus, type DayStatus } from "@/lib/derive";
@@ -19,6 +20,9 @@ const CELL: Record<DayStatus, { bg: string; fg: string; border: string; icon: Ic
   future: { bg: "var(--surface-card)", fg: "var(--text-disabled)", border: "1.5px solid transparent", icon: null, aria: "" },
   untracked: { bg: "var(--surface-card)", fg: "var(--text-disabled)", border: "1.5px solid transparent", icon: null, aria: "ก่อนเริ่มใช้โมโม่" },
 };
+
+// What Momo says when tapped on History — encouraging, never about a specific dose.
+const HISTORY_LINES = ["โมโม่จดไว้ให้ครบเลยนะ ✎", "ดูแลตัวเองทุกวัน เก่งมากเลยน้า ♡", "วันไหนลืมก็ไม่เป็นไรนะ ค่อย ๆ ไป ♡", "ปฏิทินสวยขึ้นทุกวันเลย ✦", "โมโม่ภูมิใจในแพรวาจัง ♡"];
 
 /** Screen 06 — monthly calendar with taken / pending / missed, and day details. */
 export default function HistoryPage() {
@@ -143,7 +147,7 @@ export default function HistoryPage() {
               <h2 className="m-0 text-[20px] leading-[28px] font-extrabold">{sel === today ? "วันนี้" : `${selDate.getDate()} ${TH_MONTHS[selDate.getMonth()]}`}</h2>
               <div className="text-[13px] leading-[20px] text-(--text-secondary)">{selDate.getDate()} {TH_MONTHS[selDate.getMonth()]} {selDate.getFullYear()}</div>
             </div>
-            <MomoBunny state={sd.momo} still size={72} />
+            <ReactiveMomo state={sd.momo} size={96} lines={HISTORY_LINES} className="-my-3 -mr-1" />
           </div>
           <div className={cx("flex items-center gap-3 rounded-[18px] px-[14px] py-3", sd.cls)}>
             <Icon name={sd.icon} size={20} stroke={2.6} />
