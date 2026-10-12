@@ -33,7 +33,12 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install edge-tts
-      - run: node scripts/gen-voice.mts
+      - name: Render clips
+        shell: bash
+        run: |
+          set -o pipefail
+          node --version; edge-tts --version || true
+          node scripts/gen-voice.mts 2>&1 | tee /tmp/voice.log
         env:
           MOMO_VOICE: ${{ inputs.voice }}
           MOMO_PITCH: ${{ inputs.pitch }}
@@ -46,3 +51,14 @@ jobs:
           git diff --cached --quiet && echo "no changes" && exit 0
           git commit -m "Momo voice clips (${{ inputs.voice }}, ${{ inputs.pitch }})"
           git push
+      - name: Save log on failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan voice-log
+          git rm -rfq --cached . >/dev/null
+          cp /tmp/voice.log ../voice.log || echo "no log" > ../voice.log
+          git add -f ../voice.log
+          git commit -qm "voice log"
+          git push -f origin voice-log
