@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useUI } from "@/lib/ui";
+import { KeepName } from "./ui";
 import { TO_MASCOT, type MomoState } from "./momo/MomoBunny";
 import { MomoMascot, type MascotState } from "./momo/MomoMascot";
 
@@ -84,7 +85,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
         className="bubble-pop relative mt-3 self-start rounded-[20px_20px_20px_6px] bg-(--surface-card) px-[14px] py-3 text-[15px] leading-[23px] font-extrabold text-pretty shadow-(--shadow-soft)"
         aria-live="polite"
       >
-        {line}
+        <KeepName text={line} />
       </div>
     </div>
   );

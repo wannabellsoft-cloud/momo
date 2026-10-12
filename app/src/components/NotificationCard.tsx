@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import type { BannerKind } from "@/lib/ui";
 import { Icon } from "./momo/Icon";
 import { MomoBunny, type MomoState } from "./momo/MomoBunny";
-import { cx } from "./ui";
+import { KeepName, cx } from "./ui";
 
 const MOMO: Record<BannerKind, MomoState> = { remind: "reminder", follow: "waiting", bedtime: "sleep", test: "reminder" };
 
@@ -51,8 +51,8 @@ export function NotificationCard({
           </span>
           <span className="text-(--text-secondary)">{time}</span>
         </span>
-        <span className="mt-[2px] block text-[15px] leading-[21px] font-extrabold text-pretty text-(--text-primary)">{title}</span>
-        <span className="block text-[13px] leading-[18px] text-(--text-secondary)">{body}</span>
+        <span className="mt-[2px] block text-[15px] leading-[21px] font-extrabold text-pretty text-(--text-primary)">{typeof title === "string" ? <KeepName text={title} /> : title}</span>
+        <span className="block text-[13px] leading-[18px] text-(--text-secondary)">{typeof body === "string" ? <KeepName text={body} /> : body}</span>
       </span>
       {action && <span className="relative flex-none">{action}</span>}
       {timer != null && (

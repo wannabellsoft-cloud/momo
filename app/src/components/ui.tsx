@@ -151,3 +151,16 @@ export function RowLabel({ title, sub }: { title: ReactNode; sub?: ReactNode }) 
 export function DemoLabel() {
   return <div className="text-center text-[12px] leading-[18px] text-(--text-secondary)">ข้อมูลตัวอย่าง · Demo data</div>;
 }
+
+/** Thai line-breaking doesn't know Praewa's name and can split it ("แพร|วา").
+    Keeps the name (with "วันนี้"/"พี่" in front) on one line. */
+const NAME = /((?:วันนี้|พี่)?แพรวา+)/g;
+export function KeepName({ text }: { text: string }) {
+  const parts = text.split(NAME);
+  if (parts.length === 1) return <>{text}</>;
+  return (
+    <>
+      {parts.map((p, i) => (i % 2 ? <span key={i} className="whitespace-nowrap">{p}</span> : p))}
+    </>
+  );
+}

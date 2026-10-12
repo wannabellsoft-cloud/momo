@@ -6,7 +6,7 @@ import { VoicePicker } from "@/components/VoicePicker";
 import { BondBadge } from "@/components/BondBadge";
 import { EXP_RULES, TIERS, momoExp } from "@/lib/exp";
 import { useNow } from "@/lib/hooks";
-import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch, cx } from "@/components/ui";
+import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch, KeepName, cx } from "@/components/ui";
 import { playGreeting, playTone } from "@/lib/sound";
 import { MED, useMomo, type Settings } from "@/lib/store";
 import { useUI } from "@/lib/ui";
@@ -30,7 +30,7 @@ export default function ProfilePage() {
         <div className="text-[28px] leading-[36px] font-extrabold">
           โมโม่ <span className="text-[15px] text-(--action-soft-text)">Momo</span>
         </div>
-        <div className="text-[14px] leading-[22px] text-balance">กระต่ายโมจิตัวเล็ก ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย ที่คุณเบลส่งมาช่วยดูแลพี่แพรวางับ</div>
+        <div className="text-[14px] leading-[22px] text-balance"><KeepName text="กระต่ายโมจิตัวเล็ก ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย ที่คุณเบลส่งมาช่วยดูแลพี่แพรวางับ" /></div>
       </div>
 
       <LevelCard />

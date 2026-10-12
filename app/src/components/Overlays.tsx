@@ -11,7 +11,7 @@ const BANNER_MS = 5200;
 import { Icon, type IconName } from "./momo/Icon";
 import { TO_MASCOT, type MomoState } from "./momo/MomoBunny";
 import { MomoMascot } from "./momo/MomoMascot";
-import { cx } from "./ui";
+import { KeepName, cx } from "./ui";
 
 /** In-app notification card (shown when a reminder fires while Momo is open). */
 export function Banner() {
@@ -117,7 +117,7 @@ export function Toast() {
         )}
       >
         <div className={cx("relative flex min-h-[60px] items-center gap-3 overflow-hidden rounded-[22px] border-[1.5px] border-solid py-[10px] pr-3 pl-[74px] shadow-(--shadow-toast)", tone.bg, tone.ring)}>
-          <span className={cx("min-w-0 flex-1 text-[15px] leading-[21px] font-extrabold text-pretty", tone.fg)}>{shown?.text}</span>
+          <span className={cx("min-w-0 flex-1 text-[15px] leading-[21px] font-extrabold text-pretty", tone.fg)}><KeepName text={shown?.text ?? ""} /></span>
           <span key={shown?.key} className={cx("notif-pop flex h-8 w-8 flex-none items-center justify-center rounded-full bg-(--surface-card)", tone.fg)}>
             <Icon name={tone.icon} size={17} stroke={2.6} />
           </span>
