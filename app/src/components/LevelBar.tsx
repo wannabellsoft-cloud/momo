@@ -7,6 +7,7 @@ import { useNow } from "@/lib/hooks";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 import { BondBadge } from "./BondBadge";
+import { StreakFlame } from "./StreakFlame";
 import { cx } from "./ui";
 
 /** Closeness with Momo on Home: heart badge with the level, tier name, points bar and the current streak.
@@ -49,11 +50,12 @@ export function LevelBar() {
       </span>
       <span
         className={cx(
-          "flex h-8 flex-none items-center gap-[3px] rounded-full px-[10px] text-[12px] font-extrabold",
-          x.streak > 0 ? "bg-(--warning-bg) text-(--warning-fg)" : "bg-(--bg-subtle) text-(--text-secondary)",
+          "tnum flex h-8 flex-none items-center gap-[3px] rounded-full pr-[10px] pl-[7px] text-[13px] font-extrabold",
+          x.streak > 0 ? "bg-(--action-soft) text-(--action-soft-text)" : "bg-(--bg-subtle) text-(--text-secondary)",
         )}
       >
-        🔥 {x.streak}
+        <StreakFlame size={18} lit={x.streak > 0} />
+        {x.streak}
       </span>
     </Link>
   );

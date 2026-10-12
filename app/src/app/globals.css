@@ -32,6 +32,7 @@
   --action-primary:var(--pink-600); --action-primary-hover:var(--pink-700); --action-primary-pressed:var(--pink-800);
   --action-secondary:var(--lavender-600); --action-secondary-hover:var(--lavender-700);
   --action-soft:var(--pink-100); --action-soft-text:var(--pink-700);
+  --flame-a:#FFB59C; --flame-b:var(--pink-400); --flame-core:#FFE3D6;
   --action-disabled-bg:#F1E7EB; --action-disabled-text:var(--rose-400);
 
   --success-bg:var(--mint-100); --success-fg:var(--mint-700);
@@ -96,6 +97,7 @@
   --action-primary:#C4B0FF; --action-primary-hover:#D3C3FF; --action-primary-pressed:#AE97F5;
   --action-secondary:#9F8BF0; --action-secondary-hover:#B3A2F5;
   --action-soft:#2C2248; --action-soft-text:#D7C8FF;
+  --flame-a:#FFB3CF; --flame-b:#B79CFF; --flame-core:#FFE6F1;
   --action-disabled-bg:#241E38; --action-disabled-text:#6E6490;
   --success-bg:#1B3330; --success-fg:#9EE3C5; --warning-bg:#352C1A; --warning-fg:#FFD98A;
   --error-bg:#3A1F2E; --error-fg:#FFB3C8; --info-bg:#1D2540; --info-fg:#AFC8FF;
@@ -225,6 +227,8 @@ svg.momo25 { display: block; overflow: visible; }
 @keyframes exp-pop { 0% { transform: scale(.4) translateY(6px); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: none; } }
 .care-dot { animation: care-dot 1.8s ease-in-out infinite; }
 @keyframes care-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(244,127,167,.55); } 60% { box-shadow: 0 0 0 6px rgba(244,127,167,0); } }
+.flame-lit .flame-body { transform-origin: 12px 21px; animation: flame 1.6s ease-in-out infinite; }
+@keyframes flame { 0%, 100% { transform: scale(1, 1) rotate(0); } 30% { transform: scale(.96, 1.05) rotate(-2deg); } 65% { transform: scale(1.03, .97) rotate(2deg); } }
 .exp-fill { background: linear-gradient(90deg, var(--pink-300), var(--action-primary)); transition: width 700ms var(--ease-out); }
 .momo-pic .m-face { position: absolute; inset: 0; pointer-events: none; }
 .momo-pic .m-shadow { position: absolute; left: 22%; right: 22%; bottom: 1.5%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(160, 112, 100, .3), transparent); transform-origin: 50% 50%; }
@@ -271,12 +275,12 @@ svg.momo25 { display: block; overflow: visible; }
 @keyframes taken-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-3deg); } }
 @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes notif-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-[data-reduce-motion="true"] :is(.exp-pop, .care-dot, .toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+[data-reduce-motion="true"] :is(.flame-lit .flame-body, .exp-pop, .care-dot, .toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
 [data-reduce-motion="true"] .check-draw { animation: none; stroke-dashoffset: 0; }
 [data-reduce-motion="true"] :is(.momo-drift, .momo-burst) { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.exp-pop, .care-dot, .toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+  :is(.flame-lit .flame-body, .exp-pop, .care-dot, .toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
   .check-draw { animation: none !important; stroke-dashoffset: 0; }
   :is(.momo-drift, .momo-burst) { display: none; }
   .momo25 * { animation: none !important; }

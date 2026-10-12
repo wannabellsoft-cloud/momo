@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { VoicePicker } from "@/components/VoicePicker";
 import { BondBadge } from "@/components/BondBadge";
+import { StreakFlame } from "@/components/StreakFlame";
 import { EXP_RULES, TIERS, momoExp } from "@/lib/exp";
 import { useNow } from "@/lib/hooks";
 import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch, KeepName, cx } from "@/components/ui";
@@ -152,9 +153,12 @@ function LevelCard() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
-        <div className="rounded-[16px] bg-(--warning-bg) px-3 py-2 text-(--warning-fg)">
+        <div className="rounded-[16px] bg-(--action-soft) px-3 py-2 text-(--action-soft-text)">
           <div className="text-[12px] font-extrabold">ต่อเนื่อง</div>
-          <div className="text-[18px] font-extrabold">🔥 {x.streak} วัน</div>
+          <div className="flex items-center gap-[6px] text-[18px] font-extrabold text-(--text-primary)">
+            <StreakFlame size={24} lit={x.streak > 0} />
+            {x.streak} วัน
+          </div>
         </div>
         <div className="rounded-[16px] bg-(--surface-soft) px-3 py-2">
           <div className="text-[12px] font-extrabold text-(--action-soft-text)">อารมณ์โมโม่</div>
