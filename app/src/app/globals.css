@@ -43,7 +43,7 @@
   --dose-pending-bg:var(--butter-100); --dose-pending-fg:var(--butter-700);
   --dose-missed-bg:var(--lavender-100); --dose-missed-fg:var(--lavender-700);
   --refill-bg:var(--butter-100); --refill-fg:var(--butter-700);
-  --tablet-foil:#ECE7EA; --tablet-pill:#FFFFFF; --tablet-next:var(--pink-400); --tablet-used:#F7F3F5;
+  --blister-arrow:#B59AA8; --tablet-foil:#ECE7EA; --tablet-pill:#FFFFFF; --tablet-next:var(--pink-400); --tablet-used:#F7F3F5;
 
   /* app-level tokens for values the prototype used without a named token */
   --surface-hero-deco:#FFE9F0;            /* decorative circle on pink hero */
@@ -101,7 +101,7 @@
   --error-bg:#3A1F2E; --error-fg:#FFB3C8; --info-bg:#1D2540; --info-fg:#AFC8FF;
   --dose-taken-bg:#1B3330; --dose-taken-fg:#9EE3C5; --dose-pending-bg:#352C1A; --dose-pending-fg:#FFD98A;
   --dose-missed-bg:#2A2350; --dose-missed-fg:#D3C6FF; --refill-bg:#352C1A; --refill-fg:#FFD98A;
-  --tablet-foil:#2E2747; --tablet-pill:#EDE8FA; --tablet-used:#241E38; --tablet-next:#C4B0FF;
+  --blister-arrow:#8D7FC0; --tablet-foil:#2E2747; --tablet-pill:#EDE8FA; --tablet-used:#241E38; --tablet-next:#C4B0FF;
 
   --surface-hero-deco:#3A2E5E; --surface-muted:#1C1730;
   --surface-nav:rgba(33,27,53,.94); --surface-banner:rgba(33,27,53,.97); --surface-glass:rgba(18,15,28,.45);
@@ -224,6 +224,8 @@ svg.momo25 { display: block; overflow: visible; }
 .momo-pic .m-shadow { position: absolute; left: 22%; right: 22%; bottom: 1.5%; height: 6%; border-radius: 50%; background: radial-gradient(closest-side, rgba(160, 112, 100, .3), transparent); transform-origin: 50% 50%; }
 .momo-pic .m-fx { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .momo-pic[data-animated="true"]:is([data-state="reminder"], [data-state="refill"]) .m-all { animation: m-rock 2.8s ease-in-out infinite; }
+.blister-lead { animation: blister-lead 1.4s ease-in-out infinite; }
+@keyframes blister-lead { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
 @keyframes m-rock { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-2.5deg); } 70% { transform: rotate(2.5deg); } }
 
 /* ─── Home Momo + notification motion ──────────────────────────────────── */
@@ -261,12 +263,12 @@ svg.momo25 { display: block; overflow: visible; }
 @keyframes taken-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-3deg); } }
 @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes notif-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-[data-reduce-motion="true"] :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+[data-reduce-motion="true"] :is(.blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
 [data-reduce-motion="true"] .check-draw { animation: none; stroke-dashoffset: 0; }
 [data-reduce-motion="true"] :is(.momo-drift, .momo-burst) { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+  :is(.blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
   .check-draw { animation: none !important; stroke-dashoffset: 0; }
   :is(.momo-drift, .momo-burst) { display: none; }
   .momo25 * { animation: none !important; }

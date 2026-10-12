@@ -136,34 +136,60 @@ function tabletState(pack: Pack, i: number, next: number): TabletState {
   return t.doseId ? "taken" : "removed";
 }
 
-/** 3 rows × 5 — row 2 runs right→left (snake order). role=grid for screen readers. */
+/** Direction arrow printed on the foil, like the real Pristiq blister. */
+function Arrow({ dir, lead }: { dir: "right" | "left" | "down"; lead?: boolean }) {
+  const rot = { right: 0, left: 180, down: 90 }[dir];
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className={cx("block flex-none", lead ? "blister-lead text-(--tablet-next)" : "text-(--blister-arrow)")} style={{ transform: `rotate(${rot}deg)` }}>
+      <path d="M2 8h10" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M8.5 3.8 13 8l-4.5 4.2" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  );
+}
+
+const COLS = "grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)]";
+
+/** 3 rows × 5 in snake order (→, ←, →) with arrows between tablets and at each turn, as printed on the
+    real blister. The arrow leading into the next tablet is highlighted. role=grid for screen readers. */
 function BlisterGrid({ pack, next, onPress }: { pack: Pack; next: number; onPress: (i: number) => void }) {
   return (
-    <div role="grid" aria-label={`แผง ${pack.label} 15 เม็ด`} className="flex flex-col gap-[6px] rounded-[20px] bg-(--tablet-foil) px-[10px] py-[14px] shadow-[inset_0_1px_0_rgba(255,255,255,.9),inset_0_-2px_6px_rgba(103,68,84,.08)]">
+    <div role="grid" aria-label={`แผง ${pack.label} 15 เม็ด ลำดับตามลูกศร`} className="flex flex-col rounded-[20px] bg-(--tablet-foil) px-[8px] py-[12px] shadow-[inset_0_1px_0_rgba(255,255,255,.9),inset_0_-2px_6px_rgba(103,68,84,.08)]">
       {[0, 1, 2].map((r) => (
-        <div key={r} role="row" className="flex items-center gap-1">
-          <div className="grid flex-1 grid-cols-5 gap-1">
+        <div key={r}>
+          <div role="row" className={cx("grid items-center gap-x-[2px]", COLS)}>
             {[0, 1, 2, 3, 4].map((c) => {
               const i = snakeIndex(r, c);
               const st = tabletState(pack, i, next);
-              return (
+              // arrow after column c (visual order); it leads from tablet a to tablet b
+              const a = i, b = snakeIndex(r, c + 1);
+              const from = r === 1 ? b : a, to = r === 1 ? a : b;
+              return [
                 <button
                   key={c}
                   type="button"
                   role="gridcell"
                   aria-label={`เม็ดที่ ${i + 1} ${LABELS[st]}`}
                   onClick={() => onPress(i)}
-                  className="group flex min-h-16 cursor-pointer flex-col items-center gap-[3px] border-0 bg-transparent px-0 py-1"
+                  className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center gap-[3px] border-0 bg-transparent px-0 py-1"
                 >
                   <Pill st={st} />
                   <span className={cx("text-[12px] leading-[16px] font-extrabold", st === "next" ? "text-(--action-primary)" : "text-(--text-secondary)")}>{i + 1}</span>
-                </button>
-              );
+                </button>,
+                c < 4 && (
+                  <span key={`a${c}`} className="-mt-5 flex justify-center">
+                    <Arrow dir={r === 1 ? "left" : "right"} lead={to === next && from === next - 1} />
+                  </span>
+                ),
+              ];
             })}
           </div>
-          <span className="flex w-5 justify-center text-(--text-disabled)" aria-hidden="true">
-            <Icon name={r === 1 ? "left" : "right"} size={16} stroke={2.4} />
-          </span>
+          {r < 2 && (
+            <div className={cx("grid h-4 items-center gap-x-[2px]", COLS)} aria-hidden="true">
+              <span className={cx("flex justify-center", r === 0 ? "col-start-9" : "col-start-1")}>
+                <Arrow dir="down" lead={next === (r === 0 ? 5 : 10)} />
+              </span>
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -171,7 +197,7 @@ function BlisterGrid({ pack, next, onPress }: { pack: Pack; next: number; onPres
 }
 
 function Pill({ st }: { st: TabletState }) {
-  const base = "flex h-[46px] w-[46px] items-center justify-center rounded-full transition-all duration-[240ms] ease-(--ease-out) group-active:scale-[.96]";
+  const base = "flex aspect-square w-full max-w-[46px] items-center justify-center rounded-full transition-all duration-[240ms] ease-(--ease-out) group-active:scale-[.96]";
   if (st === "taken")
     return (
       <span className={cx(base, "border-[1.5px] border-dashed border-(--taken-dash) bg-(--dose-taken-bg) text-(--dose-taken-fg) shadow-[inset_0_2px_4px_rgba(44,118,81,.15)]")}>
