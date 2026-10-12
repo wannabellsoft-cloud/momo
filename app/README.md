@@ -107,7 +107,7 @@ Where it shows:
 
 ## Drug info
 
-`/care/` shows the Pristiq box (`public/med/pristiq.webp`, cut from the user's product photo), the missed-dose assistant (with the time until the next dose) and important cautions. The wording lives in `src/lib/care-info.ts`.
+`/care/` shows a vector Pristiq box drawn after the real packaging (`src/components/PristiqBox.tsx`), the missed-dose assistant (with the time until the next dose) and important cautions. The wording lives in `src/lib/care-info.ts`.
 
 How to reach it:
 - From Home, a small link that shows only while today's dose is still open.

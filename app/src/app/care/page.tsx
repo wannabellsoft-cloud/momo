@@ -3,8 +3,8 @@
 import { Fragment } from "react";
 import { Icon } from "@/components/momo/Icon";
 import { MomoMascot } from "@/components/momo/MomoMascot";
+import { PristiqBox } from "@/components/PristiqBox";
 import { BackHeader, Card } from "@/components/ui";
-import { BASE } from "@/lib/base";
 import { CAUTIONS, MISSED_DOSE } from "@/lib/care-info";
 import { addDays, atTime, dayKey } from "@/lib/date";
 import { useNow } from "@/lib/hooks";
@@ -44,8 +44,7 @@ export default function CarePage() {
 
       {/* Drug info card */}
       <Card className="flex items-center gap-3 overflow-hidden py-3 pr-4 pl-3">
-        {/* eslint-disable-next-line @next/next/no-img-element -- static export; product photo supplied by the user */}
-        <img src={`${BASE}/med/pristiq.webp`} alt="กล่องยา Pristiq 50 mg" width={128} height={100} className="h-[100px] w-[128px] flex-none object-contain" />
+        <PristiqBox width={128} title="กล่องยา Pristiq 50 mg" />
         <div className="min-w-0 flex-1">
           <div className="text-[18px] leading-[26px] font-extrabold">{MED.name}</div>
           <div className="text-[13px] leading-[20px] text-(--text-secondary)">{MED.generic}</div>
