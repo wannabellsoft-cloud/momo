@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const s = useMomo();
   const set = s.updateSettings;
   const showToast = useUI((u) => u.showToast);
-  const { call, voice, tone, uiSounds, greeting, music, reduceMotion, theme } = s.settings;
+  const { call, voice, tone, uiSounds, greeting, music, musicTrack, reduceMotion, theme } = s.settings;
   const [confirmReset, setConfirmReset] = useState(false);
   const sweet = voice === "sweet";
 
@@ -54,9 +54,22 @@ export default function ProfilePage() {
           </div>
         </div>
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
-          <RowLabel title="เพลงประกอบ" sub="เพลงกล่องดนตรีเบา ๆ ตอนเปิดแอป · ปิดเองเมื่อโหมดเงียบ" />
+          <RowLabel title="เพลงประกอบ" sub="เพลงเบา ๆ ตอนเปิดแอป · ปิดเองเมื่อโหมดเงียบ" />
           <Switch checked={music} onChange={(v) => set({ music: v })} label="เพลงประกอบ" />
         </div>
+        {music && (
+          <div className="-mt-1 flex flex-col gap-2">
+            <Segmented<Settings["musicTrack"]>
+              label="เพลง"
+              value={musicTrack}
+              options={[["lullaby", "กล่อมนอน"], ["box", "กล่องดนตรี"], ["time", "ตามเวลา"]]}
+              onChange={(v) => set({ musicTrack: v })}
+            />
+            <span className="text-[12px] leading-[18px] text-(--text-secondary)">
+              {musicTrack === "lullaby" ? "เพลงกล่อมช้า ๆ นุ่ม ๆ ฟังสบาย" : musicTrack === "box" ? "กล่องดนตรีใส ๆ สดใส" : "กลางวันกล่องดนตรี · หลัง 6 โมงเย็นเปลี่ยนเป็นเพลงกล่อมนอน"}
+            </span>
+          </div>
+        )}
         <div className="flex items-center gap-3">
           <RowLabel title="เสียงตอนกดปุ่ม" sub="ปิ๊ก ๆ เบา ๆ ทุกครั้งที่แตะ" />
           <Switch checked={uiSounds} onChange={(v) => set({ uiSounds: v })} label="เสียงตอนกดปุ่ม" />

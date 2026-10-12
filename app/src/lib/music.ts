@@ -1,42 +1,31 @@
 "use client";
 
-/* Momo's background music — an original, gentle music-box lullaby, synthesized live with Web Audio
-   (no audio file). 8-bar loop in C major at 84 bpm: music-box melody, soft bass, a little twinkle.
+/* Momo's background music — original tunes, synthesized live with Web Audio (no audio files).
+   - "box": music-box melody in C major, 84 bpm, soft bass and a little twinkle.
+   - "lullaby": slow 3/4 lullaby in F major, 60 bpm — soft celesta melody over a warm, filtered pad.
    - Starts after the first tap (browsers block audio before that), pauses when the app is hidden.
    - Lowers itself ("ducks") while Momo talks.
    - Follows the iPhone silent switch (ambient audio session, see sound.ts). */
 import { audioContext, onDuck } from "./sound";
 
-const BPM = 84;
-const EIGHTH = 60 / BPM / 2;
-const BAR = EIGHTH * 8;
-const VOLUME = 0.32;
+export type Track = "box" | "lullaby";
 
-const N: Record<string, number> = {
-  C3: 130.81, F3: 174.61, G3: 196, A3: 220,
-  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880, B5: 987.77,
-  C6: 1046.5, D6: 1174.66, E6: 1318.51,
+const SEMI: Record<string, number> = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
+/** "A4" · "Bb3" · "F#5" → Hz */
+function hz(note: string) {
+  const m = /^([A-G])(b|#)?(\d)$/.exec(note);
+  if (!m) return 0;
+  const n = SEMI[m[1]] + (m[2] === "b" ? -1 : m[2] === "#" ? 1 : 0) + (Number(m[3]) - 4) * 12;
+  return 440 * 2 ** (n / 12);
+}
+
+type Song = {
+  bpm: number;
+  slots: number; // eighth notes per bar
+  melody: string[][]; // one row per bar, "" = rest/hold
+  play: (c: AudioContext, out: AudioNode, bar: number, slot: number, t: number, eighth: number) => void;
+  volume: number;
 };
-
-// 8 eighth-note slots per bar ("" = rest)
-const MELODY: string[][] = [
-  ["E5", "", "G5", "", "C6", "", "G5", ""],
-  ["A5", "", "G5", "E5", "", "", "D5", ""],
-  ["F5", "", "A5", "", "C6", "", "A5", "G5"],
-  ["G5", "", "", "D5", "", "E5", "F5", ""],
-  ["E5", "G5", "C6", "", "D6", "", "C6", ""],
-  ["A5", "", "C6", "", "A5", "G5", "E5", ""],
-  ["F5", "", "A5", "", "G5", "", "D5", ""],
-  ["C5", "", "E5", "", "C5", "", "", ""],
-];
-const BASS = ["C3", "A3", "F3", "G3", "C3", "A3", "F3", "C3"];
-const TWINKLE: [number, number, string][] = [[3, 7, "E6"], [7, 4, "G5"], [5, 3, "E6"]]; // [bar, slot, note]
-
-let master: GainNode | null = null;
-let timer: ReturnType<typeof setInterval> | null = null;
-let nextTime = 0;
-let step = 0; // eighth-note index within the loop
-let playing = false;
 
 function box(c: AudioContext, out: AudioNode, f: number, t: number, v: number) {
   // music-box: sine + quiet octave partial, fast attack, long ring
@@ -54,38 +43,132 @@ function box(c: AudioContext, out: AudioNode, f: number, t: number, v: number) {
   }
 }
 
-function bass(c: AudioContext, out: AudioNode, f: number, t: number) {
+function tone(c: AudioContext, out: AudioNode, f: number, t: number, v: number, type: OscillatorType, attack: number, length: number) {
   const o = c.createOscillator();
   const g = c.createGain();
-  o.type = "triangle";
+  o.type = type;
   o.frequency.value = f;
   g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.09, t + 0.05);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + BAR * 0.48);
+  g.gain.exponentialRampToValueAtTime(v, t + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + length);
   o.connect(g).connect(out);
   o.start(t);
-  o.stop(t + BAR * 0.5);
+  o.stop(t + length + 0.05);
 }
+
+// ─── Music box ────────────────────────────────────────────────────────────
+const BOX_BASS = ["C3", "A3", "F3", "G3", "C3", "A3", "F3", "C3"];
+const BOX_TWINKLE: [number, number, string][] = [[3, 7, "E6"], [7, 4, "G5"], [5, 3, "E6"]]; // [bar, slot, note]
+const MUSIC_BOX: Song = {
+  bpm: 84,
+  slots: 8,
+  volume: 0.32,
+  melody: [
+    ["E5", "", "G5", "", "C6", "", "G5", ""],
+    ["A5", "", "G5", "E5", "", "", "D5", ""],
+    ["F5", "", "A5", "", "C6", "", "A5", "G5"],
+    ["G5", "", "", "D5", "", "E5", "F5", ""],
+    ["E5", "G5", "C6", "", "D6", "", "C6", ""],
+    ["A5", "", "C6", "", "A5", "G5", "E5", ""],
+    ["F5", "", "A5", "", "G5", "", "D5", ""],
+    ["C5", "", "E5", "", "C5", "", "", ""],
+  ],
+  play(c, out, bar, slot, t, eighth) {
+    const note = this.melody[bar][slot];
+    if (note) box(c, out, hz(note), t, slot % 2 === 0 ? 0.16 : 0.12);
+    if (slot === 0 || slot === 4) tone(c, out, hz(BOX_BASS[bar]), t, 0.09, "triangle", 0.05, eighth * 8 * 0.48);
+    for (const [b, sl, n] of BOX_TWINKLE) if (b === bar && sl === slot) box(c, out, hz(n), t + eighth / 2, 0.05);
+  },
+};
+
+// ─── Lullaby ──────────────────────────────────────────────────────────────
+// F · Dm · C · Bb · Bb · F · C · F — each bar: low root + a slow, filtered pad chord.
+const LULL_CHORDS: string[][] = [
+  ["F2", "F3", "A3", "C4"],
+  ["D2", "D3", "F3", "A3"],
+  ["C2", "C3", "E3", "G3"],
+  ["Bb1", "Bb2", "D3", "F3"],
+  ["Bb1", "Bb2", "D3", "F3"],
+  ["F2", "F3", "A3", "C4"],
+  ["C2", "C3", "E3", "G3"],
+  ["F2", "F3", "A3", "C4"],
+];
+let padFilter: BiquadFilterNode | null = null;
+const LULLABY: Song = {
+  bpm: 60,
+  slots: 6, // 3/4
+  volume: 0.36,
+  melody: [
+    ["A4", "", "", "", "C5", ""],
+    ["F5", "", "", "", "", ""],
+    ["E5", "", "D5", "", "C5", ""],
+    ["D5", "", "", "", "", ""],
+    ["Bb4", "", "", "", "D5", ""],
+    ["C5", "", "A4", "", "F4", ""],
+    ["G4", "", "", "", "E4", ""],
+    ["F4", "", "", "", "", ""],
+  ],
+  play(c, out, bar, slot, t, eighth) {
+    const barLen = eighth * 6;
+    const note = this.melody[bar][slot];
+    if (note) {
+      // celesta: sine + soft octave, gentle attack, long ring
+      tone(c, out, hz(note), t, 0.12, "sine", 0.03, 2.4);
+      tone(c, out, hz(note) * 2, t, 0.018, "sine", 0.02, 1.1);
+    }
+    if (slot === 0) {
+      if (!padFilter || padFilter.context !== c) {
+        padFilter = c.createBiquadFilter();
+        padFilter.type = "lowpass";
+        padFilter.frequency.value = 900;
+        padFilter.connect(out);
+      }
+      const [root, ...pad] = LULL_CHORDS[bar];
+      tone(c, out, hz(root), t, 0.07, "sine", 0.08, barLen * 0.95);
+      for (const n of pad) tone(c, padFilter, hz(n), t, 0.022, "triangle", barLen * 0.35, barLen * 1.15);
+    }
+    // a soft "rocking" note on beat 3 of the held bars
+    if (slot === 4 && !this.melody[bar][4] && bar % 2 === 1) tone(c, out, hz(LULL_CHORDS[bar][3]) * 2, t, 0.03, "sine", 0.04, 1.4);
+  },
+};
+
+const SONGS: Record<Track, Song> = { box: MUSIC_BOX, lullaby: LULLABY };
+
+let master: GainNode | null = null;
+let timer: ReturnType<typeof setInterval> | null = null;
+let nextTime = 0;
+let step = 0; // eighth-note index within the loop
+let song: Song = MUSIC_BOX;
+let current: Track | null = null;
+let switching: ReturnType<typeof setTimeout> | null = null;
 
 function schedule() {
   const c = audioContext();
   if (!c || !master) return;
+  const eighth = 60 / song.bpm / 2;
+  const loop = song.slots * song.melody.length;
   while (nextTime < c.currentTime + 0.25) {
-    const bar = Math.floor(step / 8) % 8;
-    const slot = step % 8;
-    const note = MELODY[bar][slot];
-    if (note) box(c, master, N[note], nextTime, slot % 2 === 0 ? 0.16 : 0.12);
-    if (slot === 0 || slot === 4) bass(c, master, N[BASS[bar]], nextTime);
-    for (const [b, sl, n] of TWINKLE) if (b === bar && sl === slot) box(c, master, N[n], nextTime + EIGHTH / 2, 0.05);
-    nextTime += EIGHTH;
-    step = (step + 1) % 64;
+    song.play(c, master, Math.floor(step / song.slots), step % song.slots, nextTime, eighth);
+    nextTime += eighth;
+    step = (step + 1) % loop;
   }
 }
 
-export function startMusic() {
+/** Start (or switch to) a track. Switching fades the old one out first. */
+export function startMusic(track: Track = "box") {
   const c = audioContext();
-  if (!c || playing) return;
-  playing = true;
+  if (!c) return;
+  if (switching) clearTimeout(switching);
+  switching = null;
+  if (current === track) return;
+  if (current) {
+    stopMusic();
+    switching = setTimeout(() => startMusic(track), 450);
+    return;
+  }
+  current = track;
+  song = SONGS[track];
+  step = 0;
   master ??= (() => {
     const g = c.createGain();
     g.connect(c.destination);
@@ -93,7 +176,7 @@ export function startMusic() {
   })();
   master.gain.cancelScheduledValues(c.currentTime);
   master.gain.setValueAtTime(0.0001, c.currentTime);
-  master.gain.exponentialRampToValueAtTime(VOLUME, c.currentTime + 1.5); // fade in
+  master.gain.exponentialRampToValueAtTime(song.volume, c.currentTime + 1.5); // fade in
   nextTime = c.currentTime + 0.1;
   timer = setInterval(schedule, 90);
   schedule();
@@ -101,7 +184,9 @@ export function startMusic() {
 
 export function stopMusic() {
   const c = audioContext();
-  playing = false;
+  current = null;
+  if (switching) clearTimeout(switching);
+  switching = null;
   if (timer) clearInterval(timer);
   timer = null;
   if (c && master) {
@@ -111,16 +196,17 @@ export function stopMusic() {
   }
 }
 
-export const isMusicPlaying = () => playing;
+export const isMusicPlaying = () => current !== null;
 
 // Quiet the music while Momo talks, then bring it back.
 onDuck((ms) => {
   const c = audioContext();
-  if (!c || !master || !playing) return;
+  if (!c || !master || !current) return;
   const g = master.gain;
+  const v = song.volume;
   g.cancelScheduledValues(c.currentTime);
   g.setValueAtTime(Math.max(g.value, 0.0001), c.currentTime);
-  g.exponentialRampToValueAtTime(VOLUME * 0.2, c.currentTime + 0.25);
-  g.setValueAtTime(VOLUME * 0.2, c.currentTime + ms / 1000);
-  g.exponentialRampToValueAtTime(VOLUME, c.currentTime + ms / 1000 + 1.2);
+  g.exponentialRampToValueAtTime(v * 0.2, c.currentTime + 0.25);
+  g.setValueAtTime(v * 0.2, c.currentTime + ms / 1000);
+  g.exponentialRampToValueAtTime(v, c.currentTime + ms / 1000 + 1.2);
 });

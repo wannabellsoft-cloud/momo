@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { audioReady, availableClips, greetingLine, playGreeting, playUi, type UiSound } from "@/lib/sound";
 import { startMusic, stopMusic } from "@/lib/music";
+import { isNight } from "@/lib/date";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -40,8 +41,9 @@ export function SoundLayer() {
     // Background music: needs a first tap (unlocked), follows the setting and app visibility.
     let unlocked = false;
     const syncMusic = () => {
-      const on = unlocked && useMomo.getState().settings.music && document.visibilityState === "visible";
-      if (on) startMusic();
+      const { music, musicTrack } = useMomo.getState().settings;
+      const on = unlocked && music && document.visibilityState === "visible";
+      if (on) startMusic(musicTrack === "time" ? (isNight(new Date()) ? "lullaby" : "box") : musicTrack);
       else stopMusic();
     };
     void audioReady().then((ok) => {
@@ -49,7 +51,7 @@ export function SoundLayer() {
       syncMusic();
     });
     const unsubMusic = useMomo.subscribe((st, prev) => {
-      if (st.settings.music !== prev.settings.music) syncMusic();
+      if (st.settings.music !== prev.settings.music || st.settings.musicTrack !== prev.settings.musicTrack) syncMusic();
     });
     document.addEventListener("visibilitychange", syncMusic);
 

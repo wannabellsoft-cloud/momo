@@ -84,13 +84,14 @@ To change Momo's look, replace the sheet (same pose order: idle, squint (unused)
   - night with nothing pending → sleeping
   - otherwise → idle
 - **Old state names:** `MomoBunny` maps the app's situation names (taken, nostock, error…) onto these states.
-- **Icons:** the app icon is the winking capsule-hug pose on peach-pink. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from `public/mascot/`.
+- **Icons:** the app icon is "Momo" on top with Momo's face below (like the profile picture) on peach-pink. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from `public/mascot/`.
 - **Limits:** a pose is one image, so ears and arms can't move on their own, and there is no blink (the squint pose doesn't line up with idle). Rigged limbs would need the art split into layers, e.g. in Rive.
 
 ## Sounds
 
 `src/lib/sound.ts` synthesizes everything with Web Audio, so no audio files ship:
 - **Notification tones:** กรุ๊งกริ๊ง, ป๊อปฟอง, ปุ๊กปิ๊ก (chosen in Momo's profile). They play with the in-app banner. System notifications use the phone's sound.
+- **Background music:** original tunes synthesized in `src/lib/music.ts`: กล่อมนอน (a slow 3/4 lullaby, the default), กล่องดนตรี (music box) or ตามเวลา (music box by day, lullaby from 18:00). Chosen in Momo's profile.
 - **Tap sounds:** `SoundLayer` plays a soft tap for every button. Set `data-sound="success|toggle|back|giggle|none"` on an element to override it.
 - **Greeting:** a chime, then Momo says hello using the device's Thai voice (higher pitch), once per launch. iOS only allows audio after a tap, so the greeting plays on the first tap. The page uses the "ambient" audio session, so the silent switch mutes Momo.
 - **Momo's voice, same on every device:** recorded clips in `public/voice/` take priority over device text-to-speech. Generate them once on any computer with internet access:

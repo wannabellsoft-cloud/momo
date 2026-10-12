@@ -118,5 +118,7 @@ export function systemNotificationCopy(s: MomoData, kind: "remind" | "follow" | 
     kind === "bedtime" ? "ราตรีสวัสดิ์จากโมโม่ 🌙"
     : kind === "follow" ? (privacy ? "ถ้าดูแลตัวเองแล้ว กดบันทึกให้โมโม่หน่อยน้า" : `Pristiq 50 mg · ${qty} เม็ด · ถ้ากินแล้วกดบันทึกได้เลย`)
     : privacy ? `เตือนประจำวัน · ${remind} น.` : `Pristiq 50 mg · ${qty} เม็ด · ${remind} น.`;
-  return { title: "Momo", body: `${line}\n${detail}\nแตะเพื่อเปิดโมโม่` };
+  // iOS already adds "from Momo" under a Home Screen app's notification, so the title is the reminder
+  // itself (not "Momo" again) and the body carries the details.
+  return { title: line, body: `${detail}\nแตะเพื่อเปิดโมโม่` };
 }

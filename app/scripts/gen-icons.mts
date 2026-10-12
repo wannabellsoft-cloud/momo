@@ -16,15 +16,25 @@ const art = (pose: Pose, px: number) => `<img src="${uri(pose)}" width="${px}" h
 
 // [path, size, background, html]
 const ICONS: [string, number, string, (size: number) => string][] = [];
-// Winking Momo hugging the capsule (the board's app icon). The pose sits low in its square, so lift it.
-const appIcon = (size: number) => `<div style="margin-top:-${Math.round(size * 0.1)}px">${art("icon", Math.round(size * 1.08))}</div>`;
+// "Momo" on top, Momo's face (idle pose) filling the lower part, like the profile picture.
+// `inset` shrinks everything into the centre (maskable icons keep content inside the safe zone).
+const FONT = `data:font/woff2;base64,${readFileSync(new URL("../src/fonts/anuphan-latin-700-normal.woff2", import.meta.url)).toString("base64")}`;
+const appIcon = (size: number, inset = 1) => {
+  const S = size * inset;
+  const img = S * 1.6; // idle.webp: character is 368 of 440 px wide → character ≈ 1.34 S (ears and body cropped, like the profile picture)
+  return `<style>@font-face{font-family:A;src:url(${FONT}) format("woff2");font-weight:700}</style>
+    <div style="position:relative;width:${S}px;height:${S}px;overflow:${inset < 1 ? "visible" : "hidden"}">
+      <div style="position:absolute;left:0;right:0;top:${S * 0.045}px;text-align:center;font:700 ${S * 0.2}px/1 A;letter-spacing:-.01em;color:#7A3B4E;text-shadow:0 ${S * 0.008}px 0 rgba(255,255,255,.7)">Momo</div>
+      <img src="${uri("idle")}" style="position:absolute;width:${img}px;height:${img}px;left:${(S - img) / 2}px;top:${S * 0.25 - img * (131 / 440)}px">
+    </div>`;
+};
 for (const [f, size] of [["icon-192.png", 192], ["icon-512.png", 512], ["apple-touch-icon.png", 180], ["icon-maskable-512.png", 512]] as const) {
-  ICONS.push([OUT + f, size, BG, f.includes("maskable") ? (s) => `<div style="margin-top:-${Math.round(s * 0.06)}px">${art("icon", Math.round(s * 0.86))}</div>` : appIcon]);
+  ICONS.push([OUT + f, size, BG, f.includes("maskable") ? (s) => appIcon(s, 0.8) : (s) => appIcon(s)]);
 }
 ICONS.push([OUT + "badge-96.png", 96, "transparent", (s) => art("idle", s)]);
 if (existsSync(IOS)) {
   // App Store icons must be opaque; the splash is one square image iOS crops to fit.
-  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, BG, appIcon]);
+  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, BG, (s) => appIcon(s)]);
   for (const f of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) ICONS.push([IOS + "Splash.imageset/" + f, 2732, "#FFFAF6", (s) => art("idle", Math.round(s * 0.3))]);
 }
 
