@@ -150,11 +150,9 @@ export default function SettingsPage() {
       </Link>
 
       <Link href="/care/" className="press flex items-center gap-3 rounded-[24px] bg-(--surface-card) px-4 py-3 text-(--text-primary) no-underline shadow-(--shadow-card)">
-        <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-(--info-bg)">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-          <img src={`${BASE}/mascot/props/medbox.webp`} alt="" width={30} height={30} className="h-[30px] w-[30px] object-contain" />
-        </span>
-        <RowLabel title="ข้อมูลยา Pristiq" sub="ลืมกินยาทำไงดี · ข้อควรระวัง · ผลข้างเคียง" />
+        {/* eslint-disable-next-line @next/next/no-img-element -- static export; product photo */}
+        <img src={`${BASE}/med/pristiq.webp`} alt="" width={48} height={48} className="h-12 w-12 flex-none object-contain" />
+        <RowLabel title="ข้อมูลยา Pristiq" sub="ลืมกินยาทำไงดี · ข้อควรระวัง" />
         <Icon name="right" size={18} />
       </Link>
     </div>

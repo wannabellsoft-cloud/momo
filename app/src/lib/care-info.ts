@@ -16,6 +16,3 @@ export const CAUTIONS: string[] = [
   "แจ้งแพทย์หรือเภสัชกรก่อนใช้ร่วมกับยาอื่น โดยเฉพาะ MAOIs, **tramadol**, ยาต้านเศร้าอื่น และสมุนไพร **St. John's wort (Blackmores Hyperiforte)**",
   "**ระวังการดื่มแอลกอฮอล์** และควรติดตามความดันโลหิตตามแพทย์แนะนำ",
 ];
-
-/** Side effects: being prepared. Add items as { title, body } when the information is ready. */
-export const SIDE_EFFECTS: { title: string; body: string }[] = [];

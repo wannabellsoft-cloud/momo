@@ -1,7 +1,7 @@
 import { addDays, dayKey } from "./date";
 import type { Dose, MomoData } from "./store";
 
-/* Momo's EXP & level — a reward layer computed from the dose history (never stored, so it can't drift
+/* Closeness with Momo (ความสนิท) — points & level, a reward layer computed from the dose history (never stored, so it can't drift
    and never touches medication or stock records).
 
    Per recorded day:
@@ -32,11 +32,14 @@ function scoreDose(d: Dose, remind: string, streakBefore: number): DoseExp {
 /** Cumulative EXP needed to reach level n (n ≥ 1): 0, 50, 150, 300, 500, 750… */
 export const expForLevel = (n: number) => 25 * n * (n - 1);
 
-export type Tier = { from: number; name: string; badge: "sprout" | "star" | "sparkles" };
+/** Closeness tiers; `index` picks the badge colour (BondBadge). */
+export type Tier = { from: number; name: string; index: number };
 export const TIERS: Tier[] = [
-  { from: 1, name: "ต้นอ่อนน้อย", badge: "sprout" },
-  { from: 5, name: "ดาวดวงน้อย", badge: "star" },
-  { from: 10, name: "เพื่อนซี้โมโม่", badge: "sparkles" },
+  { from: 1, name: "เพิ่งรู้จัก", index: 0 },
+  { from: 3, name: "เพื่อนใหม่", index: 1 },
+  { from: 5, name: "เพื่อนสนิท", index: 2 },
+  { from: 8, name: "คู่หูคนสำคัญ", index: 3 },
+  { from: 12, name: "ซี้กันที่สุด", index: 4 },
 ];
 
 export type Mood = "happy" | "ok" | "sulky";

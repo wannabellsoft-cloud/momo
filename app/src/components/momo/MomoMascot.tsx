@@ -141,7 +141,7 @@ export function MomoMascot({ state = "idle", size = "md", px, animated = true, s
   const dim = px ?? MASCOT_SIZES[size];
   const [ref, onscreen] = useOnscreen<HTMLSpanElement>(animated);
   const [failed, setFailed] = useState<MascotState | null>(null);
-  const fx = useMemo(() => (showProps ? momoFx(state, id, BASE) : ""), [state, id, showProps]);
+  const fx = useMemo(() => (showProps ? momoFx(state, id) : ""), [state, id, showProps]);
   const vector = useMemo(() => (failed === state ? momoSvg(state, id, { props: showProps }) : ""), [failed, state, id, showProps]);
   const label = alt ?? MASCOT_ALT[state];
   useEffect(preloadPoses, []);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { VoicePicker } from "@/components/VoicePicker";
-import { badgeSrc } from "@/components/LevelBar";
+import { BondBadge } from "@/components/BondBadge";
 import { EXP_RULES, TIERS, momoExp } from "@/lib/exp";
 import { useNow } from "@/lib/hooks";
 import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch, cx } from "@/components/ui";
@@ -127,7 +127,7 @@ export default function ProfilePage() {
 
 const MOOD = { happy: "อารมณ์ดีสุด ๆ ♡", ok: "สบายดี", sulky: "งอนนิดนึง 😤" } as const;
 
-/** Momo's level, EXP, streak and mood — and how EXP is earned (lib/exp.ts). */
+/** Closeness with Momo: level, points, streak and mood — and how points are earned (lib/exp.ts). */
 function LevelCard() {
   const s = useMomo();
   const x = momoExp(s, useNow());
@@ -136,13 +136,10 @@ function LevelCard() {
     <section id="level" className="scroll-mt-4">
     <Card className="flex flex-col gap-3 p-4">
       <div className="flex items-center gap-3">
-        <span className="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-(--surface-soft)">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-          <img src={badgeSrc(x.tier.badge)} alt="" width={38} height={38} className="h-[38px] w-[38px] object-contain" />
-        </span>
+        <BondBadge level={x.level} tier={x.tier.index} size={60} />
         <div className="min-w-0 flex-1">
-          <div className="text-[12px] font-extrabold tracking-[.08em] text-(--action-soft-text)">MOMO LEVEL</div>
-          <div className="text-[22px] leading-[30px] font-extrabold">Lv.{x.level} · {x.tier.name}</div>
+          <div className="text-[12px] font-extrabold tracking-[.08em] text-(--action-soft-text)">ความสนิทกับโมโม่ · Lv.{x.level}</div>
+          <div className="text-[22px] leading-[30px] font-extrabold">{x.tier.name}</div>
         </div>
       </div>
       <div>
@@ -150,8 +147,8 @@ function LevelCard() {
           <div className="exp-fill h-full rounded-full" style={{ width: `${Math.max(4, Math.round(x.progress * 100))}%` }} />
         </div>
         <div className="tnum mt-1 flex justify-between text-[12px] font-extrabold text-(--text-secondary)">
-          <span>{x.inLevel}/{x.toNext} EXP</span>
-          <span>รวม {x.exp} EXP</span>
+          <span>{x.inLevel}/{x.toNext} ♡ ถึงเลเวลถัดไป</span>
+          <span>รวม {x.exp} ♡</span>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -165,18 +162,17 @@ function LevelCard() {
         </div>
       </div>
       <div className="rounded-[16px] bg-(--bg-app) px-3 py-[10px] text-[13px] leading-[21px]">
-        <div className="mb-1 font-extrabold">ได้ EXP ยังไง</div>
+        <div className="mb-1 font-extrabold">สนิทกันมากขึ้นได้ยังไง</div>
         <div>• บันทึกว่ากินยาแล้ว +{R.base}</div>
         <div>• ตรงเวลา (ไม่เกิน {R.onTimeMin} นาทีจากเวลาเตือน) +{R.onTime} · เกือบตรง ({R.closeMin} นาที) +{R.close}</div>
         <div>• กินต่อเนื่องทุกวัน +{R.streakStep} ต่อวัน (สูงสุด +{R.streakMax})</div>
-        <div className="text-(--text-secondary)">ลืมกินไม่โดนหัก EXP แต่ความต่อเนื่องจะเริ่มใหม่ และโมโม่จะงอนนิดนึง</div>
+        <div className="text-(--text-secondary)">ลืมกินไม่โดนหักแต้ม แต่ความต่อเนื่องจะเริ่มใหม่ และโมโม่จะงอนนิดนึง</div>
       </div>
       <div className="flex gap-2">
         {TIERS.map((t) => (
-          <div key={t.name} className={cx("flex flex-1 flex-col items-center gap-1 rounded-[16px] px-1 py-2 text-center", x.tier.name === t.name ? "bg-(--action-soft)" : "bg-(--bg-subtle) opacity-70")}>
-            {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-            <img src={badgeSrc(t.badge)} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
-            <span className="text-[11px] leading-[15px] font-extrabold">Lv.{t.from}+<br />{t.name}</span>
+          <div key={t.name} className={cx("flex min-w-0 flex-1 flex-col items-center gap-1 rounded-[16px] px-[2px] py-2 text-center", x.tier.name === t.name ? "bg-(--action-soft)" : "bg-(--bg-subtle)", x.level < t.from && "opacity-55")}>
+            <BondBadge level={t.from} tier={t.index} size={30} />
+            <span className="text-[10px] leading-[14px] font-extrabold">{t.name}</span>
           </div>
         ))}
       </div>

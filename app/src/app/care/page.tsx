@@ -5,7 +5,7 @@ import { Icon } from "@/components/momo/Icon";
 import { MomoMascot } from "@/components/momo/MomoMascot";
 import { BackHeader, Card } from "@/components/ui";
 import { BASE } from "@/lib/base";
-import { CAUTIONS, MISSED_DOSE, SIDE_EFFECTS } from "@/lib/care-info";
+import { CAUTIONS, MISSED_DOSE } from "@/lib/care-info";
 import { addDays, atTime, dayKey } from "@/lib/date";
 import { useNow } from "@/lib/hooks";
 import { MED, useMomo } from "@/lib/store";
@@ -25,9 +25,7 @@ function Rich({ text }: { text: string }) {
   );
 }
 
-const prop = (name: string) => `${BASE}/mascot/props/${name}.webp`;
-
-/** Drug info: Missed Dose Assistant · important cautions · side effects (being prepared). */
+/** Drug info: the Pristiq box, Missed Dose Assistant and important cautions. */
 export default function CarePage() {
   const s = useMomo();
   const now = useNow();
@@ -45,14 +43,13 @@ export default function CarePage() {
       <BackHeader href="/" eyebrow="DRUG INFO" title="ข้อมูลยา" />
 
       {/* Drug info card */}
-      <Card className="flex items-center gap-3 px-4 py-[14px]">
-        <span className="flex h-12 w-12 flex-none items-center justify-center rounded-[16px] bg-(--info-bg)">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-          <img src={prop("medbox")} alt="" width={32} height={32} className="h-8 w-8 object-contain" />
-        </span>
+      <Card className="flex items-center gap-3 overflow-hidden py-3 pr-4 pl-3">
+        {/* eslint-disable-next-line @next/next/no-img-element -- static export; product photo supplied by the user */}
+        <img src={`${BASE}/med/pristiq.webp`} alt="กล่องยา Pristiq 50 mg" width={128} height={100} className="h-[100px] w-[128px] flex-none object-contain" />
         <div className="min-w-0 flex-1">
           <div className="text-[18px] leading-[26px] font-extrabold">{MED.name}</div>
-          <div className="text-[13px] leading-[20px] text-(--text-secondary)">{MED.generic} · วันละ {s.settings.qty} เม็ด · {remind} น.</div>
+          <div className="text-[13px] leading-[20px] text-(--text-secondary)">{MED.generic}</div>
+          <div className="mt-1 inline-flex h-7 items-center rounded-full bg-(--surface-soft) px-[10px] text-[12px] font-extrabold text-(--action-soft-text)">วันละ {s.settings.qty} เม็ด · {remind} น.</div>
         </div>
       </Card>
 
@@ -117,36 +114,6 @@ export default function CarePage() {
               </li>
             ))}
           </ul>
-        </Card>
-      </section>
-
-      {/* Side effects */}
-      <section id="side-effects" className="scroll-mt-4">
-        <Card className="flex flex-col gap-3 p-4">
-          <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-(--info-bg) text-(--info-fg)">
-              <Icon name="heart" size={18} stroke={2.4} />
-            </span>
-            <h2 className="m-0 text-[18px] leading-[26px] font-extrabold">ผลข้างเคียง</h2>
-          </div>
-          {SIDE_EFFECTS.length ? (
-            SIDE_EFFECTS.map((e) => (
-              <div key={e.title} className="rounded-[16px] bg-(--bg-app) px-3 py-[10px]">
-                <div className="text-[14px] font-extrabold">{e.title}</div>
-                <div className="text-[13px] leading-[20px] text-(--text-secondary)">{e.body}</div>
-              </div>
-            ))
-          ) : (
-            <div className="flex items-center gap-3 rounded-[16px] bg-(--bg-app) px-3 py-3">
-              {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-              <img src={prop("sprout")} alt="" width={36} height={36} className="h-9 w-9 flex-none object-contain" />
-              <div className="text-[13px] leading-[20px]">
-                <b>กำลังจัดทำข้อมูล</b>
-                <br />
-                <span className="text-(--text-secondary)">ระหว่างนี้ ถ้ามีอาการผิดปกติ ปรึกษาแพทย์หรือเภสัชกรได้เลยนะ</span>
-              </div>
-            </div>
-          )}
         </Card>
       </section>
 

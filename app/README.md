@@ -55,7 +55,7 @@ Momo's look comes from a rendered pose sheet, `assets-src/momo-sheet.png` (a tra
 
 To change Momo's look, replace the sheet (same pose order: idle, squint (unused), reminder, happy, missed, sleeping, refill, loading, success, icon) and re-run.
 
-**Face frames:** `scripts/face-frames.py` (OpenCV) builds `<pose>-blink.webp` (eyes closed) and `<pose>-talk.webp` (mouth closed) from each pose, so they line up exactly. Momo blinks every 3–5 s, and the Home and splash Momo (`talks`) move their mouth while Momo speaks. Both stop offscreen and with reduced motion. **Props:** `public/mascot/props/` holds 3D props isolated from the V2 asset pack (speech bubble, star, sprout, sparkles, medicine box, clock, clipboard, water glass).
+**Face frames:** `scripts/face-frames.py` (OpenCV) builds `<pose>-blink.webp` (eyes closed) and `<pose>-talk.webp` (mouth closed) from each pose, so they line up exactly. Momo blinks every 3–5 s, and the Home and splash Momo (`talks`) move their mouth while Momo speaks. Both stop offscreen and with reduced motion.
 
 `MomoMascot` draws the pose image plus animated SVG effects from `src/components/momo/momo-character.ts`: bell, hearts, "…" bubble, Zz and moon, "!", confetti, sparkles and loading dots. If an image fails to load, it falls back to the drawn vector Momo from the same file.
 
@@ -89,24 +89,25 @@ To change Momo's look, replace the sheet (same pose order: idle, squint (unused)
 - **Icons:** the app icon is "Momo" on top with Momo's face below (like the profile picture) on peach-pink. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from `public/mascot/`.
 - **Limits:** a pose is one image, so ears and arms can't move on their own, and there is no blink (the squint pose doesn't line up with idle). Rigged limbs would need the art split into layers, e.g. in Rive.
 
-## Momo level (EXP) and mood
+## Closeness with Momo (ความสนิท) and mood
 
-`src/lib/exp.ts` computes EXP from the dose history, so nothing extra is stored and medication records are untouched:
+`src/lib/exp.ts` computes closeness points (♡) from the dose history, so nothing extra is stored and medication records are untouched:
 - **Per recorded day:** +10 for recording at all (+5 for a back-fill without a time).
 - **Timing:** +10 if within 30 min of the reminder time, +5 if within 90 min.
 - **Streak:** +2 per consecutive day, capped at +10.
-- **Levels:** reaching Lv.n needs 25·n·(n−1) EXP. Tiers: 🌱 ต้นอ่อนน้อย (Lv.1+), ⭐ ดาวดวงน้อย (Lv.5+), ✨ เพื่อนซี้โมโม่ (Lv.10+).
-- **Missed days:** no EXP is taken away. The streak restarts and Momo sulks ("งอน") on Home until today's dose is recorded.
+- **Levels:** reaching Lv.n needs 25·n·(n−1) ♡. Tiers: เพิ่งรู้จัก (Lv.1), เพื่อนใหม่ (3), เพื่อนสนิท (5), คู่หูคนสำคัญ (8), ซี้กันที่สุด (12).
+- **Logo:** `BondBadge` is a heart wearing Momo's floppy ears, with the level inside. It deepens in colour per tier, and the top tier gets a gold rim.
+- **Missed days:** no points are taken away. The streak restarts and Momo sulks ("งอน") on Home until today's dose is recorded.
 
 Where it shows:
 - **Home:** level bar.
-- **Taken card:** "+EXP" chip.
-- **Momo's profile:** level card.
+- **Taken card:** "+♡ ความสนิท" chip.
+- **Momo's profile:** closeness card.
 - **Level-ups:** announced once (`settings.seenLevel`).
 
 ## Drug info
 
-`/care/` covers the missed-dose assistant (with the time until the next dose), important cautions and side effects (being prepared). The wording lives in `src/lib/care-info.ts`.
+`/care/` shows the Pristiq box (`public/med/pristiq.webp`, cut from the user's product photo), the missed-dose assistant (with the time until the next dose) and important cautions. The wording lives in `src/lib/care-info.ts`.
 
 How to reach it:
 - From Home, a small link that shows only while today's dose is still open.

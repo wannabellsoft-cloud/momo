@@ -48,7 +48,7 @@ export function TakenCard({ time }: { time: string | null }) {
         </span>
         {today && (
           <span className={cx("mt-1 inline-flex h-6 items-center gap-1 rounded-full bg-(--surface-card) px-2 text-[12px] font-extrabold text-(--action-soft-text)", fresh && "exp-pop")}>
-            +{today.total} EXP{why && <span className="font-bold text-(--text-secondary)">· {why}</span>}
+            +{today.total} ความสนิท ♡{why && <span className="font-bold text-(--text-secondary)">· {why}</span>}
           </span>
         )}
       </span>
