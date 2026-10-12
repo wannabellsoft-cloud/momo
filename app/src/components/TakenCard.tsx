@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUI } from "@/lib/ui";
-import { MomoBunny } from "./momo/MomoBunny";
+import { MomoMascot } from "./momo/MomoMascot";
 
 const PRAISE = ["เก่งมากเลยน้า", "โมโม่ภูมิใจจัง", "ดูแลตัวเองดีมาก", "เย้ เรียบร้อย ♡"];
 
@@ -41,7 +41,7 @@ export function TakenCard({ time }: { time: string | null }) {
         </span>
       </span>
       <span className="taken-bob relative -my-2 flex-none">
-        <MomoBunny state="taken" size={62} />
+        <MomoMascot state={fresh ? "celebrate" : "success"} px={62} alt="" />
       </span>
     </div>
 

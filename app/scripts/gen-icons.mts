@@ -1,7 +1,7 @@
 // Renders the PWA icons, plus the iOS app icon and launch splash when ios/ exists, from Momo's
 // vector art (Design System “App icon”: Momo's head on Pink Light, no text). Run: npm run icons
 import { chromium } from "playwright-core";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { momoSvgMarkup, momoViewBox } from "../src/components/momo/momo-art.ts";
 
 const OUT = new URL("../public/icons/", import.meta.url).pathname;
@@ -18,10 +18,13 @@ const ICONS: [string, number, string, number, Art?][] = [
   ["badge-96.png", 96, "transparent", 1],
 ].map(([f, ...r]) => [OUT + f, ...r] as [string, number, string, number]);
 // System notification art (Chromium shows `icon` + a large `image`; iOS shows the app icon).
-const NOTIF: [string, "reminder" | "waiting" | "sleep"][] = [["remind", "reminder"], ["follow", "waiting"], ["bedtime", "sleep"]];
+// Uses the 3D-style mascot art (public/mascot/momo/*.webp) — temporary concept crops, see mascot-manifest.ts.
+const MASCOT_DIR = new URL("../public/mascot/momo/", import.meta.url).pathname;
+const mascotUri = (state: string) => `data:image/webp;base64,${readFileSync(MASCOT_DIR + state + ".webp").toString("base64")}`;
+const NOTIF: [string, string][] = [["remind", "reminder"], ["follow", "waiting"], ["bedtime", "sleep"]];
 const EXTRA: { file: string; w: number; h: number; html: string }[] = [];
 for (const [kind, state] of NOTIF) {
-  const art = (px: number) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox()}" width="${px}" height="${px}">${momoSvgMarkup(state, undefined, "n")}</svg>`;
+  const art = (px: number) => `<img src="${mascotUri(state)}" width="${px}" height="${px}" style="display:block;object-fit:cover;-webkit-mask-image:radial-gradient(closest-side,#000 74%,transparent 100%)">`;
   EXTRA.push({ file: OUT + `notif-${kind}.png`, w: 192, h: 192, html: `<div style="width:192px;height:192px;border-radius:50%;background:#FFDCE9;display:flex;align-items:center;justify-content:center;overflow:hidden">${art(170)}</div>` });
   EXTRA.push({
     file: OUT + `notif-banner-${kind}.png`, w: 720, h: 360,
@@ -54,6 +57,7 @@ for (const [file, size, bg, scale, art = "head"] of ICONS) {
 for (const x of EXTRA) {
   await page.setViewportSize({ width: x.w, height: x.h });
   await page.setContent(`<html><body style="margin:0;background:transparent">${x.html}</body></html>`);
+  await page.waitForLoadState("networkidle");
   await page.screenshot({ path: x.file, omitBackground: true });
   console.log("wrote", x.file.replace(new URL("..", import.meta.url).pathname, ""));
 }

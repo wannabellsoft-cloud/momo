@@ -45,6 +45,29 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 
 Limitation: there is no push server, so reminders only fire while Momo is open or still alive in the background. On iPhone the app must be added to the Home Screen first (iOS 16.4+). Reliable delivery to a fully closed app needs Web Push: VAPID keys, a small server that stores the subscription and sends on a schedule, and a `push` handler in `sw.js`.
 
+## Mascot (3D-style art, temporary)
+
+`MomoMascot` (`src/components/momo/MomoMascot.tsx`) shows Momo as an image via `next/image`, using the asset manifest `mascot-manifest.ts`:
+
+```tsx
+<MomoMascot state="reminder" size="lg" priority />   // states: welcome · reminder · waiting · success · refill · noStock · sleep · question · celebrate
+```
+
+- Sizes: `sm` 56 · `md` 112 · `lg` 170 · `hero` 220, or `px`. The box is always reserved, so the layout doesn't shift. Non-hero images load lazily.
+- Variants: `soft` (edges fade into the card, the default), `tile`, `circle`. `MomoAvatar` is the round face.
+- Fallback: missing state → `waiting` → original vector Momo.
+- Breathing motion turns off with "ลดการเคลื่อนไหว" or `prefers-reduced-motion`.
+- The older `MomoBunny` API still works and maps its states onto `MomoMascot`, so no screen logic changed.
+
+**The current files are temporary.** They are square crops of `momo_original_concept_sheet.png`: raster concept art with its own cream background. They are not transparent renders, 3D models or animations. The PWA/iOS app icon still uses the vector icon until a clean 1024px icon exists.
+
+Still needed (drop into `public/mascot/momo/` with the same names; no code change):
+- [ ] `welcome` `reminder` `waiting` `success` `refill` `noStock` `sleep` `question` `celebrate`: 768×768 transparent PNG/WebP, same framing and scale
+- [ ] Hero (`waiting`/splash): 1024×1024 transparent
+- [ ] `avatar`: 512×512 face, transparent
+- [ ] App icon: 1024×1024 opaque square (then run `npm run icons`)
+- [ ] Optional: `loading`/`error` poses (they currently use `question`)
+
 ## Sounds
 
 `src/lib/sound.ts` synthesizes everything with Web Audio, so no audio files ship:

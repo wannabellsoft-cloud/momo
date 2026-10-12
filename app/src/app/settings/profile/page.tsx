@@ -28,6 +28,7 @@ export default function ProfilePage() {
           โมโม่ <span className="text-[15px] text-(--action-soft-text)">Momo</span>
         </div>
         <div className="text-[14px] leading-[22px]">กระต่ายตัวเล็กของ{call} ชอบดอกไม้สีชมพูกับการงีบตอนบ่าย</div>
+        <div className="mt-1 rounded-full bg-(--surface-card) px-3 py-[2px] text-[11px] text-(--text-secondary)">ภาพโมโม่ 3D ชุดนี้เป็นภาพตัวอย่างชั่วคราว (concept art)</div>
       </div>
 
       <Card className="flex flex-col gap-[14px] p-4">

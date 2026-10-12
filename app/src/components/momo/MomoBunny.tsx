@@ -2,6 +2,8 @@
 
 import { useId, useState } from "react";
 import { momoSvgMarkup, momoViewBox, type MomoState } from "./momo-art";
+import type { MascotState } from "./mascot-manifest";
+import { MomoAvatar, MomoMascot } from "./MomoMascot";
 
 /* Momo mascot — vector placeholder ported from project/momo-kit.js.
    To ship real plush renders, drop transparent PNG/WebP files in public/momo/ and
@@ -20,8 +22,8 @@ type Props = {
   className?: string;
 };
 
-/** Decorative mascot. Always aria-hidden — the message next to Momo carries the meaning. */
-export function MomoBunny({ state = "idle", crop, still, size, className }: Props) {
+/** Original vector Momo — now only the last-resort fallback for MomoMascot. */
+export function MomoVector({ state = "idle", crop, still, size, className }: Props) {
   const id = "m" + useId().replace(/[^a-zA-Z0-9]/g, "");
   const key = state + (crop ? "-" + crop : "");
   const src = MOMO_RENDERS[key] ?? MOMO_RENDERS[state];
@@ -41,4 +43,25 @@ export function MomoBunny({ state = "idle", crop, still, size, className }: Prop
       dangerouslySetInnerHTML={{ __html: momoSvgMarkup(state, crop, id) }}
     />
   );
+}
+
+/* ─── Compatibility adapter ─────────────────────────────────────────────
+   Existing screens use the original state names; they now render the 3D-style MomoMascot. */
+export const TO_MASCOT: Record<MomoState, MascotState> = {
+  idle: "waiting",
+  reminder: "reminder",
+  waiting: "waiting",
+  taken: "success",
+  refill: "refill",
+  nostock: "noStock",
+  sleep: "sleep",
+  welcome: "welcome",
+  loading: "question",
+  error: "question",
+};
+
+/** Decorative Momo (the text next to Momo carries the meaning, so alt is empty). */
+export function MomoBunny({ state = "idle", crop, still, size, className }: Props) {
+  if (crop === "head") return <MomoAvatar px={size} className={className} />;
+  return <MomoMascot state={TO_MASCOT[state]} px={size} alt="" animate={!still} className={`${state === "loading" ? "mascot-bounce " : ""}${className ?? ""}`} />;
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useUI } from "@/lib/ui";
-import { MomoBunny, type MomoState } from "./momo/MomoBunny";
+import { TO_MASCOT, type MomoState } from "./momo/MomoBunny";
+import { MomoMascot, type MascotState } from "./momo/MomoMascot";
 
 // Things Momo says when tapped — affectionate only, never about whether a dose was taken.
 const TAP_LINES = ["ปุ๊กปิ๊ก ♡", "จิ้มโมโม่ทำไมน้า~ ♡", "กอดหน่อยได้ไหม ♡", "โมโม่อยู่ตรงนี้นะ", "วันนี้ก็เป็นวันที่ดีน้า ✦", "แพรวาน่ารักที่สุดเลย ♡", "ฮึบ! สู้ ๆ น้า"];
@@ -12,7 +13,7 @@ type Burst = { id: number; x: number; d: number; s: number; glyph: string };
 /** Animated Momo for the Home hero: pop-in, idle hop, floating hearts, tap-to-play, launch wave. */
 export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }) {
   const greet = useUI((u) => u.greet);
-  const [override, setOverride] = useState<{ line: string; momo?: MomoState; until: number } | null>(null);
+  const [override, setOverride] = useState<{ line: string; momo?: MascotState; until: number } | null>(null);
   const [jump, setJump] = useState(0);
   const [burst, setBurst] = useState<Burst[]>([]);
   const lastLine = useRef(-1);
@@ -35,7 +36,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
     let i = Math.floor(Math.random() * TAP_LINES.length);
     if (i === lastLine.current) i = (i + 1) % TAP_LINES.length;
     lastLine.current = i;
-    setOverride({ line: TAP_LINES[i], until: Date.now() + 2800 });
+    setOverride({ line: TAP_LINES[i], momo: "celebrate", until: Date.now() + 2800 });
     setJump((j) => j + 1);
     const now = Date.now();
     setBurst((b) => [
@@ -44,7 +45,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
     ]);
   };
 
-  const momo = override?.momo ?? state;
+  const momo: MascotState = override?.momo ?? TO_MASCOT[state];
   const line = override?.line ?? bubble;
 
   return (
@@ -74,7 +75,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
         ))}
         <span className="momo-enter block">
           <span key={jump} className={jump ? "momo-jump block" : "momo-idle-hop block"}>
-            <MomoBunny state={momo} size={170} />
+            <MomoMascot state={momo} size="lg" priority alt="" />
           </span>
         </span>
       </button>
