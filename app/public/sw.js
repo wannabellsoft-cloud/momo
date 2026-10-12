@@ -1,7 +1,7 @@
 /* Momo service worker — offline shell + notification taps.
    Navigations: network-first, falling back to the cached page (or the cached home page).
    Static assets (/_next/static, fonts, icons): cache-first. */
-const CACHE = "momo-v2";
+const CACHE = "momo-v3";
 // Works at the domain root or under a basePath (e.g. GitHub Pages "/momo/"): everything is relative to the scope.
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const SHELL = ["/", "/blister/", "/history/", "/inventory/", "/inventory/open-box/", "/settings/", "/settings/profile/", "/manifest.webmanifest"].map((p) => BASE + p);
@@ -35,14 +35,16 @@ self.addEventListener("fetch", (e) => {
   }
 
   const path = url.pathname.slice(BASE.length);
-  if (path.startsWith("/_next/static/") || path.startsWith("/icons/")) {
+  if (path.startsWith("/_next/static/") || path.startsWith("/icons/") || (path.startsWith("/voice/") && path.endsWith(".mp3"))) {
     e.respondWith(
       caches.match(req).then(
         (hit) =>
           hit ||
           fetch(req).then((res) => {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy));
+            if (res.ok) {
+              const copy = res.clone();
+              caches.open(CACHE).then((c) => c.put(req, copy));
+            }
             return res;
           }),
       ),

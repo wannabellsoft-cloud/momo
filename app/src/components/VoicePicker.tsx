@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-import { greetingLine, speak, subscribeVoices, voicesSnapshot, type MomoVoice, type TtsPitch } from "@/lib/sound";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { MOMO_CLIPS, availableClips, greetingLine, playClip, speak, subscribeVoices, voicesSnapshot, type MomoVoice, type TtsPitch } from "@/lib/sound";
+import { greetingId } from "@/lib/voice-lines";
 import { isIOS } from "@/lib/install";
 import { useMomo } from "@/lib/store";
 import { Icon } from "./momo/Icon";
@@ -15,8 +16,15 @@ export function VoicePicker() {
   const voices = useSyncExternalStore(subscribeVoices, voicesSnapshot, () => EMPTY);
   const { ttsVoice, ttsPitch } = useMomo((s) => s.settings);
   const set = useMomo((s) => s.updateSettings);
-  const selected = ttsVoice && voices.some((v) => v.name === ttsVoice) ? ttsVoice : null;
-  const sample = (voice: string | null, pitch: TtsPitch = ttsPitch) => speak(greetingLine(), { voice, pitch });
+  const [hasClips, setHasClips] = useState(false);
+  useEffect(() => {
+    void availableClips().then((s) => setHasClips(s.has(greetingId())));
+  }, []);
+  const selected = ttsVoice === MOMO_CLIPS && hasClips ? MOMO_CLIPS : ttsVoice && voices.some((v) => v.name === ttsVoice) ? ttsVoice : null;
+  const sample = (voice: string | null, pitch: TtsPitch = ttsPitch) => {
+    if ((voice === MOMO_CLIPS || voice === null) && hasClips) void playClip(greetingId());
+    else speak(greetingLine(), { voice, pitch });
+  };
 
   const row = (key: string | null, title: string, sub: string, chip?: string) => {
     const on = selected === key;
@@ -54,17 +62,20 @@ export function VoicePicker() {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-[15px] font-extrabold">เสียงของโมโม่</span>
-      {voices.length === 0 ? (
+      {voices.length === 0 && !hasClips ? (
         <span className="rounded-[14px] bg-(--warning-bg) px-3 py-[10px] text-[13px] leading-[20px] text-(--warning-fg)">
           เครื่องนี้ยังไม่มีเสียงภาษาไทย
           {isIOS() ? " · ดาวน์โหลดได้ที่ การตั้งค่า → การช่วยการเข้าถึง → เนื้อหาที่พูด → เสียง → ไทย" : " · ลองเปิดใน Chrome, Edge หรือ Safari"}
         </span>
       ) : (
         <div role="radiogroup" aria-label="เสียงของโมโม่" className="flex flex-col gap-2">
-          {row(null, "อัตโนมัติ", `เสียงผู้หญิงที่ดีที่สุดในเครื่อง · ${voices[0].label}`)}
+          {row(null, "อัตโนมัติ", hasClips ? "ใช้เสียงโมโม่ที่อัดไว้" : `เสียงผู้หญิงที่ดีที่สุดในเครื่อง · ${voices[0].label}`)}
+          {hasClips && row(MOMO_CLIPS, "เสียงโมโม่", "ไฟล์เสียง · เหมือนกันทุกเครื่อง", "ผู้หญิง")}
           {voices.map((v) => row(v.name, v.label, v.voice.localService ? "ในเครื่อง" : "ออนไลน์", GENDER[v.gender] || undefined))}
         </div>
       )}
+      {selected !== MOMO_CLIPS && !(selected === null && hasClips) && (
+      <>
       <span className="mt-1 text-[13px] font-extrabold text-(--text-secondary)">ความน่ารักของเสียง</span>
       <div data-sound="none">
         <Segmented<TtsPitch>
@@ -77,7 +88,9 @@ export function VoicePicker() {
           }}
         />
       </div>
-      {isIOS() && (
+      </>
+      )}
+      {isIOS() && !hasClips && (
         <span className="text-[12px] leading-[18px] text-(--text-secondary)">
           อยากได้เสียงนุ่มขึ้น: ดาวน์โหลดเสียง “Narisa (ปรับปรุง)” ใน การตั้งค่า → การช่วยการเข้าถึง → เนื้อหาที่พูด → เสียง → ไทย
         </span>

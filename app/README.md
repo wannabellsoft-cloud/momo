@@ -51,6 +51,13 @@ Limitation: there is no push server, so reminders only fire while Momo is open o
 - **Notification tones:** กรุ๊งกริ๊ง, ป๊อปฟอง, ปุ๊กปิ๊ก (chosen in Momo's profile). They play with the in-app banner. System notifications use the phone's sound.
 - **Tap sounds:** `SoundLayer` plays a soft tap for every button. Set `data-sound="success|toggle|back|giggle|none"` on an element to override it.
 - **Greeting:** a chime, then Momo says hello using the device's Thai voice (higher pitch), once per launch. iOS only allows audio after a tap, so the greeting plays on the first tap. The page uses the "ambient" audio session, so the silent switch mutes Momo.
+- **Momo's voice, same on every device:** recorded clips in `public/voice/` take priority over device text-to-speech. Generate them once on any computer with internet access:
+  ```bash
+  pip install edge-tts
+  npm run voice        # Premwadee (Microsoft neural, female), cute pitch → public/voice/*.mp3
+  git add public/voice && git commit -m "Momo voice" && git push
+  ```
+  Lines live in `src/lib/voice-lines.ts`. Any clip can be replaced with a real recording of the same file name. Without clips, Momo uses the best female Thai voice on the device (picker in Momo's profile).
 
 ## iOS app (Capacitor, paused)
 

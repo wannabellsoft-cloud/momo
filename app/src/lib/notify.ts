@@ -39,10 +39,23 @@ export function registerServiceWorker() {
   navigator.serviceWorker.register(`${BASE}/sw.js`, { scope: `${BASE}/` }).catch(() => {});
 }
 
-export async function showSystemNotification(title: string, body: string, opts: { tag: string; silent: boolean }) {
+/** System notification. The OS draws the card (we can't change its colors); we add Momo's
+    icon per kind, a large Momo picture where supported (Chrome on Windows/Android/Mac), and an open button. */
+export async function showSystemNotification(title: string, body: string, opts: { tag: string; silent: boolean; kind?: "remind" | "follow" | "bedtime" }) {
   if (isNative()) return showNativeNow(title, body).then(() => true, () => false);
   if (notificationPermission() !== "granted") return false;
-  const options: NotificationOptions = { body, tag: opts.tag, silent: opts.silent, icon: `${BASE}/icons/icon-192.png`, badge: `${BASE}/icons/badge-96.png`, data: { url: `${BASE}/` } };
+  const kind = opts.kind ?? "remind";
+  const options: NotificationOptions & { image?: string; actions?: { action: string; title: string }[]; renotify?: boolean } = {
+    body,
+    tag: opts.tag,
+    silent: opts.silent,
+    renotify: true,
+    icon: `${BASE}/icons/notif-${kind}.png`,
+    image: `${BASE}/icons/notif-banner-${kind}.png`,
+    badge: `${BASE}/icons/badge-96.png`,
+    actions: kind === "bedtime" ? [] : [{ action: "open", title: "เปิดโมโม่ ♡" }],
+    data: { url: `${BASE}/` },
+  };
   try {
     const reg = "serviceWorker" in navigator ? await navigator.serviceWorker.getRegistration() : undefined;
     if (reg) await reg.showNotification(title, options);

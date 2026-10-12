@@ -61,7 +61,7 @@ function tick() {
       useUI.getState().showBanner({ title, body, kind: e.kind });
       playTone(s.settings.tone);
     } else {
-      void showSystemNotification(title, body, { tag: `momo-${e.kind}`, silent: s.settings.tone === "off" });
+      void showSystemNotification(title, body, { tag: `momo-${e.kind}`, silent: s.settings.tone === "off", kind: e.kind });
     }
   }
 }

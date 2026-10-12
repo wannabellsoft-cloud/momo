@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { audioReady, greetingLine, playGreeting, playUi, type UiSound } from "@/lib/sound";
+import { audioReady, availableClips, greetingLine, playGreeting, playUi, type UiSound } from "@/lib/sound";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -12,6 +12,7 @@ const GREETED = "momo:greeted";
     otherwise on the first tap (iOS requires a gesture). */
 export function SoundLayer() {
   useEffect(() => {
+    void availableClips(); // know early whether recorded clips exist
     let pendingGreeting = false;
     const greet = () => {
       pendingGreeting = false;

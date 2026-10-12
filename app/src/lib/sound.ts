@@ -6,6 +6,9 @@
    - Greeting: a chime + Momo saying hello with the device's Thai voice
    On iOS the page's audio session is "ambient", so the ring/silent switch mutes Momo. */
 
+import { BASE } from "./base";
+import { VOICE_LINES, greetingId, type VoiceLineId } from "./voice-lines";
+
 export type Tone = "sparkle" | "bubble" | "hop" | "off";
 export type UiSound = "tap" | "success" | "toggle" | "back" | "giggle";
 
@@ -113,15 +116,6 @@ export function playUi(kind: UiSound) {
   play(UI[kind]);
 }
 
-/* ─── Greeting ─────────────────────────────────────────────────────────── */
-function greetingLine(now = new Date()) {
-  const h = now.getHours();
-  if (h < 11) return "อรุณสวัสดิ์ แพรวา โมโม่มาแล้วน้า";
-  if (h < 17) return "สวัสดีแพรวา โมโม่คิดถึงจังเลย";
-  if (h < 21) return "สวัสดีตอนเย็นน้า แพรวา";
-  return "สวัสดีแพรวา ใกล้เวลานอนแล้วน้า";
-}
-
 /* ─── Momo's voice (Web Speech TTS) ──────────────────────────────────────
    Voices depend on the device. The API has no gender field, so we rank by known Thai voice
    names: female first (Momo is a girl), male voices last. */
@@ -201,10 +195,70 @@ export function speak(text: string, opts: { voice?: string | null; pitch?: TtsPi
   } catch {}
 }
 
+/* ─── Recorded clips (same voice on every device) ─────────────────────── */
+export const MOMO_CLIPS = "@momo"; // settings.ttsVoice value that selects the clips
+
+let clipSet: Promise<Set<string>> | null = null;
+/** Which clips exist in public/voice (from manifest.json). Empty when none were generated. */
+export function availableClips(): Promise<Set<string>> {
+  clipSet ??= fetch(`${BASE}/voice/manifest.json`, { cache: "no-cache" })
+    .then((r) => (r.ok ? r.json() : { lines: {} }))
+    .then((m: { lines?: Record<string, string> }) => new Set(Object.keys(m.lines ?? {})))
+    .catch(() => new Set<string>());
+  return clipSet;
+}
+
+const buffers = new Map<string, Promise<AudioBuffer | null>>();
+function loadClip(id: VoiceLineId) {
+  const c = audio();
+  if (!c) return Promise.resolve(null);
+  if (!buffers.has(id))
+    buffers.set(
+      id,
+      fetch(`${BASE}/voice/${id}.mp3`)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject()))
+        .then((b) => c.decodeAudioData(b))
+        .catch(() => null),
+    );
+  return buffers.get(id)!;
+}
+
+/** Play a recorded line through the (already unlocked) audio context. Resolves false if unavailable. */
+export async function playClip(id: VoiceLineId, delay = 0): Promise<boolean> {
+  const c = audio();
+  if (!c || !(await availableClips()).has(id)) return false;
+  const buf = await loadClip(id);
+  if (!buf) return false;
+  const src = c.createBufferSource();
+  const g = c.createGain();
+  g.gain.value = 1;
+  src.buffer = buf;
+  src.connect(g).connect(c.destination);
+  src.start(c.currentTime + delay);
+  return true;
+}
+
+/** Say a line: recorded clip when chosen/available, otherwise the device voice. */
+export async function sayLine(id: VoiceLineId, opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
+  const wantClips = opts.voice == null || opts.voice === MOMO_CLIPS;
+  if (wantClips && (await availableClips()).has(id)) {
+    if (await playClip(id, 0.45)) return;
+  }
+  speak(VOICE_LINES[id], { ...opts, voice: opts.voice === MOMO_CLIPS ? null : opts.voice });
+}
+
 /** Chime + Momo says hello in the chosen voice. */
 export function playGreeting(opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
   playTone("sparkle");
-  speak(greetingLine(), opts);
+  const id = greetingId();
+  const wantClips = opts.voice == null || opts.voice === MOMO_CLIPS;
+  // Device speech must start inside the tap on iOS, so only go async when clips are known to exist.
+  if (wantClips && clipSet) {
+    void clipSet.then((set) => (set.has(id) ? playClip(id, 0.45).then((ok) => ok || speak(VOICE_LINES[id], opts)) : speak(VOICE_LINES[id], opts)));
+    return;
+  }
+  speak(VOICE_LINES[id], { ...opts, voice: opts.voice === MOMO_CLIPS ? null : opts.voice });
 }
 
+const greetingLine = (now = new Date()) => VOICE_LINES[greetingId(now)];
 export { greetingLine };

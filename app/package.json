@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/gen-icons.mts",
     "ios:sync": "next build && cap sync ios",
-    "ios:open": "cap open ios"
+    "ios:open": "cap open ios",
+    "voice": "node scripts/gen-voice.mts"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

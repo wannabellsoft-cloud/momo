@@ -37,7 +37,7 @@ export default function SettingsPage() {
     const { title, body } = notificationCopy(s, "remind");
     ui.showBanner({ title, body, kind: "test" });
     playTone(s.settings.tone);
-    if (perm === "granted") void showSystemNotification(title, body, { tag: "momo-test", silent: s.settings.tone === "off" });
+    if (perm === "granted") void showSystemNotification(title, body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" });
   };
 
   return (
