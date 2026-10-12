@@ -32,12 +32,17 @@ type FireBody = { kind: "remind" | "follow" | "bedtime" | "reset"; subscription:
 
 const PUSH_HOSTS = [/\.push\.apple\.com$/, /(^|\.)fcm\.googleapis\.com$/, /\.push\.services\.mozilla\.com$/, /\.notify\.windows\.com$/];
 
-/** QSTASH_* variables, also when an integration added them with a prefix (e.g. UPSTASH_QSTASH_TOKEN). */
+/** QSTASH_* variables — also when an integration added them under another name, e.g. UPSTASH_QSTASH_TOKEN,
+    STORAGE_QSTASH_TOKEN or QSTASH_QSTASH_TOKEN. */
 function env(name: string) {
   if (process.env[name]) return process.env[name];
-  const key = Object.keys(process.env).find((k) => k.endsWith(`_${name}`) && process.env[k]);
+  const keys = Object.keys(process.env).filter((k) => process.env[k]);
+  const key = keys.find((k) => k.endsWith(`_${name}`)) ?? keys.find((k) => k.includes("QSTASH") && k.endsWith(name.replace(/^QSTASH_/, "_")));
   return key ? process.env[key] : undefined;
 }
+
+/** Names (never values) of QStash-looking variables, to debug the setup from /api/push/key/. */
+export const qstashVarNames = () => Object.keys(process.env).filter((k) => /QSTASH|UPSTASH/i.test(k)).sort();
 
 export const enabled = () => !!env("QSTASH_TOKEN");
 

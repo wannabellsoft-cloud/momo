@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { canPromptInstall, isIOS, promptInstall, shouldOfferInstall } from "@/lib/install";
 import { checkNotificationPermission, notificationPermission, requestNotificationPermission } from "@/lib/notify";
+import { syncPush } from "@/lib/push";
 import { playGreeting, playTone } from "@/lib/sound";
 import { useMomo, DEFAULT_SETTINGS } from "@/lib/store";
 import { useUI } from "@/lib/ui";
@@ -184,6 +185,8 @@ function NotifyStep({ onDone }: { onDone: (demo: boolean) => void }) {
     if (p === "granted") {
       playTone(useMomo.getState().settings.tone);
       showToast("ขอบคุณน้า โมโม่จะเตือนเบา ๆ นะ", "welcome");
+      // turn on reminders-while-closed right away (Web Push) — still inside the tap, as iOS wants
+      void syncPush(useMomo.getState(), { create: true, force: true });
     } else if ((await checkNotificationPermission()) === "denied") {
       showToast("เปิดได้ทีหลังในการตั้งค่าของเครื่องนะ", "waiting");
     }

@@ -88,7 +88,7 @@ function payload(s: MomoData, sub: PushSubscription) {
 /** Subscribe (when `create`, e.g. from a tap) and push the current schedule to the server if it changed.
     Returns "on" when server reminders are active on this device. */
 export async function syncPush(s: MomoData, opts: { create?: boolean; force?: boolean } = {}): Promise<"on" | "off" | "unavailable"> {
-  if (!pushSupported() || Notification.permission !== "granted" || !s.onboarded) return "unavailable";
+  if (!pushSupported() || Notification.permission !== "granted") return "unavailable";
   const key = await serverKey();
   if (!key) return "unavailable";
   try {
