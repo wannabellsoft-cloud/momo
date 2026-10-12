@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Momo · Design System</title>
+<script src="./momo-kit.js"></script>
+<style>
+@font-face{font-family:"LINE Seed Sans TH";font-weight:400;font-display:swap;src:url("https://db.onlinewebfonts.com/t/0a54bd29f535bbdd5c69fdd2976d7b66.woff2") format("woff2")}
+@font-face{font-family:"LINE Seed Sans TH";font-weight:700 800;font-display:swap;src:url("https://db.onlinewebfonts.com/t/3976453f9da88f461c6a8fc2d21b87f2.woff2") format("woff2")}
+body{margin:0;background:#FFF8F2}
+*{box-sizing:border-box}
+a{color:#A8385C;font-weight:800}a:hover{color:#A8385C}
+button{font-family:inherit}
+</style>
+</helmet>
+<div style="font-family:'LINE Seed Sans TH','Anuphan','IBM Plex Sans Thai',-apple-system,sans-serif;color:#674454;max-width:1200px;margin:0 auto;padding:48px 28px 96px;display:flex;flex-direction:column;gap:72px">
+
+  <!-- COVER -->
+  <section data-screen-label="Cover" style="border-radius:36px;background:#FFDCE9;padding:48px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;align-items:center;position:relative;overflow:hidden">
+    <div style="display:flex;flex-direction:column;gap:12px;position:relative">
+      <div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#A8385C">DESIGN SYSTEM · v1.0 · สำหรับแพรวา</div>
+      <div style="font-size:96px;line-height:96px;font-weight:800;letter-spacing:-3px;display:flex;align-items:flex-start;gap:4px">momo<span style="font-size:34px;line-height:40px;color:#F47FA7">♥</span></div>
+      <div style="font-size:24px;line-height:34px;font-weight:800">Your little bunny who cares.</div>
+      <div style="font-size:17px;line-height:28px">A little reminder, a lot of love. · โมโม่เป็นกระต่ายตัวเล็กที่คอยดูแลเราในทุก ๆ วัน ♡</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <a href="Momo Prototype.dc.html" style="height:52px;padding:0 22px;border-radius:18px;background:#C4466F;color:#fff;display:flex;align-items:center;text-decoration:none">เปิด Prototype →</a>
+        <a href="HANDOFF.md" style="height:52px;padding:0 22px;border-radius:18px;background:#fff;color:#A8385C;display:flex;align-items:center;text-decoration:none">Developer handoff</a>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:center;position:relative">
+      <div style="width:360px;max-width:100%;aspect-ratio:1;border-radius:50%;background:#FFE9F0;display:flex;align-items:center;justify-content:center">
+        <x-import component-from-global-scope="momo-bunny" state="welcome" hint-size="300px,300px" style="width:300px;height:300px"></x-import>
+      </div>
+    </div>
+  </section>
+
+  <!-- A. BRAND -->
+  <section data-screen-label="A Brand" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">A · BRAND IDENTITY</div><div style="font-size:40px;line-height:52px;font-weight:800">โลโก้ ไอคอน และบุคลิก</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+      <div style="background:#fff;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:15px;font-weight:800">Wordmark</div>
+        <div style="height:140px;border-radius:20px;background:#FFF8F2;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:800;letter-spacing:-2px">momo<span style="font-size:22px;color:#F47FA7;align-self:flex-start;margin-top:36px">♥</span></div>
+        <div style="height:80px;border-radius:20px;background:#674454;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;letter-spacing:-1px;color:#FFF8F2">momo<span style="font-size:15px;color:#F9A3C1;align-self:flex-start;margin-top:18px">♥</span></div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">ตัวพิมพ์เล็กเสมอ · LINE Seed Sans TH ExtraBold · tracking −3% · หัวใจลอยที่มุมขวาบน เว้นระยะรอบโลโก้ ≥ ความสูงตัว “m”</div>
+      </div>
+      <div style="background:#fff;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:15px;font-weight:800">App icon</div>
+        <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+          <div style="width:120px;height:120px;border-radius:27px;background:#FFDCE9;overflow:hidden;box-shadow:0 8px 24px -12px rgba(103,68,84,.3)"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="120px,120px" style="width:120px;height:120px"></x-import></div>
+          <div style="width:76px;height:76px;border-radius:17px;background:#FFDCE9;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="76px,76px" style="width:76px;height:76px"></x-import></div>
+          <div style="width:76px;height:76px;border-radius:17px;background:#33252C;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="76px,76px" style="width:76px;height:76px"></x-import></div>
+          <div style="width:40px;height:40px;border-radius:9px;background:#FFDCE9;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="40px,40px" style="width:40px;height:40px"></x-import></div>
+        </div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">หัวโมโม่บนพื้น Pink Light · เวอร์ชันมืดใช้ Surface dark #33252C · ไม่ใส่ข้อความในไอคอน</div>
+      </div>
+      <div style="background:#fff;border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:15px;font-weight:800">Notification</div>
+        <div style="border-radius:22px;background:#F6EDF1;padding:12px;display:flex;gap:10px">
+          <div style="width:38px;height:38px;border-radius:10px;background:#FFDCE9;flex:none;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="38px,38px" style="width:38px;height:38px"></x-import></div>
+          <div><div style="font-size:12px;color:#7D6571"><b style="color:#674454">MOMO</b> · ตอนนี้</div><div style="font-size:14px;line-height:20px;font-weight:800">แพรวาา ได้เวลากินยาแล้วน้า 🐰💕</div><div style="font-size:13px;color:#7D6571">แตะเพื่อเปิดโมโม่</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center"><div style="width:32px;height:32px;border-radius:8px;background:#C4466F;display:flex;align-items:center;justify-content:center;color:#fff"><x-import component-from-global-scope="momo-icon" name="heart" size="18" stroke="2.4" hint-size="18px,18px"></x-import></div><span style="font-size:13px;line-height:20px;color:#7D6571">Badge/monochrome icon: หัวใจเส้น 2px บน Action primary</span></div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">โหมดส่วนตัวเป็นค่าเริ่มต้น: ไม่แสดงชื่อยาบนหน้าจอล็อก</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="4">
+        <div style="border-radius:24px;background:#fff;padding:20px;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;color:#C4466F;font-weight:800">{{ p.n }}</span><span style="font-size:17px;line-height:26px;font-weight:800">{{ p.t }}</span><span style="font-size:14px;line-height:22px;color:#7D6571">{{ p.b }}</span></div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- MASCOT -->
+  <section data-screen-label="Mascot" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">A · MOMO CHARACTER</div><div style="font-size:40px;line-height:52px;font-weight:800">โมโม่ 10 อารมณ์</div>
+      <div style="font-size:16px;line-height:26px;color:#7D6571;max-width:760px;margin-top:6px">ภาพเวกเตอร์นี้เป็นตัวแทนชั่วคราว ทุกตัวสลับเป็นภาพเรนเดอร์ plush จริงได้: วางไฟล์ PNG โปร่งใสไว้ที่ <b>assets/momo-[state].png</b> แล้วตั้งค่า <b>window.MOMO_RENDERS</b> ใน momo-kit.js ทุกหน้าจอจะเปลี่ยนตาม</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+      <sc-for list="{{ states }}" as="s" hint-placeholder-count="10">
+        <div style="background:#fff;border-radius:28px;padding:16px;display:flex;flex-direction:column;gap:8px">
+          <div style="aspect-ratio:1;border-radius:22px;background:{{ s.bg }};display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-bunny" state="{{ s.key }}" hint-size="150px,150px" style="width:150px;height:150px"></x-import></div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:16px;font-weight:800">{{ s.th }}</span><span style="font-size:12px;color:#7D6571;font-weight:800">{{ s.num }} · {{ s.key }}</span></div>
+          <div style="font-size:13px;line-height:20px;color:#7D6571">{{ s.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px">
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:17px;font-weight:800">สัดส่วนและขนาด</div>
+        <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap">
+          <div style="width:160px;height:160px;position:relative;background:#FFF8F2;border-radius:20px;background-image:linear-gradient(#F3E4EA 1px,transparent 1px),linear-gradient(90deg,#F3E4EA 1px,transparent 1px);background-size:20px 20px"><x-import component-from-global-scope="momo-bunny" still="" hint-size="160px,160px" style="width:160px;height:160px"></x-import></div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:22px">
+            <span>หัว : ตัว = <b>1.2 : 1</b> (หัวใหญ่กว่า)</span><span>หูยาว ≈ <b>0.9×</b> ความสูงหัว ห้อยข้าง</span><span>ตาอยู่ <b>52%</b> ของความสูงหัว</span><span>ขั้นต่ำ: ตัวเต็ม <b>72px</b> · หัว <b>32px</b></span><span>เว้นขอบรอบตัว ≥ <b>8%</b></span>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:17px;font-weight:800">พื้นหลังสว่าง / มืด และ avatar</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:110px;height:110px;border-radius:22px;background:#FFF8F2;border:1px solid #F3E4EA"><x-import component-from-global-scope="momo-bunny" state="idle" still="" hint-size="110px,110px" style="width:110px;height:110px"></x-import></div>
+          <div style="width:110px;height:110px;border-radius:22px;background:#22181D"><x-import component-from-global-scope="momo-bunny" state="sleep" still="" hint-size="110px,110px" style="width:110px;height:110px"></x-import></div>
+          <div style="width:64px;height:64px;border-radius:50%;background:#FFDCE9;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="64px,64px" style="width:64px;height:64px"></x-import></div>
+          <div style="width:40px;height:40px;border-radius:50%;background:#E9E1FF;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="40px,40px" style="width:40px;height:40px"></x-import></div>
+        </div>
+        <div style="font-size:14px;line-height:22px;color:#7D6571">ขนสีครีมอ่านได้ดีทั้งสองพื้น บนพื้นมืดไม่ต้องเพิ่มเส้นขอบ · avatar วางบนวงกลม Pink Light หรือ Lavender เท่านั้น</div>
+      </div>
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:17px;font-weight:800">ควรทำ / ไม่ควรทำ</div>
+        <sc-for list="{{ dosDonts }}" as="d" hint-placeholder-count="6">
+          <div style="display:flex;gap:10px;font-size:14px;line-height:22px"><span style="{{ d.style }}"><x-import component-from-global-scope="momo-icon" name="{{ d.icon }}" size="14" stroke="3" hint-size="14px,14px"></x-import></span><span>{{ d.t }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- B. COLOR -->
+  <section data-screen-label="B Color" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">B · COLOR TOKENS</div><div style="font-size:40px;line-height:52px;font-weight:800">พาสเทลที่อ่านง่าย</div>
+      <div style="font-size:16px;line-height:26px;color:#7D6571;max-width:760px;margin-top:6px">Pink Primary #F47FA7 ใช้เป็นสีแบรนด์และของตกแต่ง ส่วนปุ่มหลักใช้ Pink 600 #C4466F เพื่อให้ตัวอักษรสีขาวผ่าน AA · Muted Text ปรับจาก #927F89 เป็น #7D6571 (3.6 → 5.0:1)</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">
+      <sc-for list="{{ palette }}" as="c" hint-placeholder-count="14">
+        <div style="background:#fff;border-radius:22px;padding:8px;display:flex;flex-direction:column;gap:8px">
+          <div style="{{ c.sw }}"><span>Aa</span></div>
+          <div style="padding:0 6px 6px"><div style="font-size:14px;font-weight:800">{{ c.name }}</div><div style="font-size:12px;color:#7D6571;font-variant-numeric:tabular-nums">{{ c.hex }} · {{ c.token }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border-radius:28px;padding:8px 24px;overflow-x:auto">
+      <div style="display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,1fr) minmax(130px,1fr) 90px 80px;gap:12px;padding:14px 0;font-size:12px;letter-spacing:1px;font-weight:800;color:#7D6571;border-bottom:1px solid #F3E4EA;min-width:640px"><span>SEMANTIC TOKEN</span><span>LIGHT</span><span>DARK</span><span>CONTRAST</span><span>WCAG</span></div>
+      <sc-for list="{{ semantic }}" as="r" hint-placeholder-count="16">
+        <div style="display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(130px,1fr) minmax(130px,1fr) 90px 80px;gap:12px;padding:10px 0;align-items:center;border-bottom:1px solid #F3E4EA;font-size:13px;min-width:640px">
+          <span><span style="display:block;font-weight:800;font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ r.token }}</span><span style="color:#7D6571;font-size:12px">{{ r.use }}</span></span>
+          <span style="{{ r.lightChip }}">{{ r.light }}</span>
+          <span style="{{ r.darkChip }}">{{ r.dark }}</span>
+          <span style="font-weight:800;font-variant-numeric:tabular-nums">{{ r.ratio }}</span>
+          <span style="{{ r.passStyle }}">{{ r.pass }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+      <sc-for list="{{ statusDemo }}" as="s" hint-placeholder-count="4">
+        <div style="{{ s.style }}"><x-import component-from-global-scope="momo-icon" name="{{ s.icon }}" size="20" stroke="2.6" hint-size="20px,20px"></x-import><span><span style="display:block;font-weight:800;font-size:15px">{{ s.t }}</span><span style="font-size:13px">{{ s.b }}</span></span></div>
+      </sc-for>
+    </div>
+    <div style="font-size:14px;line-height:22px;color:#7D6571">สถานะยาไม่ใช้สีอย่างเดียว: ทุกสถานะมีไอคอน + ข้อความกำกับ และในแผงยาใช้รูปทรงต่างกัน (เม็ดนูน / ช่องว่างเส้นประ + ✓ / ช่องว่างเส้นประ + –)</div>
+  </section>
+
+  <!-- TYPE -->
+  <section data-screen-label="B Typography" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">B · TYPOGRAPHY</div><div style="font-size:40px;line-height:52px;font-weight:800">LINE Seed Sans TH</div>
+      <div style="font-size:16px;line-height:26px;color:#7D6571;max-width:760px;margin-top:6px">เลือก LINE Seed Sans TH เพราะหัวกลมนุ่ม อ่านง่ายที่ขนาดเล็ก และมีตัวเลขชัด · Fallback: Anuphan → IBM Plex Sans Thai → Noto Sans Thai → system · ใช้ 2 น้ำหนัก: Regular 400 และ ExtraBold 800 · line-height ภาษาไทย ≥ 1.5 สำหรับเนื้อหา</div></div>
+    <div style="background:#fff;border-radius:28px;padding:8px 24px">
+      <sc-for list="{{ typeScale }}" as="t" hint-placeholder-count="10">
+        <div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:20px;padding:16px 0;border-bottom:1px solid #F3E4EA;align-items:baseline">
+          <div><div style="font-size:14px;font-weight:800">{{ t.name }}</div><div style="font-size:12px;color:#7D6571;font-variant-numeric:tabular-nums">{{ t.spec }}</div></div>
+          <div style="{{ t.style }}">{{ t.sample }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- SPACE / SHAPE / ELEVATION -->
+  <section data-screen-label="B Spacing" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">B · SPACING · SHAPE · ELEVATION</div><div style="font-size:40px;line-height:52px;font-weight:800">นุ่ม โค้ง มีที่ว่าง</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:17px;font-weight:800">Spacing (ฐาน 4px)</div>
+        <sc-for list="{{ spaces }}" as="s" hint-placeholder-count="9">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px"><span style="width:80px;font-family:ui-monospace,Menlo,monospace;font-size:12px">{{ s.k }}</span><span style="{{ s.bar }}"></span><span style="color:#7D6571">{{ s.v }}px</span></div>
+        </sc-for>
+        <div style="font-size:13px;line-height:20px;color:#7D6571;margin-top:6px">ขอบจอ 20 · ระหว่างการ์ด 16 · ภายในการ์ด 16–20 · touch target ≥ 44×44 · bottom nav ลอย 22px เหนือ safe-area</div>
+      </div>
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:17px;font-weight:800">Radius</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px">
+          <sc-for list="{{ radii }}" as="r" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="{{ r.box }}"></span><span style="font-size:12px;font-weight:800">{{ r.k }}</span><span style="font-size:11px;color:#7D6571">{{ r.v }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="background:#FFF3F7;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:17px;font-weight:800">Elevation (เงาโทนกุหลาบ ไม่ใช้เทา)</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px">
+          <sc-for list="{{ shadows }}" as="s" hint-placeholder-count="4">
+            <div style="{{ s.box }}"><span style="font-size:13px;font-weight:800">{{ s.k }}</span><span style="font-size:11px;color:#7D6571">{{ s.use }}</span></div>
+          </sc-for>
+        </div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">Overlay rgba(62,36,48,.32) · Bottom sheet: radius 28 บน, handle 40×5, ปิดด้วยแตะพื้นหลังหรือปัดลง</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ICON + MOTION -->
+  <section data-screen-label="Iconography and Motion" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">A · ICONOGRAPHY · B · MOTION</div><div style="font-size:40px;line-height:52px;font-weight:800">ไอคอนเส้นกลม · ขยับเบา ๆ</div></div>
+    <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:14px;line-height:22px;color:#7D6571">สไตล์ Lucide: เส้น 2px ปลายมน มุม join มน · 22px ใน nav, 18–20px ในการ์ด · สีตาม currentColor</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px">
+        <sc-for list="{{ icons }}" as="i" hint-placeholder-count="24">
+          <div style="height:84px;border-radius:18px;background:#FFF8F2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#674454"><x-import component-from-global-scope="momo-icon" name="{{ i }}" size="24" hint-size="24px,24px"></x-import><span style="font-size:11px;color:#7D6571">{{ i }}</span></div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">
+      <sc-for list="{{ motions }}" as="m" hint-placeholder-count="7">
+        <div style="background:#fff;border-radius:28px;padding:16px;display:flex;gap:12px;align-items:center">
+          <div style="width:84px;height:84px;flex:none;border-radius:20px;background:#FFF3F7"><x-import component-from-global-scope="momo-bunny" state="{{ m.state }}" hint-size="84px,84px" style="width:84px;height:84px"></x-import></div>
+          <div><div style="font-size:15px;font-weight:800">{{ m.t }}</div><div style="font-size:12px;line-height:18px;color:#7D6571">{{ m.spec }}</div><div style="font-size:12px;line-height:18px;color:#5E4CB8;margin-top:2px">ลดการเคลื่อนไหว: {{ m.rm }}</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border-radius:28px;padding:8px 24px">
+      <sc-for list="{{ transitions }}" as="t" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:minmax(160px,1fr) 110px minmax(200px,2fr);gap:12px;padding:12px 0;border-bottom:1px solid #F3E4EA;font-size:13px"><span style="font-weight:800">{{ t.k }}</span><span style="font-variant-numeric:tabular-nums">{{ t.d }}</span><span style="color:#7D6571">{{ t.e }}</span></div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- C. COMPONENTS -->
+  <section data-screen-label="C Components" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">C · COMPONENT LIBRARY</div><div style="font-size:40px;line-height:52px;font-weight:800">ชิ้นส่วนที่ใช้ซ้ำ</div>
+      <div style="font-size:16px;line-height:26px;color:#7D6571;max-width:760px;margin-top:6px">ตัวอย่างสถานะหลักของแต่ละคอมโพเนนต์ สเปกเต็ม (anatomy, props, a11y, tokens) อยู่ใน <a href="HANDOFF.md">HANDOFF.md</a></div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">PrimaryButton · SecondaryButton · IconButton</div>
+        <div style="height:56px;border-radius:20px;background:#C4466F;color:#fff;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px -4px rgba(196,70,111,.45)">บันทึกว่ากินยาแล้ว ♡</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;font-size:12px;text-align:center;color:#7D6571">
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="height:44px;border-radius:16px;background:#A8385C;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px">Hover</div>hover</div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="height:44px;border-radius:16px;background:#8E2E4D;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;transform:scale(.97)">Pressed</div>pressed · scale .97</div>
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="height:44px;border-radius:16px;background:#C4466F;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 0 3px #fff,0 0 0 6px #7360D0">Focus</div>focus ring</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="height:48px;padding:0 18px;border-radius:16px;background:#FFF3F7;color:#A8385C;font-weight:800;display:flex;align-items:center">ยกเลิก</div>
+          <div style="height:48px;padding:0 18px;border-radius:16px;border:1.5px solid #EBDDE3;color:#674454;font-weight:800;display:flex;align-items:center">Outline</div>
+          <div style="height:48px;padding:0 18px;border-radius:16px;background:#F1E7EB;color:#B6A3AD;font-weight:800;display:flex;align-items:center">Disabled</div>
+          <div style="width:48px;height:48px;border-radius:50%;background:#fff;box-shadow:0 8px 24px -12px rgba(103,68,84,.3);display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="bell" size="20" hint-size="20px,20px"></x-import></div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">BlisterTablet · 4 สถานะ</div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;background:#ECE7EA;border-radius:20px;padding:16px 8px">
+          <sc-for list="{{ tablets }}" as="t" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><span style="{{ t.style }}"><sc-if value="{{ t.icon }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="momo-icon" name="{{ t.icon }}" size="18" stroke="3" hint-size="18px,18px"></x-import></sc-if></span><span style="font-size:12px;font-weight:800;text-align:center">{{ t.t }}</span></div>
+          </sc-for>
+        </div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">แตะเม็ดที่อยู่ → ConfirmationBottomSheet · แตะช่องว่าง → รายละเอียด + แก้ไข · “กินแล้ว” กับ “แกะออก” แยกกันเสมอ</div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">PackSelector · SegmentedControl · Toggle · NumberStepper</div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;height:60px;border-radius:20px;background:#C4466F;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:16px">แผง A</b><span style="font-size:12px">ห้องนอน · เหลือ 5</span></div>
+          <div style="flex:1;height:60px;border-radius:20px;background:#E3F1FC;color:#2D5F86;display:flex;flex-direction:column;align-items:center;justify-content:center"><b style="font-size:16px">แผง B</b><span style="font-size:12px">ห้องทำงาน · เหลือ 1</span></div>
+        </div>
+        <div style="display:flex;background:#FFF3F7;border-radius:999px;padding:3px">
+          <span style="flex:1;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#7D6571">15 นาที</span>
+          <span style="flex:1;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#A8385C;background:#fff;box-shadow:0 2px 8px -2px rgba(103,68,84,.2)">30 นาที</span>
+          <span style="flex:1;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#7D6571">1 ชม.</span>
+        </div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+          <span style="width:52px;height:32px;border-radius:999px;background:#C4466F;position:relative"><span style="position:absolute;top:3px;left:23px;width:26px;height:26px;border-radius:50%;background:#fff"></span></span>
+          <span style="width:52px;height:32px;border-radius:999px;background:#EBDDE3;position:relative"><span style="position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff"></span></span>
+          <span style="display:flex;align-items:center;gap:6px;background:#F4F0FF;border-radius:999px;padding:4px"><span style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#5E4CB8"><x-import component-from-global-scope="momo-icon" name="minus" size="16" hint-size="16px,16px"></x-import></span><b style="min-width:20px;text-align:center">1</b><span style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;color:#5E4CB8"><x-import component-from-global-scope="momo-icon" name="plus" size="16" hint-size="16px,16px"></x-import></span></span>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">MomoHeroCard · MomoSpeechBubble</div>
+        <div style="border-radius:28px;background:#FFDCE9;padding:16px;display:flex;align-items:flex-end;gap:6px">
+          <div style="width:120px;height:120px;flex:none"><x-import component-from-global-scope="momo-bunny" state="reminder" hint-size="120px,120px" style="width:120px;height:120px"></x-import></div>
+          <div style="align-self:flex-start;margin-top:8px;background:#fff;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:15px;line-height:23px;font-weight:800">แพรวาา ได้เวลากินยาแล้วน้า โมโม่มาเตือนแล้วนะ ♡</div>
+        </div>
+        <div style="font-size:13px;line-height:20px;color:#7D6571">Bubble: max 2–3 บรรทัด · หางชี้หาโมโม่ (มุมล่างซ้าย radius 6) · ข้อความไม่ใช่ข้อมูลสำคัญเพียงแหล่งเดียว</div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">InventorySummaryCard · RefillAlertCard · Badge</div>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+          <div style="background:#DDF3E8;border-radius:22px;padding:14px"><div style="font-size:12px;color:#2C7651;font-weight:800">ยาในแผง (A+B)</div><div style="font-size:30px;line-height:38px;font-weight:800">6 <span style="font-size:15px">เม็ด</span></div></div>
+          <div style="background:#E9E1FF;border-radius:22px;padding:14px"><div style="font-size:12px;color:#5E4CB8;font-weight:800">กล่องสำรอง</div><div style="font-size:30px;line-height:38px;font-weight:800">1 <span style="font-size:15px">กล่อง</span></div></div>
+        </div>
+        <div style="border-radius:20px;background:#FFF0BD;padding:12px 14px;display:flex;gap:10px;color:#80570A"><x-import component-from-global-scope="momo-icon" name="alert" size="18" hint-size="18px,18px"></x-import><div><div style="font-size:14px;font-weight:800">ยาในแผงเหลือน้อยแล้ว</div><div style="font-size:13px;color:#674454">เหลือ 6 เม็ด · เตรียมเปิดกล่องใหม่ได้เลยนะ</div></div></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span style="height:28px;padding:0 10px;border-radius:999px;background:#DDF3E8;color:#2C7651;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px"><x-import component-from-global-scope="momo-icon" name="check" size="12" stroke="3" hint-size="12px,12px"></x-import>กินแล้ว</span>
+          <span style="height:28px;padding:0 10px;border-radius:999px;background:#FFF0BD;color:#80570A;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px"><x-import component-from-global-scope="momo-icon" name="clock" size="12" stroke="3" hint-size="12px,12px"></x-import>รอบันทึก</span>
+          <span style="height:28px;padding:0 10px;border-radius:999px;background:#E9E1FF;color:#5E4CB8;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px"><x-import component-from-global-scope="momo-icon" name="info" size="12" stroke="3" hint-size="12px,12px"></x-import>ไม่มีบันทึก</span>
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">CalendarDay · DoseHistoryItem · Toast · SkeletonLoader</div>
+        <div style="display:flex;gap:6px">
+          <span style="width:48px;height:48px;border-radius:14px;background:#DDF3E8;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:14px">4<span style="color:#2C7651;font-size:10px">✓</span></span>
+          <span style="width:48px;height:48px;border-radius:14px;border:1.5px dashed #C9BBF7;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px">7</span>
+          <span style="width:48px;height:48px;border-radius:14px;background:#FFF0BD;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;box-shadow:0 0 0 2.5px #C4466F">12</span>
+          <span style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#B6A3AD">13</span>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:10px 14px;border-radius:18px;background:#DDF3E8;color:#2C7651"><x-import component-from-global-scope="momo-icon" name="check" size="20" stroke="2.6" hint-size="20px,20px"></x-import><div><div style="font-weight:800;font-size:15px">กินแล้ว</div><div style="font-size:13px">บันทึกเวลา 08:21 น. · แผง A เม็ดที่ 5</div></div></div>
+        <div style="display:flex;gap:10px;align-items:center;padding:10px 14px;border-radius:20px;background:#fff;box-shadow:0 12px 32px -12px rgba(103,68,84,.35)"><span style="width:32px;height:32px"><x-import component-from-global-scope="momo-bunny" state="taken" still="" hint-size="32px,32px" style="width:32px;height:32px"></x-import></span><b style="font-size:14px">เย้ วันนี้แพรวาดูแลตัวเองแล้ว ♡</b></div>
+        <div style="display:flex;gap:10px;align-items:center"><span style="width:44px;height:44px;border-radius:14px;background:#F6EDF1"></span><span style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="height:12px;width:70%;border-radius:6px;background:#F6EDF1"></span><span style="height:10px;width:45%;border-radius:6px;background:#F6EDF1"></span></span></div>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">Input · ReminderSettingsCard</div>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:800">ชื่อยา</span><span style="height:52px;border-radius:16px;border:1.5px solid #EBDDE3;padding:0 14px;display:flex;align-items:center;font-size:16px">Pristiq 50 mg</span></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:800">เวลาเตือน</span><span style="height:52px;border-radius:16px;border:2px solid #7360D0;box-shadow:0 0 0 4px #E9E1FF;padding:0 14px;display:flex;align-items:center;justify-content:space-between;font-size:16px;font-weight:800">08:00<x-import component-from-global-scope="momo-icon" name="clock" size="18" hint-size="18px,18px"></x-import></span><span style="font-size:12px;color:#7D6571">focus state</span></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:800">จำนวนต่อครั้ง</span><span style="height:52px;border-radius:16px;border:2px solid #AE3A55;padding:0 14px;display:flex;align-items:center;font-size:16px">0</span><span style="font-size:12px;color:#AE3A55;display:flex;gap:4px;align-items:center"><x-import component-from-global-scope="momo-icon" name="info" size="14" hint-size="14px,14px"></x-import>ใส่อย่างน้อย 1 เม็ดนะ ตามที่แพทย์สั่ง</span></label>
+      </div>
+
+      <div style="background:#fff;border-radius:28px;padding:24px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:13px;font-weight:800;color:#7D6571">BottomNavigation · ConfirmationBottomSheet · EmptyState</div>
+        <div style="height:68px;border-radius:26px;background:#fff;box-shadow:0 12px 32px -12px rgba(103,68,84,.28);border:1px solid #F3E4EA;display:flex;align-items:center;justify-content:space-around">
+          <sc-for list="{{ navDemo }}" as="n" hint-placeholder-count="5">
+            <span style="display:flex;flex-direction:column;align-items:center;gap:2px"><span style="{{ n.wrap }}"><x-import component-from-global-scope="momo-icon" name="{{ n.icon }}" size="20" hint-size="20px,20px"></x-import></span><span style="{{ n.label }}">{{ n.t }}</span></span>
+          </sc-for>
+        </div>
+        <div style="border-radius:24px 24px 0 0;background:#fff;box-shadow:0 -8px 40px -12px rgba(103,68,84,.30);padding:10px 16px 16px;border:1px solid #F3E4EA">
+          <div style="width:40px;height:5px;border-radius:3px;background:#EBDDE3;margin:0 auto 10px"></div>
+          <div style="font-size:16px;font-weight:800">แพรวากินยาเม็ดนี้แล้วใช่ไหม?</div>
+          <div style="font-size:12px;color:#7D6571">แผง A · เม็ดที่ 5 · วันนี้ 08:15</div>
+          <div style="display:flex;gap:8px;margin-top:10px"><span style="flex:1;height:44px;border-radius:16px;background:#C4466F;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px">ยืนยัน กินแล้ว ♡</span><span style="height:44px;padding:0 14px;border-radius:16px;background:#FFF3F7;color:#A8385C;font-weight:800;display:flex;align-items:center;font-size:14px">ยกเลิก</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VOICE -->
+  <section data-screen-label="Voice" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">NOTIFICATION PERSONALITY</div><div style="font-size:40px;line-height:52px;font-weight:800">โมโม่พูดยังไง</div></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px">
+      <sc-for list="{{ voiceRules }}" as="v" hint-placeholder-count="4">
+        <div style="{{ v.style }}"><div style="font-size:15px;font-weight:800">{{ v.t }}</div><sc-for list="{{ v.items }}" as="i" hint-placeholder-count="3"><div style="font-size:14px;line-height:22px">· {{ i }}</div></sc-for></div>
+      </sc-for>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+      <sc-for list="{{ voice }}" as="v" hint-placeholder-count="6">
+        <div style="background:#fff;border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:52px;height:52px;border-radius:16px;background:#FFF3F7;flex:none"><x-import component-from-global-scope="momo-bunny" state="{{ v.momo }}" still="" hint-size="52px,52px" style="width:52px;height:52px"></x-import></span><span><span style="display:block;font-size:16px;font-weight:800">{{ v.t }}</span><span style="font-size:12px;color:#7D6571">{{ v.when }}</span></span></div>
+          <sc-for list="{{ v.lines }}" as="l" hint-placeholder-count="4"><div style="font-size:14px;line-height:22px;background:#FFF8F2;border-radius:14px;padding:8px 12px">{{ l }}</div></sc-for>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- A11Y -->
+  <section data-screen-label="Accessibility" style="display:flex;flex-direction:column;gap:24px">
+    <div><div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#C4466F">ACCESSIBILITY REVIEW</div><div style="font-size:40px;line-height:52px;font-weight:800">น่ารัก แต่ต้องใช้ได้จริง</div></div>
+    <div style="background:#fff;border-radius:28px;padding:8px 24px">
+      <sc-for list="{{ a11y }}" as="a" hint-placeholder-count="10">
+        <div style="display:grid;grid-template-columns:28px minmax(160px,1fr) minmax(220px,2fr);gap:12px;padding:12px 0;border-bottom:1px solid #F3E4EA;font-size:14px;line-height:22px;align-items:start">
+          <span style="width:22px;height:22px;border-radius:50%;background:#DDF3E8;color:#2C7651;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="check" size="13" stroke="3" hint-size="13px,13px"></x-import></span>
+          <span style="font-weight:800">{{ a.k }}</span><span style="color:#7D6571">{{ a.v }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- HANDOFF -->
+  <section data-screen-label="Handoff" style="border-radius:36px;background:#E9E1FF;padding:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;align-items:center">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:13px;letter-spacing:2px;font-weight:800;color:#5E4CB8">B · F · DEVELOPER HANDOFF</div>
+      <div style="font-size:32px;line-height:42px;font-weight:800">Next.js · Tailwind · shadcn/ui · Motion</div>
+      <div style="font-size:15px;line-height:24px">Tokens เป็น CSS variables แบบ semantic สลับธีมด้วย data-theme="dark" · ไอคอนแมปตรงกับ Lucide · แอนิเมชันมีค่า reduced-motion ทุกตัว</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <sc-for list="{{ files }}" as="f" hint-placeholder-count="5">
+        <a href="{{ f.href }}" style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:18px;padding:12px 16px;text-decoration:none;color:#674454"><x-import component-from-global-scope="momo-icon" name="{{ f.icon }}" size="20" hint-size="20px,20px"></x-import><span style="flex:1"><span style="display:block;font-weight:800;font-size:14px">{{ f.name }}</span><span style="font-size:12px;color:#7D6571;font-weight:400">{{ f.d }}</span></span><x-import component-from-global-scope="momo-icon" name="arrow" size="16" hint-size="16px,16px"></x-import></a>
+      </sc-for>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+function lum(hex) {
+  const h = hex.replace('#', ''); const c = [0, 2, 4].map(i => parseInt(h.substr(i, 2), 16) / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function ratio(a, b) { const x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+const chip = (fg, bg) => ({ display: 'inline-flex', alignItems: 'center', minHeight: 30, padding: '5px 10px', whiteSpace: 'nowrap', borderRadius: 10, background: bg, color: fg, fontWeight: 800, fontSize: 11, fontFamily: 'ui-monospace,Menlo,monospace', border: '1px solid rgba(103,68,84,.08)', width: 'fit-content' });
+
+class Component extends DCLogic {
+  renderVals() {
+    const palette = [
+      ['Pink Primary', '#F47FA7', 'pink-400', '#674454'], ['Pink Light', '#FFDCE9', 'pink-100', '#674454'], ['Pink 600 · Action', '#C4466F', 'pink-600', '#FFFFFF'], ['Pink 700', '#A8385C', 'pink-700', '#FFFFFF'],
+      ['Cream', '#FFF8F2', 'cream-100', '#674454'], ['White', '#FFFFFF', 'white', '#674454'], ['Sky Blue', '#B8DEFA', 'sky-300', '#2D5F86'], ['Sky 100', '#E3F1FC', 'sky-100', '#2D5F86'],
+      ['Mint', '#DDF3E8', 'mint-100', '#2C7651'], ['Lavender', '#E9E1FF', 'lavender-100', '#5E4CB8'], ['Lavender 600', '#7360D0', 'lavender-600', '#FFFFFF'], ['Butter Yellow', '#FFF0BD', 'butter-100', '#80570A'],
+      ['Rose Text', '#674454', 'rose-900', '#FFF8F2'], ['Muted Text', '#7D6571', 'rose-600', '#FFFFFF'],
+    ].map(([name, hex, token, fg]) => ({ name, hex, token, sw: { height: 88, borderRadius: 16, background: hex, color: fg, display: 'flex', alignItems: 'flex-end', padding: 10, fontSize: 20, fontWeight: 800, border: hex === '#FFFFFF' || hex === '#FFF8F2' ? '1px solid #F3E4EA' : 'none' } }));
+
+    const sem = [
+      ['--text-primary', 'เนื้อหาหลัก บน Cream', '#674454', '#FFF8F2', '#FCEFF4', '#22181D'],
+      ['--text-secondary', 'ข้อความรอง บน White', '#7D6571', '#FFFFFF', '#D3BCC7', '#33252C'],
+      ['--text-on-action', 'ปุ่มหลัก (white บน pink-600)', '#FFFFFF', '#C4466F', '#3A1426', '#F59AB9'],
+      ['--action-secondary', 'ปุ่มรอง (white บน lavender-600)', '#FFFFFF', '#7360D0', '#22181D', '#C9BBF7'],
+      ['--text-accent', 'ลิงก์ / ไฮไลต์ บน Cream', '#A8385C', '#FFF8F2', '#FF9DBF', '#22181D'],
+      ['--dose-taken', 'กินแล้ว (fg บน bg)', '#2C7651', '#DDF3E8', '#A9E0C4', '#1F3B2F'],
+      ['--dose-pending', 'รอบันทึก', '#80570A', '#FFF0BD', '#FFE08A', '#3D321A'],
+      ['--dose-missed', 'ไม่มีบันทึก', '#5E4CB8', '#E9E1FF', '#D8CEFA', '#352E4D'],
+      ['--refill', 'ยาใกล้หมด', '#80570A', '#FFF0BD', '#FFE08A', '#3D321A'],
+      ['--error', 'ผิดพลาด (อ่อนโยน)', '#AE3A55', '#FFE4E8', '#FFB3C3', '#44222C'],
+      ['--info', 'ข้อมูล / ออฟไลน์', '#2D5F86', '#E3F1FC', '#B8DEFA', '#22364A'],
+      ['--pack-selected', 'PackSelector inactive', '#2D5F86', '#E3F1FC', '#B8DEFA', '#22364A'],
+      ['--text-on-soft', 'ข้อความบน Pink Light', '#674454', '#FFDCE9', '#FFC2D7', '#4A2B3A'],
+      ['--text-soft-action', 'ปุ่ม soft (ยกเลิก)', '#A8385C', '#FFF3F7', '#FFC2D7', '#4A2B3A'],
+      ['--focus-ring', 'Focus ring บน White (non-text 3:1)', '#7360D0', '#FFFFFF', '#C9BBF7', '#22181D'],
+      ['--brand-pink (ห้ามใช้กับตัวหนังสือ)', 'Pink 400 บน White = ตกแต่งเท่านั้น', '#F47FA7', '#FFFFFF', '#F47FA7', '#22181D'],
+    ];
+    const semantic = sem.map(([token, use, fg, bg, dfg, dbg]) => {
+      const r = ratio(fg, bg); const nonText = token === '--focus-ring';
+      const pass = nonText ? (r >= 3 ? 'AA 3:1' : '✕') : r >= 7 ? 'AAA' : r >= 4.5 ? 'AA' : r >= 3 ? 'ตกแต่ง' : '✕';
+      const ok = nonText ? r >= 3 : r >= 4.5;
+      return { token, use, light: fg + ' / ' + bg, dark: dfg + ' / ' + dbg, lightChip: chip(fg, bg), darkChip: chip(dfg, dbg), ratio: r.toFixed(1) + ':1', pass,
+        passStyle: { display: 'inline-flex', height: 26, alignItems: 'center', padding: '0 10px', borderRadius: 999, fontSize: 12, fontWeight: 800, width: 'fit-content', background: ok ? '#DDF3E8' : '#FFF0BD', color: ok ? '#2C7651' : '#80570A' } };
+    });
+
+    const typeScale = [
+      ['Display', '34 / 44 · 800 · −0.2', 34, 44, 800, 'สวัสดีแพรวา ☀️'], ['Heading XL', '28 / 38 · 800', 28, 38, 800, 'ประวัติการกินยา'],
+      ['Heading LG', '22 / 32 · 800', 22, 32, 800, 'เม็ดถัดไป ลำดับที่ 5'], ['Heading MD', '18 / 28 · 800', 18, 28, 800, 'Pristiq 50 mg · แผง A'],
+      ['Body LG', '17 / 28 · 400', 17, 28, 400, 'โมโม่จะเตือนตามเวลาที่ตั้งไว้ทุกวัน'], ['Body', '15 / 24 · 400', 15, 24, 400, 'แตะเม็ดยาเพื่อบันทึก หรือแก้ไขถ้าบันทึกผิด'],
+      ['Body SM', '13 / 20 · 400 · +0.1', 13, 20, 400, 'Desvenlafaxine · 1 เม็ด · 08:00 น.'], ['Caption', '12 / 18 · 400 · +0.2', 12, 18, 400, 'ข้อมูลตัวอย่าง · บันทึกเมื่อ 08:21 น.'],
+      ['Button', '17 / 24 · 800', 17, 24, 800, 'บันทึกว่ากินยาแล้ว ♡'], ['Numeric', '40 / 44 · 800 · tnum', 40, 44, 800, '6 เม็ด · 1 กล่อง'],
+    ].map(([name, spec, fs, lh, fw, sample]) => ({ name, spec, sample, style: { fontSize: fs, lineHeight: lh + 'px', fontWeight: fw, fontVariantNumeric: 'tabular-nums', textWrap: 'pretty' } }));
+
+    const spaces = [1, 2, 3, 4, 5, 6, 8, 10, 12].map(k => ({ k: 'space-' + k, v: k * 4, bar: { height: 12, width: k * 4 * 3, borderRadius: 4, background: '#F9A3C1' } }));
+    const radii = [['sm', 12], ['md', 16], ['lg', 20], ['card', 24], ['hero', 28], ['pill', 999]].map(([k, v]) => ({ k, v: v === 999 ? '999' : v + 'px', box: { width: k === 'pill' ? 96 : 64, height: 64, borderRadius: v, background: '#FFDCE9', border: '2px solid #F9A3C1' } }));
+    const shadows = [['button', '0 4px 12px -4px rgba(196,70,111,.45)', 'ปุ่มหลัก'], ['card', '0 1px 2px rgba(103,68,84,.04), 0 8px 24px -12px rgba(103,68,84,.16)', 'การ์ดทั่วไป'], ['float', '0 12px 32px -12px rgba(103,68,84,.28)', 'Bottom nav, toast'], ['modal', '0 -8px 40px -12px rgba(103,68,84,.30)', 'Bottom sheet']]
+      .map(([k, v, use]) => ({ k, use, box: { height: 88, borderRadius: 22, background: '#fff', boxShadow: v, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 14px' } }));
+
+    const pill = { width: 46, height: 46, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' };
+    const tablets = [
+      ['ถัดไป', null, { ...pill, background: 'radial-gradient(circle at 35% 30%,#fff 0%,#F7F3F5 55%,#E3DBDF 100%)', boxShadow: '0 0 0 3px #F47FA7,0 0 0 7px rgba(244,127,167,.25)' }],
+      ['ยังอยู่', null, { ...pill, background: 'radial-gradient(circle at 35% 30%,#fff 0%,#F7F3F5 55%,#E3DBDF 100%)', boxShadow: '0 3px 6px rgba(103,68,84,.18)' }],
+      ['กินแล้ว', 'check', { ...pill, background: '#DDF3E8', color: '#2C7651', border: '1.5px dashed #A9E0C4' }],
+      ['แกะออก', 'minus', { ...pill, background: '#E9E1FF', color: '#5E4CB8', border: '1.5px dashed #C9BBF7' }],
+    ].map(([t, icon, style]) => ({ t, icon, style }));
+
+    const navDemo = [['หน้าหลัก', 'home', true], ['แผงยา', 'blister'], ['ประวัติ', 'calendar'], ['สต็อกยา', 'box'], ['ตั้งค่า', 'settings']].map(([t, icon, on]) => ({ t, icon,
+      wrap: { width: 44, height: 28, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: on ? '#FFDCE9' : 'transparent', color: on ? '#C4466F' : '#7D6571' },
+      label: { fontSize: 11, fontWeight: 800, color: on ? '#C4466F' : '#7D6571' } }));
+
+    return {
+      principles: [
+        { n: '01', t: 'โมโม่คือหัวใจ', b: 'ทุกข้อความมาจากโมโม่ ไม่ใช่จากระบบ' },
+        { n: '02', t: 'ข้อมูลยาต้องถูกต้อง', b: 'ชื่อยา จำนวน เวลา อ่านง่ายเสมอ ไม่ซ่อนหลังของตกแต่ง' },
+        { n: '03', t: 'ปุ่มสำคัญหาง่าย', b: 'หนึ่งหน้าจอ หนึ่งปุ่มหลัก ขนาด ≥ 56px' },
+        { n: '04', t: 'ไม่ตำหนิ ไม่กดดัน', b: 'ลืมกินก็ไม่เป็นไร โมโม่ไม่บ่น ไม่แนะนำให้กินชดเชย' },
+      ],
+      states: [
+        ['01', 'idle', 'นั่งยิ้ม', 'หน้าหลักก่อนถึงเวลา โปรไฟล์', '#FFF3F7'], ['02', 'reminder', 'ถือนาฬิกาปลุก', 'ถึงเวลากินยา / แจ้งเตือน', '#FFF0BD'],
+        ['03', 'waiting', 'รอพร้อมหัวใจดวงเล็ก', 'เตือนซ้ำ, หน้าว่างประวัติ', '#FFF3F7'], ['04', 'taken', 'กอดหัวใจ', 'หลังยืนยันกินยา', '#DDF3E8'],
+        ['05', 'refill', 'ถือกล่องยา', 'ยาในแผง < 7 และมีกล่องสำรอง', '#E9E1FF'], ['06', 'nostock', 'ถือโน้ตซื้อของ', 'ยาใกล้หมด ไม่มีกล่องสำรอง', '#FFF0BD'],
+        ['07', 'sleep', 'หลับใต้ผ้าห่ม', 'ราตรีสวัสดิ์ (ไม่บ่งบอกการกินยา)', '#E9E1FF'], ['08', 'welcome', 'โบกมือทักทาย', 'Splash, onboarding', '#FFDCE9'],
+        ['09', 'loading', 'เด้งเบา ๆ', 'กำลังโหลด / ลองใหม่', '#E3F1FC'], ['10', 'error', 'สงสัย ไม่ตกใจ', 'ออฟไลน์ / ผิดพลาด', '#E3F1FC'],
+      ].map(([num, key, th, use, bg]) => ({ num, key, th, use, bg })),
+      dosDonts: [
+        ['check', 'ใช้ท่าทางเดียวกันกับสถานะเดียวกันทุกที่'], ['check', 'วางโมโม่ข้างข้อมูล ไม่ทับข้อมูล'], ['check', 'ใช้ภาพเต็มตัว ≥ 72px, หัว ≥ 32px'],
+        ['x', 'ไม่ใช้อีโมจิ 🐰 แทนตัวโมโม่'], ['x', 'ไม่ทำหน้าเศร้า ร้องไห้ หรือโกรธ'], ['x', 'ไม่ยืด บิด หรือเปลี่ยนสีขน'],
+      ].map(([icon, t]) => ({ icon, t, style: { width: 22, height: 22, flex: 'none', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: icon === 'check' ? '#DDF3E8' : '#FFE4E8', color: icon === 'check' ? '#2C7651' : '#AE3A55' } })),
+      palette, semantic,
+      statusDemo: [
+        ['check', 'กินแล้ว · Taken', 'ไอคอนถูก + เวลา', '#DDF3E8', '#2C7651'], ['clock', 'รอบันทึก · Pending', 'ไอคอนนาฬิกา + เวลาเตือน', '#FFF0BD', '#80570A'],
+        ['info', 'ไม่มีบันทึก · Missed', 'เส้นประ ไม่ใช้สีแดง', '#E9E1FF', '#5E4CB8'], ['alert', 'ใกล้หมด · Refill', 'สามเหลี่ยม + จำนวนเม็ด', '#FFF0BD', '#80570A'],
+      ].map(([icon, t, b, bg, fg]) => ({ icon, t, b, style: { display: 'flex', gap: 12, alignItems: 'center', padding: '14px 16px', borderRadius: 20, background: bg, color: fg } })),
+      typeScale, spaces, radii, shadows,
+      icons: ['home', 'blister', 'calendar', 'box', 'settings', 'bell', 'pill', 'check', 'clock', 'alert', 'info', 'heart', 'pin', 'undo', 'bag', 'lock', 'wifioff', 'moon', 'refresh', 'plus', 'minus', 'left', 'right', 'eye'],
+      motions: [
+        { state: 'idle', t: 'หายใจ · Idle breathing', spec: 'scale 1 → 1.02 · 3.4s ease-in-out loop', rm: 'นิ่ง' },
+        { state: 'idle', t: 'กระพริบตา · Blink', spec: 'scaleY .12 ทุก 5s · 150ms', rm: 'ปิด' },
+        { state: 'waiting', t: 'หูขยับ · Ear sway', spec: 'rotate −3° · 4.4s · หูขวาช้ากว่า 300ms', rm: 'ปิด' },
+        { state: 'welcome', t: 'โบกมือ · Wave', spec: 'rotate 0 → −16° · 1.6s · สูงสุด 3 รอบ', rm: 'ท่าโบกค้าง' },
+        { state: 'taken', t: 'หัวใจเด้ง · Heart bounce', spec: 'scale 1.07 · spring 500/14 · ครั้งเดียวหลังยืนยัน', rm: 'fade 150ms' },
+        { state: 'reminder', t: 'นาฬิกาสั่น · Clock wiggle', spec: '±6° · 600ms ทุก 2.4s · หยุดเมื่อเปิดแอป', rm: 'นิ่ง' },
+        { state: 'loading', t: 'กำลังโหลด · Bounce', spec: 'translateY −7px · 1.1s', rm: 'จุด 3 จุดแบบ opacity' },
+      ],
+      transitions: [
+        { k: 'Tap feedback', d: '150ms', e: 'scale .97 · ease-soft' }, { k: 'Segmented / toggle', d: '200–220ms', e: 'ease-out · knob ใช้ spring' },
+        { k: 'Bottom sheet เข้า / ออก', d: '340 / 240ms', e: 'translateY 105% → 0 · ease-out · overlay fade' }, { k: 'Toast', d: '280ms · ค้าง 2.6s', e: 'translateY 12px + fade' },
+        { k: 'Tablet state change', d: '240ms', e: 'เม็ด → ช่องว่าง, ✓ fade-in' }, { k: 'Celebration หลังยืนยัน', d: '≤ 900ms', e: 'หัวใจเด้ง 1 ครั้ง + toast · ไม่มี confetti ไม่สั่นจอ' },
+      ],
+      tablets, navDemo,
+      voiceRules: [
+        { t: 'น้ำเสียง', items: ['เพื่อนตัวเล็กที่ห่วงใย ไม่ใช่พยาบาล', 'ลงท้าย น้า / นะ / เอ่ย ได้ ไม่เกิน 1 คำต่อประโยค', 'อีโมจิได้สูงสุด 2 ตัว เฉพาะแจ้งเตือน'], style: { background: '#FFDCE9', borderRadius: 24, padding: 20, display: 'flex', flexDirection: 'column', gap: 6 } },
+        { t: 'ห้าม', items: ['ตำหนิ: “ลืมอีกแล้วเหรอ”', 'สมมติว่ากินแล้วทั้งที่ยังไม่ยืนยัน', 'แนะนำให้กินเพิ่มหรือกินชดเชย'], style: { background: '#FFE4E8', borderRadius: 24, padding: 20, display: 'flex', flexDirection: 'column', gap: 6 } },
+        { t: 'ความเป็นส่วนตัว', items: ['ค่าเริ่มต้น: ไม่แสดงชื่อยาบนหน้าจอล็อก', 'ใช้ “ได้เวลาแล้วน้า” แทนชื่อยา', 'ชื่อเรียกปรับได้ (แพรวา / แพรว / หนู)'], style: { background: '#E9E1FF', borderRadius: 24, padding: 20, display: 'flex', flexDirection: 'column', gap: 6 } },
+        { t: 'ความยาว', items: ['หัวข้อ ≤ 40 ตัวอักษร', 'เนื้อหา ≤ 1 บรรทัด', 'ข้อมูลสำคัญอยู่ในแอปเสมอ ไม่ใช่แค่ในแจ้งเตือน'], style: { background: '#DDF3E8', borderRadius: 24, padding: 20, display: 'flex', flexDirection: 'column', gap: 6 } },
+      ],
+      voice: [
+        { t: 'ถึงเวลากินยา · Reminder', when: 'ตามเวลาที่ตั้ง', momo: 'reminder', lines: ['แพรวาา ได้เวลากินยาแล้วน้า 🐰💕', 'ติ๊กต็อก ๆ ได้เวลาแล้วนะแพรวา', 'โมโม่มาเตือนแล้วน้า ถึงเวลาดูแลตัวเองแล้ว ♡', 'แพรวาจ๋า ได้เวลาแล้วนะ โมโม่รออยู่ตรงนี้'] },
+        { t: 'เตือนซ้ำ · Follow-up', when: 'ยังไม่บันทึกหลัง 15–60 นาที · สูงสุด 2 ครั้ง', momo: 'waiting', lines: ['โมโม่แวะมาถามนิดนึง กินยาไปหรือยังเอ่ย?', 'ถ้ากินแล้ว กดบอกโมโม่หน่อยน้า', 'โมโม่ยังรออยู่นะ ไม่รีบ ๆ', 'ถ้ากินไปแล้ว แตะบันทึกได้เลยนะ'] },
+        { t: 'กินแล้ว · Taken', when: 'หลังกดยืนยันเท่านั้น', momo: 'taken', lines: ['เย้ วันนี้แพรวาดูแลตัวเองแล้ว ♡', 'เก่งมากเลย โมโม่จดไว้ให้แล้วนะ', 'บันทึกแล้วน้า วันนี้เรียบร้อย ♡', 'โมโม่ดีใจด้วยน้า'] },
+        { t: 'ยาใกล้หมด · Low stock', when: 'ยาในแผง < 7 · มีกล่องสำรอง', momo: 'refill', lines: ['ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้เตรียมเพิ่มนะ', 'เหลือไม่ถึง 7 เม็ดแล้ว เตรียมเปิดกล่องใหม่ได้เลย', 'แผงยาใกล้หมด กล่องสำรองยังมีอยู่ 1 กล่องนะ'] },
+        { t: 'ไม่มีกล่องสำรอง · No reserve', when: 'ยาในแผง < 7 · สำรอง = 0', momo: 'nostock', lines: ['ยาใกล้หมด แล้วกล่องสำรองก็หมดด้วยน้า', 'โมโม่จดโน้ตไว้ให้แล้ว อย่าลืมไปรับยาเพิ่มนะ', 'ยาเหลืออีกไม่กี่วัน แวะรับยาเพิ่มเร็ว ๆ นี้น้า'] },
+        { t: 'ราตรีสวัสดิ์ · Bedtime (เลือกเปิดได้)', when: 'ไม่เกี่ยวกับการกินยา', momo: 'sleep', lines: ['พักผ่อนเยอะ ๆ นะ ฝันดีน้า 🌙', 'วันนี้เหนื่อยแล้ว นอนหลับฝันดีนะ', 'โมโม่ไปนอนก่อนน้า เจอกันพรุ่งนี้ ♡'] },
+      ],
+      a11y: [
+        { k: 'Contrast', v: 'ข้อความทั้งหมด ≥ 4.5:1 (ดูตาราง B) · Pink 400 ใช้กับพื้นผิวและไอคอนตกแต่งเท่านั้น' },
+        { k: 'Status ไม่ใช้สีอย่างเดียว', v: 'ทุกสถานะมีไอคอน + ข้อความ · เม็ดยาใช้รูปทรงต่างกัน' },
+        { k: 'Touch target', v: '≥ 44×44 ทุกปุ่ม · เม็ดยา 46px + พื้นที่แตะ 64px สูง · ปุ่มหลัก 56px' },
+        { k: 'Screen reader', v: 'เม็ดยามี aria-label “เม็ดที่ 5 ถัดไป ยังอยู่ในแผง” · sheet เป็น role=dialog aria-modal · toast เป็น aria-live=polite' },
+        { k: 'Focus', v: 'Focus ring lavender 3px + offset ขาว 3px · โฟกัสย้ายเข้า sheet และกลับเมื่อปิด' },
+        { k: 'Dynamic Type', v: 'รองรับขยาย 200% · การ์ดใช้ min-height ไม่ fix height · ปุ่มขึ้นบรรทัดใหม่ได้' },
+        { k: 'Reduced motion', v: 'prefers-reduced-motion + สวิตช์ในโปรไฟล์โมโม่ · หยุด loop ทั้งหมด เหลือ fade ≤ 150ms' },
+        { k: 'ความปลอดภัยการบันทึก', v: 'ปัดแจ้งเตือนทิ้งไม่บันทึก · 1 วันบันทึกได้ 1 ครั้ง · แก้ไขทุกครั้งเก็บใน audit log' },
+        { k: 'เนื้อหาทางการแพทย์', v: 'ไม่แนะนำให้กินชดเชย · แนะนำให้ปรึกษาแพทย์/เภสัชกร · ขนาดยาตั้งค่าเองไม่เดาจากกล่อง' },
+        { k: 'ภาษา', v: 'lang="th" · ตัวเลขอารบิก · วันที่แบบ 12 ต.ค. 2026 · ป้ายภาษาอังกฤษเป็นรอง' },
+      ],
+      files: [
+        { name: 'Momo Prototype.dc.html', d: '12 หน้าจอ กดใช้งานได้จริง', href: 'Momo Prototype.dc.html', icon: 'eye' },
+        { name: 'tokens/momo-tokens.css', d: 'CSS variables · light + dark', href: 'tokens/momo-tokens.css', icon: 'list' },
+        { name: 'tokens/momo-tokens.ts', d: 'TypeScript tokens · motion springs', href: 'tokens/momo-tokens.ts', icon: 'list' },
+        { name: 'tokens/tailwind.momo.ts', d: 'Tailwind preset + shadcn alias', href: 'tokens/tailwind.momo.ts', icon: 'settings' },
+        { name: 'HANDOFF.md', d: 'Component specs · interactions · data model', href: 'HANDOFF.md', icon: 'box' },
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>
