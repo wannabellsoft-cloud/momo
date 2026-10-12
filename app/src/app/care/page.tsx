@@ -5,6 +5,7 @@ import { Icon } from "@/components/momo/Icon";
 import { MomoMascot } from "@/components/momo/MomoMascot";
 import { PristiqBox } from "@/components/PristiqBox";
 import { BackHeader, Card } from "@/components/ui";
+import { BASE } from "@/lib/base";
 import { CAUTIONS, MISSED_DOSE } from "@/lib/care-info";
 import { addDays, atTime, dayKey } from "@/lib/date";
 import { useNow } from "@/lib/hooks";
@@ -59,7 +60,9 @@ export default function CarePage() {
             <div className="min-w-0 flex-1 pb-2">
               <div className="text-[12px] font-extrabold tracking-[.08em] text-(--action-primary)">MISSED DOSE</div>
               <h2 className="m-0 text-[20px] leading-[28px] font-extrabold">{MISSED_DOSE.title}</h2>
-              <div className="mt-2 inline-flex flex-wrap items-center gap-x-2 rounded-[14px] bg-(--surface-card) px-3 py-2 text-[13px] leading-[19px]">
+              <div className="mt-2 inline-flex items-center gap-2 rounded-[14px] bg-(--surface-card) py-2 pr-3 pl-2 text-[13px] leading-[19px]">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
+                <img src={`${BASE}/mascot/props/alarm.webp`} alt="" width={26} height={30} className="h-[30px] w-[26px] flex-none object-contain" />
                 {today ? (
                   <span><b className="text-(--success-fg)">วันนี้บันทึกแล้ว</b> {today.time ? `ตอน ${today.time} น.` : ""}</span>
                 ) : (

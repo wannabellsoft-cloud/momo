@@ -47,7 +47,8 @@ export type Pose = {
   brows?: boolean;
   arms?: Arm[];
   propsBehindArms?: (id: string) => string;
-  props?: (id: string) => string;
+  /** `raster`: a prop image replaces the main drawn prop (see RASTER_FX). */
+  props?: (id: string, raster?: boolean) => string;
 };
 
 const restL: Arm = { cx: 72, cy: 162, rot: 24, rx: 13, ry: 14, cls: "m-arm-l", origin: [76, 150] };
@@ -96,7 +97,7 @@ const POSES: Record<MascotState, Pose> = {
       { cx: 80, cy: 172, rot: 30, rx: 12, ry: 11.5 },
       { cx: 129, cy: 151, rot: -40, rx: 12, ry: 11.5 },
     ],
-    props: (id) => `<g class="m-ring" style="transform-origin:166px 26px">${bell(166, 42, id)}</g>` + pops(30, 50, "#F6C76B", true),
+    props: (id, raster) => (raster ? "" : `<g class="m-ring" style="transform-origin:166px 26px">${bell(166, 42, id)}</g>`) + pops(30, 50, "#F6C76B", true),
   },
   happy: {
     eyes: "happy",
@@ -242,9 +243,21 @@ export function momoSvg(state: MascotState, id: string, opts: { props?: boolean;
 
 export const momoViewBox = (crop?: "head") => (crop === "head" ? "20 28 160 160" : "0 0 200 200");
 
+/** Prop images (public/mascot/props/) that replace a drawn effect over the rendered poses.
+    The drawn version stays for the vector fallback. */
+const RASTER_FX: Partial<Record<MascotState, { src: string; x: number; y: number; w: number; cls: string; origin: string }>> = {
+  reminder: { src: "bell", x: 148, y: 12, w: 38, cls: "m-ring", origin: "167px 14px" },
+};
+
 /** Only the floating effects of a state (bell, Zz, sparkles, bubbles, confetti…), drawn over the
-    rendered Momo images in the same 0 0 200 200 box. */
-export function momoFx(state: MascotState, id: string) {
+    rendered Momo images in the same 0 0 200 200 box. `base` is the app's base path for prop images. */
+export function momoFx(state: MascotState, id: string, base = "") {
   const p = POSES[state];
-  return p.props ? `${defs(id)}<g class="m-props">${p.props(id)}</g>` : "";
+  const r = RASTER_FX[state];
+  if (!p.props) return "";
+  const drawn = p.props(id, !!r);
+  const img = r
+    ? `<g class="${r.cls}" style="transform-origin:${r.origin}"><image href="${base}/mascot/props/${r.src}.webp" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.w}" preserveAspectRatio="xMidYMid meet"/></g>`
+    : "";
+  return `${defs(id)}<g class="m-props">${drawn}${img}</g>`;
 }
