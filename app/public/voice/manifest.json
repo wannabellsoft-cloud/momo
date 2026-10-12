@@ -1,4 +1,10 @@
 {
-  "note": "No recorded clips yet — run npm run voice. Device text-to-speech is used meanwhile.",
-  "lines": {}
+  "voice": "google-th",
+  "shift": 1.12,
+  "lines": {
+    "greet-morning": "อรุณสวัสดิ์ แพรวา โมโม่มาแล้วน้า",
+    "greet-afternoon": "สวัสดีแพรวา โมโม่คิดถึงจังเลย",
+    "greet-evening": "สวัสดีตอนเย็นน้า แพรวา",
+    "greet-night": "สวัสดีแพรวา ใกล้เวลานอนแล้วน้า"
+  }
 }
