@@ -12,7 +12,7 @@ import { Icon, type IconName } from "./momo/Icon";
 import { MomoBunny } from "./momo/MomoBunny";
 import { cx } from "./ui";
 
-/** In-app notification banner (shown when a reminder fires while Momo is open). */
+/** In-app notification card (shown when a reminder fires while Momo is open). */
 export function Banner() {
   const banner = useUI((u) => u.banner);
   const hide = useUI((u) => u.hideBanner);
@@ -27,7 +27,8 @@ export function Banner() {
     return () => clearTimeout(t);
   }, [banner, hide]);
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-0 z-[95] mx-auto max-w-[480px] px-[10px]" style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
+    // Rises from the bottom (just above the tab bar) so it never sits under the OS's own banners, which drop from the top.
+    <div className="pointer-events-none fixed inset-x-0 z-[95] mx-auto max-w-[480px] px-[10px]" style={{ bottom: "calc(max(14px, calc(env(safe-area-inset-bottom) - 12px)) + 78px)" }}>
       <div
         role="button"
         tabIndex={banner ? 0 : -1}
@@ -42,7 +43,7 @@ export function Banner() {
             router.push("/");
           }
         }}
-        className={cx("cursor-pointer transition-[transform,opacity] duration-[420ms] ease-(--ease-spring)", banner ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-[220px] opacity-0")}
+        className={cx("cursor-pointer transition-[transform,opacity] duration-[420ms] ease-(--ease-spring)", banner ? "pointer-events-auto translate-y-0 opacity-100" : "translate-y-[260px] opacity-0")}
       >
         {shown && (
           <NotificationCard
@@ -80,7 +81,8 @@ export function Toast() {
   const hide = useUI((u) => u.hideToast);
   const [shown, setShown] = useState(toast);
   const [paused, setPaused] = useState(false);
-  const visible = !!toast;
+  const bannerOpen = useUI((u) => !!u.banner);
+  const visible = !!toast && !bannerOpen; // the notification card uses the same spot
   // keep the last message rendered while the toast fades out
   if (toast && toast !== shown) setShown(toast);
   useEffect(() => {

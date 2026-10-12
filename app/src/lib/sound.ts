@@ -14,6 +14,18 @@ export type UiSound = "tap" | "success" | "toggle" | "back" | "giggle";
 
 let ctx: AudioContext | null = null;
 
+/** Shared audio context (also used by the background music). */
+export function audioContext(): AudioContext | null {
+  return audio();
+}
+
+/** Background music registers here so voice and greetings can lower it while Momo talks. */
+let duckHandler: ((ms: number) => void) | null = null;
+export function onDuck(fn: ((ms: number) => void) | null) {
+  duckHandler = fn;
+}
+const duck = (ms = 3500) => duckHandler?.(ms);
+
 function audio(): AudioContext | null {
   if (typeof window === "undefined") return null;
   try {
@@ -170,6 +182,7 @@ function pickVoice(name: string | null): SpeechSynthesisVoice | undefined {
 
 export function speak(text: string, opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  duck();
   const go = () => {
     try {
       say();
@@ -229,6 +242,7 @@ export async function playClip(id: VoiceLineId, delay = 0): Promise<boolean> {
   if (!c || !(await availableClips()).has(id)) return false;
   const buf = await loadClip(id);
   if (!buf) return false;
+  duck(buf.duration * 1000 + 1200);
   const src = c.createBufferSource();
   const g = c.createGain();
   g.gain.value = 1;
@@ -249,6 +263,7 @@ export async function sayLine(id: VoiceLineId, opts: { voice?: string | null; pi
 
 /** Chime + Momo says hello in the chosen voice. */
 export function playGreeting(opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
+  duck(4000);
   playTone("sparkle");
   const id = greetingId();
   const wantClips = opts.voice == null || opts.voice === MOMO_CLIPS;

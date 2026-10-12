@@ -72,3 +72,9 @@ export function thStamp(iso: string): string {
   const d = new Date(iso);
   return `${thShortDate(d)} · ${hm(d)}`;
 }
+
+/** Night = 18:00–05:59 local time (moon greeting, night theme). */
+export function isNight(d: Date): boolean {
+  const h = d.getHours();
+  return h >= 18 || h < 6;
+}

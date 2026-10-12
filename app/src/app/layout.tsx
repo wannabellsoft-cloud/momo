@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 };
 
 // Sets data-theme before first paint so dark mode doesn't flash.
-const themeBoot = `try{var t=localStorage.getItem("momo:theme");if(!t){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t}catch(e){}`;
+const themeBoot = `try{var p=localStorage.getItem("momo:themePref")||"time",h=new Date().getHours(),t=p==="time"?(h>=18||h<6?"dark":"light"):p==="system"?(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"):p;document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

@@ -2,7 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
-import { useHydrated } from "@/lib/hooks";
+import { isNight } from "@/lib/date";
+import { useHydrated, useNow } from "@/lib/hooks";
 import { useMomo } from "@/lib/store";
 import { DoseSheet } from "./DoseSheet";
 import { Banner, BottomNav, Toast } from "./Overlays";
@@ -32,7 +33,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const systemDark = useSystemDark();
   const path = usePathname() || "/";
 
-  const resolved = theme === "system" ? (systemDark ? "dark" : "light") : theme;
+  const now = useNow();
+  const resolved = theme === "time" ? (isNight(now) ? "dark" : "light") : theme === "system" ? (systemDark ? "dark" : "light") : theme;
   useEffect(() => {
     if (!hydrated) return;
     const html = document.documentElement;
@@ -40,9 +42,10 @@ export function AppShell({ children }: { children: ReactNode }) {
     html.dataset.reduceMotion = String(reduce);
     try {
       localStorage.setItem("momo:theme", resolved);
+      localStorage.setItem("momo:themePref", theme);
     } catch {}
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolved === "dark" ? "#22181D" : "#FFF8F2");
-  }, [hydrated, resolved, reduce]);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", resolved === "dark" ? "#120F1C" : "#FFF8F2");
+  }, [hydrated, resolved, reduce, theme]);
 
   if (!hydrated) return <div className="min-h-dvh bg-(--bg-app)" />;
   if (!onboarded)

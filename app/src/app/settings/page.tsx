@@ -7,7 +7,7 @@ import { MomoBunny } from "@/components/momo/MomoBunny";
 import { NotificationCard } from "@/components/NotificationCard";
 import { Card, OutlineButton, PrimaryButton, RowLabel, ScreenTitle, Segmented, Switch } from "@/components/ui";
 import { addMin } from "@/lib/date";
-import { notificationCopy } from "@/lib/derive";
+import { notificationCopy, systemNotificationCopy } from "@/lib/derive";
 import { checkNotificationPermission, notificationPermission, playTone, requestNotificationPermission, showSystemNotification, type Permission } from "@/lib/notify";
 import { isNative, rescheduleNative } from "@/lib/native";
 import { MED, useMomo, type FollowUp } from "@/lib/store";
@@ -37,7 +37,8 @@ export default function SettingsPage() {
     const { title, body } = notificationCopy(s, "remind");
     ui.showBanner({ title, body, kind: "test" });
     playTone(s.settings.tone);
-    if (perm === "granted") void showSystemNotification(title, body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" });
+    const sys = systemNotificationCopy(s, "remind");
+    if (perm === "granted") void showSystemNotification(sys.title, sys.body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" });
   };
 
   return (

@@ -62,6 +62,7 @@
   --notif-edge:rgba(255,255,255,.85);
   --notif-shadow:0 18px 38px -16px rgba(196,70,111,.5), 0 2px 6px rgba(103,68,84,.06);
   --notif-deco:#F9A3C1;
+  --moon:#F6E7B8;
   --taken-grad:linear-gradient(115deg, #DDF3E8 0%, #EEFBF4 48%, #E1F5EA 100%);
   --taken-shine:rgba(255,255,255,.7);
 
@@ -85,41 +86,43 @@
   color-scheme: light;
 }
 
+/* Night theme — deep ink, lavender, moonlight. */
 [data-theme="dark"] {
-  --bg-app:#22181D; --bg-subtle:#2A1E24;
-  --surface-card:#33252C; --surface-soft:#4A2B3A; --surface-secondary:#352E4D; --surface-info:#22364A;
-  --text-primary:#FCEFF4; --text-secondary:#D3BCC7; --text-disabled:#8C7480; --text-on-action:#3A1426; --text-accent:#FF9DBF;
-  --border-subtle:#3F2E37; --border-default:#523C47; --border-strong:#6B5260;
-  --focus-ring:0 0 0 3px #22181D,0 0 0 6px #C9BBF7;
-  --action-primary:#F59AB9; --action-primary-hover:#F8B0C8; --action-primary-pressed:#E987A9;
-  --action-secondary:#C9BBF7; --action-secondary-hover:#D8CEFA;
-  --action-soft:#4A2B3A; --action-soft-text:#FFC2D7;
-  --action-disabled-bg:#3A2B33; --action-disabled-text:#7D6571;
-  --success-bg:#1F3B2F; --success-fg:#A9E0C4; --warning-bg:#3D321A; --warning-fg:#FFE08A;
-  --error-bg:#44222C; --error-fg:#FFB3C3; --info-bg:#22364A; --info-fg:#B8DEFA;
-  --dose-taken-bg:#1F3B2F; --dose-taken-fg:#A9E0C4; --dose-pending-bg:#3D321A; --dose-pending-fg:#FFE08A;
-  --dose-missed-bg:#352E4D; --dose-missed-fg:#D8CEFA; --refill-bg:#3D321A; --refill-fg:#FFE08A;
-  --tablet-foil:#4A3A42; --tablet-pill:#F4EEF1; --tablet-used:#3A2B33;
+  --bg-app:#120F1C; --bg-subtle:#1C1730;
+  --surface-card:#211B35; --surface-soft:#2C2248; --surface-secondary:#2A2350; --surface-info:#1D2540;
+  --text-primary:#F3EEFF; --text-secondary:#B9AED6; --text-disabled:#776C96; --text-on-action:#1A1230; --text-accent:#D7C8FF;
+  --border-subtle:#2C2545; --border-default:#3A3160; --border-strong:#4F4580;
+  --focus-ring:0 0 0 3px #120F1C,0 0 0 6px #C9BBF7;
+  --action-primary:#C4B0FF; --action-primary-hover:#D3C3FF; --action-primary-pressed:#AE97F5;
+  --action-secondary:#9F8BF0; --action-secondary-hover:#B3A2F5;
+  --action-soft:#2C2248; --action-soft-text:#D7C8FF;
+  --action-disabled-bg:#241E38; --action-disabled-text:#6E6490;
+  --success-bg:#1B3330; --success-fg:#9EE3C5; --warning-bg:#352C1A; --warning-fg:#FFD98A;
+  --error-bg:#3A1F2E; --error-fg:#FFB3C8; --info-bg:#1D2540; --info-fg:#AFC8FF;
+  --dose-taken-bg:#1B3330; --dose-taken-fg:#9EE3C5; --dose-pending-bg:#352C1A; --dose-pending-fg:#FFD98A;
+  --dose-missed-bg:#2A2350; --dose-missed-fg:#D3C6FF; --refill-bg:#352C1A; --refill-fg:#FFD98A;
+  --tablet-foil:#2E2747; --tablet-pill:#EDE8FA; --tablet-used:#241E38; --tablet-next:#C4B0FF;
 
-  --surface-hero-deco:#55334A; --surface-muted:#2A1E24;
-  --surface-nav:rgba(51,37,44,.96); --surface-banner:rgba(51,37,44,.97); --surface-glass:rgba(34,24,29,.45);
-  --stepper-bg:#2A2440;
-  --pill-gradient:radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F4EEF1 55%, #D9CDD3 100%);
-  --pill-edge:#6B5260;
-  --taken-dash:#3D7A5C; --removed-dash:#6E5FB0;
-  --sheet-handle:#523C47;
-  --focus-outline:var(--lavender-300);
-  --notif-bg:linear-gradient(135deg, #4A2B3A 0%, #3A2631 52%, #352E4D 100%);
-  --notif-edge:rgba(255,255,255,.08);
-  --notif-shadow:0 18px 38px -16px rgba(0,0,0,.7);
-  --notif-deco:#8E4A66;
-  --taken-grad:linear-gradient(115deg, #1F3B2F 0%, #26493B 48%, #1F3B2F 100%);
-  --taken-shine:rgba(255,255,255,.07);
+  --surface-hero-deco:#3A2E5E; --surface-muted:#1C1730;
+  --surface-nav:rgba(33,27,53,.94); --surface-banner:rgba(33,27,53,.97); --surface-glass:rgba(18,15,28,.45);
+  --stepper-bg:#2A2350;
+  --pill-gradient:radial-gradient(circle at 35% 30%, #FFFFFF 0%, #EDE8FA 55%, #CFC5E8 100%);
+  --pill-edge:#4F4580;
+  --taken-dash:#2F6B58; --removed-dash:#5C4FA8;
+  --sheet-handle:#3A3160;
+  --focus-outline:#C9BBF7;
+  --notif-bg:linear-gradient(135deg, #2C2248 0%, #211B35 52%, #1D2540 100%);
+  --notif-edge:rgba(196,176,255,.14);
+  --notif-shadow:0 18px 38px -16px rgba(0,0,0,.75);
+  --notif-deco:#8E7BD6;
+  --taken-grad:linear-gradient(115deg, #1B3330 0%, #213F3B 48%, #1B3330 100%);
+  --taken-shine:rgba(255,255,255,.06);
+  --moon:#F6E7B8;
 
-  --shadow-button:0 4px 12px -4px rgba(0,0,0,.5); --shadow-button-secondary:0 6px 16px -6px rgba(0,0,0,.5);
-  --shadow-card:0 8px 24px -12px rgba(0,0,0,.5); --shadow-soft:0 8px 24px -12px rgba(0,0,0,.5); --shadow-seg:0 2px 8px -2px rgba(0,0,0,.5);
-  --shadow-float:0 12px 32px -12px rgba(0,0,0,.6); --shadow-toast:0 12px 32px -12px rgba(0,0,0,.6); --shadow-modal:0 -8px 40px -12px rgba(0,0,0,.6);
-  --overlay:rgba(10,4,8,.55);
+  --shadow-button:0 4px 14px -4px rgba(196,176,255,.35); --shadow-button-secondary:0 6px 16px -6px rgba(0,0,0,.5);
+  --shadow-card:0 8px 24px -12px rgba(0,0,0,.6); --shadow-soft:0 8px 24px -12px rgba(0,0,0,.6); --shadow-seg:0 2px 8px -2px rgba(0,0,0,.5);
+  --shadow-float:0 12px 32px -12px rgba(0,0,0,.7); --shadow-toast:0 12px 32px -12px rgba(0,0,0,.7); --shadow-modal:0 -8px 40px -12px rgba(0,0,0,.7);
+  --overlay:rgba(6,4,14,.6);
   color-scheme: dark;
 }
 
@@ -185,6 +188,8 @@
 .check-pop { animation: check-pop 600ms var(--ease-spring) both; }
 .taken-bob { animation: taken-bob 2.8s ease-in-out infinite; }
 .twinkle { animation: twinkle 2.2s ease-in-out infinite; }
+.moon-glow { filter: drop-shadow(0 0 10px rgba(246,231,184,.45)); animation: moon-float 6s ease-in-out infinite; }
+.music-wiggle { animation: music-wiggle 1.4s ease-in-out infinite; }
 .install-nudge { animation: install-nudge 1.4s ease-in-out infinite; }
 .notif-timer { animation: notif-timer linear forwards; transform-origin: left; }
 @keyframes momo-enter { 0% { transform: translateY(24px) scale(.6); opacity: 0; } 70% { transform: translateY(-6px) scale(1.04); opacity: 1; } 100% { transform: none; } }
@@ -195,6 +200,8 @@
 @keyframes bubble-pop { 0% { transform: scale(.7); opacity: 0; } 100% { transform: none; opacity: 1; } }
 @keyframes notif-pop { 0% { transform: scale(.5) rotate(-12deg); } 60% { transform: scale(1.1) rotate(4deg); } 100% { transform: none; } }
 @keyframes notif-float { 0%, 100% { transform: translateY(0); opacity: .6; } 50% { transform: translateY(-4px); opacity: 1; } }
+@keyframes moon-float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(-4deg); } }
+@keyframes music-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-10deg) translateY(-1px); } 75% { transform: rotate(10deg) translateY(-1px); } }
 @keyframes install-nudge { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 @keyframes taken-shine { 0% { transform: translateX(-120%) skewX(-18deg); } 55%, 100% { transform: translateX(260%) skewX(-18deg); } }
 @keyframes check-draw { to { stroke-dashoffset: 0; } }
@@ -202,12 +209,12 @@
 @keyframes taken-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-3deg); } }
 @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes notif-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-[data-reduce-motion="true"] :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle) { animation: none !important; }
+[data-reduce-motion="true"] :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
 [data-reduce-motion="true"] .check-draw { animation: none; stroke-dashoffset: 0; }
 [data-reduce-motion="true"] :is(.momo-drift, .momo-burst) { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle) { animation: none !important; }
+  :is(.momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
   .check-draw { animation: none !important; stroke-dashoffset: 0; }
   :is(.momo-drift, .momo-burst) { display: none; }
   .momo-svg * { animation: none !important; }

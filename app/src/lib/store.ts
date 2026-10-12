@@ -47,11 +47,12 @@ export type Settings = {
   tone: "sparkle" | "bubble" | "hop" | "off"; // notification tone (in-app); see lib/sound.ts
   uiSounds: boolean; // cute sounds on taps
   greeting: boolean; // Momo says hello when the app opens
+  music: boolean; // gentle background music while the app is open
   ttsVoice: string | null; // device voice name; null = best female Thai voice
   ttsPitch: "normal" | "cute" | "tiny";
   reduceMotion: boolean;
   storageMode: "separate" | "combined";
-  theme: "system" | "light" | "dark";
+  theme: "time" | "system" | "light" | "dark"; // "time": night theme 18:00–06:00
 };
 
 export type MomoData = {
@@ -82,11 +83,12 @@ export const DEFAULT_SETTINGS: Settings = {
   tone: "sparkle",
   uiSounds: true,
   greeting: true,
+  music: true,
   ttsVoice: null,
   ttsPitch: "cute",
   reduceMotion: false,
   storageMode: "separate",
-  theme: "system",
+  theme: "time",
 };
 
 /* ─── Helpers ──────────────────────────────────────────────────────────── */
@@ -384,7 +386,13 @@ export const useMomo = create<MomoStore>()(
     }),
     {
       name: "momo:v1",
-      version: 1,
+      version: 2,
+      // v2: the night theme follows the clock by default
+      migrate: (state, version) => {
+        const st = state as Partial<MomoData>;
+        if (version < 2 && st.settings && st.settings.theme === "system") st.settings.theme = "time";
+        return st as MomoStore;
+      },
       storage: createJSONStorage(() => safeStorage),
       partialize: (s) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

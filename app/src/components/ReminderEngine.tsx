@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { atTime, dayKey } from "@/lib/date";
-import { followUpTimes, notificationCopy } from "@/lib/derive";
+import { followUpTimes, notificationCopy, systemNotificationCopy } from "@/lib/derive";
 import { isNative, onNotificationTap, rescheduleNative } from "@/lib/native";
 import { playTone, registerServiceWorker, showSystemNotification } from "@/lib/notify";
 import { useMomo } from "@/lib/store";
@@ -56,11 +56,12 @@ function tick() {
   writeFired(today, fired);
 
   for (const e of send) {
-    const { title, body } = notificationCopy(s, e.kind);
     if (document.visibilityState === "visible") {
+      const { title, body } = notificationCopy(s, e.kind);
       useUI.getState().showBanner({ title, body, kind: e.kind });
       playTone(s.settings.tone);
     } else {
+      const { title, body } = systemNotificationCopy(s, e.kind);
       void showSystemNotification(title, body, { tag: `momo-${e.kind}`, silent: s.settings.tone === "off", kind: e.kind });
     }
   }

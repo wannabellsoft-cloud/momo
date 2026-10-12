@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { audioReady, availableClips, greetingLine, playGreeting, playUi, type UiSound } from "@/lib/sound";
+import { startMusic, stopMusic } from "@/lib/music";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -36,7 +37,27 @@ export function SoundLayer() {
       });
     }
 
+    // Background music: needs a first tap (unlocked), follows the setting and app visibility.
+    let unlocked = false;
+    const syncMusic = () => {
+      const on = unlocked && useMomo.getState().settings.music && document.visibilityState === "visible";
+      if (on) startMusic();
+      else stopMusic();
+    };
+    void audioReady().then((ok) => {
+      unlocked ||= ok;
+      syncMusic();
+    });
+    const unsubMusic = useMomo.subscribe((st, prev) => {
+      if (st.settings.music !== prev.settings.music) syncMusic();
+    });
+    document.addEventListener("visibilitychange", syncMusic);
+
     const onDown = (e: PointerEvent) => {
+      if (!unlocked) {
+        unlocked = true;
+        setTimeout(syncMusic, 0);
+      }
       const settings = useMomo.getState().settings;
       if (pendingGreeting) {
         greet();
@@ -53,7 +74,12 @@ export function SoundLayer() {
       playUi(kind);
     };
     document.addEventListener("pointerdown", onDown, { capture: true });
-    return () => document.removeEventListener("pointerdown", onDown, { capture: true });
+    return () => {
+      document.removeEventListener("pointerdown", onDown, { capture: true });
+      document.removeEventListener("visibilitychange", syncMusic);
+      unsubMusic();
+      stopMusic();
+    };
   }, []);
   return null;
 }

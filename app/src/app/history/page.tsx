@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EMPTY, EmptyState } from "@/components/EmptyState";
 import { Icon, type IconName } from "@/components/momo/Icon";
 import { MomoBunny, type MomoState } from "@/components/momo/MomoBunny";
@@ -32,13 +32,21 @@ export default function HistoryPage() {
 
   const first = new Date(month.y, month.m, 1);
   const daysIn = new Date(month.y, month.m + 1, 0).getDate();
-  const start = parseDayKey(s.trackingSince);
-  const canPrev = month.y * 12 + month.m > start.getFullYear() * 12 + start.getMonth();
-  const canNext = month.y * 12 + month.m < now.getFullYear() * 12 + now.getMonth();
+  // Browse 24 months back and 12 ahead (future days show when Momo will remind).
+  const offset = month.y * 12 + month.m - (now.getFullYear() * 12 + now.getMonth());
+  const canPrev = offset > -24;
+  const canNext = offset < 12;
   const shift = (k: number) => {
+    if ((k < 0 && !canPrev) || (k > 0 && !canNext)) return;
     const d = new Date(month.y, month.m + k, 1);
     setMonth({ y: d.getFullYear(), m: d.getMonth() });
   };
+  const goToday = () => {
+    setMonth({ y: now.getFullYear(), m: now.getMonth() });
+    setSel(today);
+  };
+  // swipe left/right on the calendar
+  const swipe = useRef<{ x: number; y: number } | null>(null);
 
   const selDate = parseDayKey(sel);
   const selSt = dayStatus(s, sel, now);
@@ -70,7 +78,14 @@ export default function HistoryPage() {
           <button type="button" aria-label="เดือนก่อน" disabled={!canPrev} onClick={() => shift(-1)} className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--bg-subtle) text-(--text-primary) disabled:cursor-default disabled:opacity-50">
             <Icon name="left" size={18} />
           </button>
-          <div className="rounded-full bg-(--bg-subtle) px-[18px] py-2 text-[17px] font-extrabold" aria-live="polite">{TH_MONTHS[month.m]} {month.y}</div>
+          <div className="flex flex-col items-center gap-1">
+            <div className="rounded-full bg-(--bg-subtle) px-[18px] py-2 text-[17px] font-extrabold" aria-live="polite">{TH_MONTHS[month.m]} {month.y}</div>
+            {offset !== 0 && (
+              <button type="button" onClick={goToday} className="h-7 cursor-pointer rounded-full border-0 bg-transparent px-3 text-[12px] font-extrabold text-(--action-soft-text)">
+                กลับมาวันนี้
+              </button>
+            )}
+          </div>
           <button type="button" aria-label="เดือนถัดไป" disabled={!canNext} onClick={() => shift(1)} className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--bg-subtle) text-(--text-primary) disabled:cursor-default disabled:opacity-50">
             <Icon name="right" size={18} />
           </button>
@@ -78,7 +93,17 @@ export default function HistoryPage() {
         <div className="mb-1 grid grid-cols-7 gap-1 text-center text-[12px] text-(--text-secondary)" aria-hidden="true">
           {TH_WEEKDAYS_SHORT.map((w) => <span key={w}>{w}</span>)}
         </div>
-        <div className="grid grid-cols-7 gap-1">
+        <div
+          className="grid touch-pan-y grid-cols-7 gap-1"
+          onPointerDown={(e) => (swipe.current = { x: e.clientX, y: e.clientY })}
+          onPointerUp={(e) => {
+            const st = swipe.current;
+            swipe.current = null;
+            if (!st) return;
+            const dx = e.clientX - st.x;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(e.clientY - st.y)) shift(dx < 0 ? 1 : -1);
+          }}
+        >
           {Array.from({ length: first.getDay() }, (_, i) => <span key={"b" + i} className="h-12" />)}
           {Array.from({ length: daysIn }, (_, i) => {
             const key = dayKey(new Date(month.y, month.m, i + 1));

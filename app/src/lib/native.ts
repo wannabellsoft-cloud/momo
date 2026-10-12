@@ -7,7 +7,7 @@ import { Capacitor } from "@capacitor/core";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { addDays, atTime, dayKey } from "./date";
-import { followUpTimes, notificationCopy } from "./derive";
+import { followUpTimes, systemNotificationCopy } from "./derive";
 import type { MomoData } from "./store";
 
 export const isNative = () => Capacitor.isNativePlatform();
@@ -26,7 +26,7 @@ export function planNotifications(s: MomoData, now = new Date()) {
     const add = (kind: "remind" | "follow" | "bedtime", time: string) => {
       const at = atTime(day, time);
       if (at <= now) return;
-      const { title, body } = notificationCopy(s, kind);
+      const { title, body } = systemNotificationCopy(s, kind);
       out.push({ id: nextId++, title, body, at, kind });
     };
     if (!taken) {

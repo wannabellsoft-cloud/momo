@@ -6,7 +6,7 @@ import { HomeMomo } from "@/components/HomeMomo";
 import { TakenCard } from "@/components/TakenCard";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Card, DemoLabel, PrimaryButton, cx } from "@/components/ui";
-import { thLongDay } from "@/lib/date";
+import { isNight, thLongDay } from "@/lib/date";
 import { derive } from "@/lib/derive";
 import { useNow, useOnline, useQuickConfirm } from "@/lib/hooks";
 import { MED, left, useMomo } from "@/lib/store";
@@ -17,6 +17,7 @@ export default function HomePage() {
   const now = useNow();
   const online = useOnline();
   const d = derive(s, now);
+  const night = isNight(now);
   const quickConfirm = useQuickConfirm();
   const { remind, qty } = s.settings;
 
@@ -32,7 +33,7 @@ export default function HomePage() {
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-3 pt-2">
         <div>
-          <h1 className="m-0 text-[28px] leading-[38px] font-extrabold">สวัสดี{d.call} ☀️</h1>
+          <h1 className="m-0 text-[28px] leading-[38px] font-extrabold">สวัสดี{d.call} {night ? "🌙" : "☀️"}</h1>
           <div className="text-[15px] leading-[24px] text-(--text-secondary)">{thLongDay(now)} · วันนี้ดูแลตัวเองหรือยัง?</div>
         </div>
         <Link href="/settings/profile/" aria-label="โปรไฟล์โมโม่" className="h-12 w-12 flex-none overflow-hidden rounded-full bg-(--surface-soft)">
@@ -50,6 +51,23 @@ export default function HomePage() {
       {/* MomoHeroCard */}
       <div className="relative min-h-[250px] overflow-hidden rounded-[28px] bg-(--surface-soft) px-5 pt-5">
         <div className="absolute -top-[30px] -right-[30px] h-[140px] w-[140px] rounded-full bg-(--surface-hero-deco)" />
+        {night && (
+          <span aria-hidden="true">
+            <span className="moon-glow absolute top-[22px] right-[78px] h-[46px] w-[46px] rounded-full" style={{ boxShadow: "12px -5px 0 0 var(--moon)" }} />
+            {[[18, 46, 11, 0], [62, 132, 8, 0.7], [104, 24, 9, 1.3], [40, 210, 7, 2], [150, 72, 7, 0.4], [90, 168, 10, 1.6]].map(([t, r, f, dl], k) => (
+              <span key={k} className="twinkle absolute text-(--moon)" style={{ top: t, right: r, fontSize: f, animationDelay: `${dl}s` }}>✦</span>
+            ))}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => s.updateSettings({ music: !s.settings.music })}
+          aria-label={s.settings.music ? "ปิดเพลง" : "เปิดเพลง"}
+          aria-pressed={s.settings.music}
+          className={cx("absolute top-3 right-3 z-10 flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 shadow-(--shadow-soft)", s.settings.music ? "bg-(--surface-card) text-(--action-primary)" : "bg-(--surface-card)/70 text-(--text-disabled)")}
+        >
+          <span className={s.settings.music ? "music-wiggle inline-flex" : "inline-flex"}><Icon name={s.settings.music ? "music" : "musicoff"} size={20} /></span>
+        </button>
         <div className="relative flex flex-wrap items-center gap-2">
           <span className={cx("inline-flex h-[30px] items-center gap-[6px] rounded-full px-3 text-[13px] font-extrabold", chip.cls)}>
             <Icon name={chip.icon} size={14} stroke={2.6} />

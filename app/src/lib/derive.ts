@@ -88,3 +88,20 @@ export function notificationCopy(s: MomoData, kind: "remind" | "follow" | "bedti
   const body = kind === "bedtime" ? "ราตรีสวัสดิ์จากโมโม่" : privacy ? "แตะเพื่อเปิดโมโม่" : `Pristiq 50 mg · ${qty} เม็ด`;
   return { title, body };
 }
+
+/** System (OS) notification: the OS draws the card, so we make the content fuller —
+    title "Momo", then Momo's line, a detail line, and the tap hint (as in the design):
+      Momo
+      แพรวาา ได้เวลากินยาแล้วน้า 🐰💕
+      ถึงเวลาดูแลตัวเองแล้ว · 08:00 น.
+      แตะเพื่อเปิดโมโม่
+    The drug name only appears when lock-screen privacy is off. */
+export function systemNotificationCopy(s: MomoData, kind: "remind" | "follow" | "bedtime") {
+  const { privacy, qty, remind } = s.settings;
+  const { title: line } = notificationCopy(s, kind);
+  const detail =
+    kind === "bedtime" ? "ราตรีสวัสดิ์จากโมโม่ 🌙"
+    : kind === "follow" ? (privacy ? "ถ้าดูแลตัวเองแล้ว กดบันทึกให้โมโม่หน่อยน้า" : `Pristiq 50 mg · ${qty} เม็ด · ถ้ากินแล้วกดบันทึกได้เลย`)
+    : privacy ? `เตือนประจำวัน · ${remind} น.` : `Pristiq 50 mg · ${qty} เม็ด · ${remind} น.`;
+  return { title: "Momo", body: `${line}\n${detail}\nแตะเพื่อเปิดโมโม่` };
+}
