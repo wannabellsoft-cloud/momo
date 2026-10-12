@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EMPTY, EmptyState } from "@/components/EmptyState";
 import { MomoBunny } from "@/components/momo/MomoBunny";
-import { BackHeader, Card, PrimaryButton, cx } from "@/components/ui";
+import { Icon } from "@/components/momo/Icon";
+import { BackHeader, Card, PrimaryButton, Segmented } from "@/components/ui";
 import { LOCS, LOC_KEYS, packLabel, useMomo, type LocationId } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -44,46 +45,50 @@ export default function OpenBoxPage() {
         />
       ) : (
         <>
-          <div className="flex flex-col items-center gap-[6px] rounded-[28px] bg-(--surface-secondary) p-5 text-center">
-            <MomoBunny state="refill" size={150} />
-            <div className="text-[18px] leading-[28px] font-extrabold">โมโม่จะช่วยแกะกล่องให้นะ</div>
-            <div className="text-[14px] leading-[22px] text-(--dose-missed-fg)">กล่องสำรอง {s.reserve} → {s.reserve - 1} กล่อง · ได้แผงใหม่ 2 แผง (+30 เม็ด)</div>
+          {/* summary — compact so everything fits above the sticky button */}
+          <div className="flex items-center gap-3 rounded-[24px] bg-(--surface-secondary) py-3 pr-4 pl-2">
+            <MomoBunny state="refill" size={84} />
+            <div className="min-w-0 flex-1">
+              <div className="text-[17px] leading-[25px] font-extrabold">ได้แผงใหม่ 2 แผง</div>
+              <div className="text-[13px] leading-[20px] text-(--dose-missed-fg)">แผง {names[0]} + แผง {names[1]} · +30 เม็ด</div>
+              <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-(--surface-card) px-[10px] py-[2px] text-[12px] font-extrabold">
+                กล่องสำรอง <span className="tnum">{s.reserve}</span> → <span className="tnum text-(--action-primary)">{s.reserve - 1}</span>
+              </div>
+            </div>
           </div>
-          {names.map((name, k) => (
-            <Card key={name} className="flex flex-col gap-[10px] p-4">
-              <div className="flex items-center justify-between">
-                <span className="text-[17px] font-extrabold">แผง {name}</span>
-                <span className="text-[13px] text-(--text-secondary)">15 เม็ด</span>
+
+          <Card className="flex flex-col gap-3 p-4">
+            <div className="flex items-center gap-2 text-[15px] font-extrabold">
+              <Icon name="pin" size={18} />
+              เก็บแผงไว้ที่ไหนดี
+            </div>
+            {(combined ? [0] : [0, 1]).map((k) => (
+              <div key={k} className="flex flex-col gap-[6px]">
+                <span className="text-[13px] font-extrabold text-(--text-secondary)">{combined ? `แผง ${names[0]} + ${names[1]} (รวมที่เดียว)` : `แผง ${names[k]}`}</span>
+                <Segmented<LocationId> label={`ที่เก็บแผง ${names[k]}`} value={locs[k]} options={LOC_KEYS.map((l) => [l, LOCS[l]] as [LocationId, string])} onChange={(l) => pick(k as 0 | 1, l)} />
               </div>
-              <div className="text-[13px] text-(--text-secondary)" id={`loc-${k}`}>เก็บไว้ที่</div>
-              <div className="flex flex-wrap gap-[6px]" role="group" aria-labelledby={`loc-${k}`}>
-                {LOC_KEYS.map((l) => {
-                  const on = locs[k] === l;
-                  return (
-                    <button
-                      key={l}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() => pick(k as 0 | 1, l)}
-                      className={cx(
-                        "h-11 cursor-pointer rounded-full border-2 border-solid px-4 text-[14px] font-extrabold",
-                        on ? "border-(--tablet-next) bg-(--bg-subtle) text-(--action-soft-text)" : "border-(--border-subtle) bg-(--surface-card) text-(--text-primary)",
-                      )}
-                    >
-                      {LOCS[l]}
-                    </button>
-                  );
-                })}
-              </div>
-            </Card>
-          ))}
+            ))}
+          </Card>
+
           <div className="px-1 text-[13px] leading-[20px] text-(--text-secondary)">
             {firstBox
               ? "ถ้าแผงที่ใช้อยู่ถูกแกะไปแล้วบางเม็ด หลังเปิดกล่อง แตะเม็ดนั้นในหน้าแผงยา แล้วเลือก “แค่แกะเม็ดออก” จะไม่นับว่ากินยา"
               : "แผงที่เปิดอยู่เดิมจะไม่ถูกลบ เม็ดที่เหลือยังนับรวมเหมือนเดิม"}
-            {combined && " · โหมดรวมที่เดียว: ทั้งสองแผงจะเก็บที่เดียวกัน"}
           </div>
-          <PrimaryButton onClick={confirm}>ยืนยัน เปิดกล่อง (−1 กล่องสำรอง)</PrimaryButton>
+
+          {/* sticky action bar — always reachable with the thumb */}
+          <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px]">
+            <div className="h-6 bg-gradient-to-t from-(--bg-app) to-transparent" />
+            <div className="pointer-events-auto flex flex-col gap-1 bg-(--bg-app) px-5 pt-1" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 14px)" }}>
+              <PrimaryButton onClick={confirm} data-sound="success">
+                <Icon name="box" size={20} />
+                เปิดกล่องเลย ♡
+              </PrimaryButton>
+              <button type="button" onClick={() => router.push("/inventory/")} className="h-10 cursor-pointer border-0 bg-transparent text-[14px] font-extrabold text-(--text-secondary)">
+                ยังไม่เปิดตอนนี้
+              </button>
+            </div>
+          </div>
         </>
       )}
     </div>
