@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dayKey, hm, parseDayKey, thShortDate } from "@/lib/date";
 import { pickLine } from "@/lib/derive";
+import { tapFeedback } from "@/lib/native";
 import { LOCS, MED, nextIdx, snakeIndex, useMomo, type TabletRef } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 import { Icon } from "./momo/Icon";
@@ -169,6 +170,7 @@ function SheetBody({ sheetRef, open }: { sheetRef: TabletRef; open: boolean }) {
   const dot = (on: boolean) => <span className="h-[22px] w-[22px] flex-none rounded-full bg-white transition-all duration-150" style={{ border: on ? "7px solid var(--action-primary)" : "2px solid var(--border-strong)" }} />;
 
   const confirm = () => {
+    tapFeedback();
     if (choice === "dose") {
       const r = s.recordDose(sheetRef, time || hm(new Date()));
       ui.closeSheet();
@@ -224,7 +226,7 @@ function SheetBody({ sheetRef, open }: { sheetRef: TabletRef; open: boolean }) {
         </div>
       )}
       <div className="mt-4 flex flex-col gap-2">
-        <PrimaryButton disabled={!open} onClick={confirm}>{choice === "dose" ? "ยืนยัน กินแล้ว ♡" : "ยืนยัน แกะออก"}</PrimaryButton>
+        <PrimaryButton disabled={!open} onClick={confirm} data-sound={choice === "dose" ? "success" : "tap"}>{choice === "dose" ? "ยืนยัน กินแล้ว ♡" : "ยืนยัน แกะออก"}</PrimaryButton>
         <SoftButton className="h-12 rounded-[16px] text-[16px]" onClick={ui.closeSheet}>ยกเลิก</SoftButton>
       </div>
     </>

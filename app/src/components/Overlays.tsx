@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useQuickConfirm } from "@/lib/hooks";
 import { useUI } from "@/lib/ui";
+import { NotificationCard } from "./NotificationCard";
+
+const BANNER_MS = 5200;
 import { Icon, type IconName } from "./momo/Icon";
 import { MomoBunny } from "./momo/MomoBunny";
 import { cx } from "./ui";
@@ -13,38 +17,59 @@ export function Banner() {
   const banner = useUI((u) => u.banner);
   const hide = useUI((u) => u.hideBanner);
   const router = useRouter();
+  const quickConfirm = useQuickConfirm();
+  const [shown, setShown] = useState(banner);
+  if (banner && banner !== shown) setShown(banner); // keep content while sliding away
+  const dose = shown?.kind !== "bedtime";
   useEffect(() => {
     if (!banner) return;
-    const t = setTimeout(hide, 4200);
+    const t = setTimeout(hide, BANNER_MS);
     return () => clearTimeout(t);
   }, [banner, hide]);
   return (
     <div className="pointer-events-none fixed inset-x-0 top-0 z-[95] mx-auto max-w-[480px] px-[10px]" style={{ paddingTop: "calc(env(safe-area-inset-top) + 8px)" }}>
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={banner ? 0 : -1}
+        aria-hidden={!banner}
         onClick={() => {
           hide();
           router.push("/");
         }}
-        aria-hidden={!banner}
-        tabIndex={banner ? 0 : -1}
-        className={cx(
-          "flex w-full cursor-pointer items-center gap-[10px] rounded-[22px] border-0 bg-(--surface-banner) px-3 py-[10px] text-left shadow-(--shadow-toast) transition-[transform,opacity] duration-[380ms] ease-(--ease-out)",
-          banner ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-[220px] opacity-0",
-        )}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            hide();
+            router.push("/");
+          }
+        }}
+        className={cx("cursor-pointer transition-[transform,opacity] duration-[420ms] ease-(--ease-spring)", banner ? "pointer-events-auto translate-y-0 opacity-100" : "-translate-y-[220px] opacity-0")}
       >
-        <span className="h-[38px] w-[38px] flex-none overflow-hidden rounded-[10px] bg-(--surface-soft)">
-          <MomoBunny crop="head" still size={38} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex justify-between text-[12px] text-(--text-secondary)">
-            <span className="font-extrabold text-(--text-primary)">MOMO</span>
-            <span>ตอนนี้</span>
-          </span>
-          <span className="block text-[14px] leading-[20px] font-extrabold">{banner?.title}</span>
-          <span className="block text-[13px] leading-[18px] text-(--text-secondary)">{banner?.body}</span>
-        </span>
-      </button>
+        {shown && (
+          <NotificationCard
+            key={shown.key}
+            kind={shown.kind}
+            title={shown.title}
+            body={shown.body}
+            timer={BANNER_MS}
+            action={
+              dose ? (
+                <button
+                  type="button"
+                  data-sound="success"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    hide();
+                    quickConfirm();
+                  }}
+                  className="press h-9 cursor-pointer rounded-full border-0 bg-(--action-primary) px-3 text-[13px] font-extrabold text-(--text-on-action) shadow-(--shadow-button)"
+                >
+                  บันทึก ♡
+                </button>
+              ) : undefined
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }

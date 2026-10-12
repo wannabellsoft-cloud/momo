@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/momo/Icon";
+import { HomeMomo } from "@/components/HomeMomo";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Card, DemoLabel, PrimaryButton, cx } from "@/components/ui";
 import { thLongDay } from "@/lib/date";
@@ -54,14 +55,7 @@ export default function HomePage() {
             {chip.label}
           </span>
         </div>
-        <div className="relative mt-[6px] flex items-end gap-1">
-          <div className="-ml-[10px] h-[170px] w-[170px] flex-none">
-            <MomoBunny state={d.homeMomo} size={170} />
-          </div>
-          <div className="relative mt-3 self-start rounded-[20px_20px_20px_6px] bg-(--surface-card) px-[14px] py-3 text-[15px] leading-[23px] font-extrabold text-pretty shadow-(--shadow-soft)" aria-live="polite">
-            {d.bubble}
-          </div>
-        </div>
+        <HomeMomo state={d.homeMomo} bubble={d.bubble} />
       </div>
 
       {/* MedicationCard */}

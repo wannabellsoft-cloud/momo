@@ -1,6 +1,7 @@
 "use client";
 
 import { BASE } from "./base";
+import { isNative, nativePermission, requestNativePermission, showNativeNow } from "./native";
 
 /* Local notifications.
    - The reminder engine (ReminderEngine.tsx) runs while Momo is open or alive in the background
@@ -16,7 +17,14 @@ export function notificationPermission(): Permission {
   return Notification.permission;
 }
 
+/** Accurate permission, including the iOS app (async there). */
+export async function checkNotificationPermission(): Promise<Permission> {
+  if (isNative()) return nativePermission().catch(() => "default" as const);
+  return notificationPermission();
+}
+
 export async function requestNotificationPermission(): Promise<Permission> {
+  if (isNative()) return requestNativePermission().catch(() => "default" as const);
   if (!("Notification" in window)) return "unsupported";
   try {
     return await Notification.requestPermission();
@@ -27,11 +35,12 @@ export async function requestNotificationPermission(): Promise<Permission> {
 
 export function registerServiceWorker() {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) return;
-  if (process.env.NODE_ENV !== "production") return; // keep dev free of stale caches
+  if (process.env.NODE_ENV !== "production" || isNative()) return; // no SW in dev or inside the iOS app
   navigator.serviceWorker.register(`${BASE}/sw.js`, { scope: `${BASE}/` }).catch(() => {});
 }
 
 export async function showSystemNotification(title: string, body: string, opts: { tag: string; silent: boolean }) {
+  if (isNative()) return showNativeNow(title, body).then(() => true, () => false);
   if (notificationPermission() !== "granted") return false;
   const options: NotificationOptions = { body, tag: opts.tag, silent: opts.silent, icon: `${BASE}/icons/icon-192.png`, badge: `${BASE}/icons/badge-96.png`, data: { url: `${BASE}/` } };
   try {
@@ -44,27 +53,4 @@ export async function showSystemNotification(title: string, body: string, opts: 
   }
 }
 
-/* ─── Tone: a soft two-note chime, synthesized so no audio files ship. ─── */
-let ctx: AudioContext | null = null;
-export function playTone(kind: "bell" | "pop" | "off") {
-  if (kind === "off" || typeof window === "undefined") return;
-  try {
-    ctx ??= new AudioContext();
-    const notes = kind === "bell" ? [1318.5, 1760] : [880];
-    notes.forEach((f, i) => {
-      const t = ctx!.currentTime + i * 0.12;
-      const o = ctx!.createOscillator();
-      const g = ctx!.createGain();
-      o.type = kind === "bell" ? "sine" : "triangle";
-      o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.18, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + (kind === "bell" ? 0.6 : 0.15));
-      o.connect(g).connect(ctx!.destination);
-      o.start(t);
-      o.stop(t + 0.7);
-    });
-  } catch {
-    /* audio unavailable */
-  }
-}
+export { playTone } from "./sound";

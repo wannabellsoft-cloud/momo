@@ -8,6 +8,7 @@ import { DoseSheet } from "./DoseSheet";
 import { Banner, BottomNav, Toast } from "./Overlays";
 import { ReminderEngine } from "./ReminderEngine";
 import { SaveError } from "./SaveError";
+import { SoundLayer } from "./SoundLayer";
 import { Welcome } from "./Welcome";
 
 function useSystemDark() {
@@ -44,7 +45,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [hydrated, resolved, reduce]);
 
   if (!hydrated) return <div className="min-h-dvh bg-(--bg-app)" />;
-  if (!onboarded) return <Welcome />;
+  if (!onboarded)
+    return (
+      <>
+        <Welcome />
+        <Toast />
+        <SoundLayer />
+      </>
+    );
 
   const showNav = !path.startsWith("/inventory/open-box");
   return (
@@ -58,6 +66,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <DoseSheet />
       <SaveError />
       <ReminderEngine />
+      <SoundLayer />
     </>
   );
 }

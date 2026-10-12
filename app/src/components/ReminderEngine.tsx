@@ -1,8 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { atTime, dayKey } from "@/lib/date";
 import { followUpTimes, notificationCopy } from "@/lib/derive";
+import { isNative, onNotificationTap, rescheduleNative } from "@/lib/native";
 import { playTone, registerServiceWorker, showSystemNotification } from "@/lib/notify";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
@@ -56,7 +58,7 @@ function tick() {
   for (const e of send) {
     const { title, body } = notificationCopy(s, e.kind);
     if (document.visibilityState === "visible") {
-      useUI.getState().showBanner({ title, body });
+      useUI.getState().showBanner({ title, body, kind: e.kind });
       playTone(s.settings.tone);
     } else {
       void showSystemNotification(title, body, { tag: `momo-${e.kind}`, silent: s.settings.tone === "off" });
@@ -64,8 +66,35 @@ function tick() {
   }
 }
 
-export function ReminderEngine() {
+/** iOS app: hand the next 14 days of reminders to the OS, re-planned whenever doses or settings change. */
+function useNativeSchedule() {
+  const router = useRouter();
   useEffect(() => {
+    if (!isNative()) return;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const plan = () => {
+      clearTimeout(t);
+      t = setTimeout(() => void rescheduleNative(useMomo.getState()), 400);
+    };
+    plan();
+    const unsub = useMomo.subscribe((s, prev) => {
+      if (s.doses !== prev.doses || s.settings !== prev.settings || s.onboarded !== prev.onboarded) plan();
+    });
+    const offTap = onNotificationTap(() => router.push("/"));
+    document.addEventListener("visibilitychange", plan); // new day / permission changed in iOS Settings
+    return () => {
+      clearTimeout(t);
+      unsub();
+      offTap();
+      document.removeEventListener("visibilitychange", plan);
+    };
+  }, [router]);
+}
+
+export function ReminderEngine() {
+  useNativeSchedule();
+  useEffect(() => {
+    if (isNative()) return; // iOS delivers scheduled notifications itself
     registerServiceWorker();
     tick();
     const id = setInterval(tick, 15_000);

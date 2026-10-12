@@ -45,6 +45,22 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 
 Limitation: there is no push server, so reminders only fire while Momo is open or still alive in the background. On iPhone the app must be added to the Home Screen first (iOS 16.4+). Reliable delivery to a fully closed app needs Web Push: VAPID keys, a small server that stores the subscription and sends on a schedule, and a `push` handler in `sw.js`.
 
+## Sounds
+
+`src/lib/sound.ts` synthesizes everything with Web Audio, so no audio files ship:
+- **Notification tones:** กรุ๊งกริ๊ง, ป๊อปฟอง, ปุ๊กปิ๊ก (chosen in Momo's profile). They play with the in-app banner. System notifications use the phone's sound.
+- **Tap sounds:** `SoundLayer` plays a soft tap for every button. Set `data-sound="success|toggle|back|giggle|none"` on an element to override it.
+- **Greeting:** a chime, then Momo says hello using the device's Thai voice (higher pitch), once per launch. iOS only allows audio after a tap, so the greeting plays on the first tap. The page uses the "ambient" audio session, so the silent switch mutes Momo.
+
+## iOS app (Capacitor, paused)
+
+`capacitor.config.ts` and `ios/` hold an iOS shell around the same static build. In the app, reminders are scheduled with iOS for the next 14 days (`src/lib/native.ts`), so they fire even when Momo is closed. Building it needs a Mac with Xcode and an Apple Developer account:
+
+```bash
+npm run ios:sync   # next build + copy into ios/
+npm run ios:open   # open in Xcode → set Team → Run / Archive
+```
+
 ## Fonts
 
 The design's typeface is **LINE Seed Sans TH**. This repo does not include it. The only copy reachable from this environment was an unofficial npm repackage whose embedded licence points to a Dalton Maag EULA. Until the official files are added, the app uses **Anuphan** (OFL, self-hosted in `src/fonts/`), the design's first fallback. To switch, download LINE Seed Sans TH from seed.line.me, put the Regular and ExtraBold `.woff2` files in `src/fonts/`, and add `url("../fonts/…")` sources to the two `LINE Seed Sans TH` `@font-face` rules at the top of `globals.css`.

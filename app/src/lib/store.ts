@@ -42,9 +42,11 @@ export type Settings = {
   privacy: boolean; // hide drug name on lock screen
   bedtime: boolean;
   bedTime: string;
-  call: string; // what Momo calls the user
+  call: string; // Momo is made for Praewa: always "แพรวา" (no longer user-editable)
   voice: "sweet" | "plain";
-  tone: "bell" | "pop" | "off";
+  tone: "sparkle" | "bubble" | "hop" | "off"; // notification tone (in-app); see lib/sound.ts
+  uiSounds: boolean; // cute sounds on taps
+  greeting: boolean; // Momo says hello when the app opens
   reduceMotion: boolean;
   storageMode: "separate" | "combined";
   theme: "system" | "light" | "dark";
@@ -75,7 +77,9 @@ export const DEFAULT_SETTINGS: Settings = {
   bedTime: "22:30",
   call: "แพรวา",
   voice: "sweet",
-  tone: "bell",
+  tone: "sparkle",
+  uiSounds: true,
+  greeting: true,
   reduceMotion: false,
   storageMode: "separate",
   theme: "system",
@@ -385,7 +389,12 @@ export const useMomo = create<MomoStore>()(
       },
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<MomoData>;
-        return { ...current, ...p, settings: { ...DEFAULT_SETTINGS, ...(p.settings ?? {}) } };
+        const settings = { ...DEFAULT_SETTINGS, ...(p.settings ?? {}), call: "แพรวา" };
+        // older tone names
+        const legacy = settings.tone as string;
+        if (legacy === "bell") settings.tone = "sparkle";
+        if (legacy === "pop") settings.tone = "bubble";
+        return { ...current, ...p, settings };
       },
     },
   ),

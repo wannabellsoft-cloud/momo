@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch } from "@/components/ui";
-import { playTone } from "@/lib/notify";
+import { playGreeting, playTone } from "@/lib/sound";
 import { MED, useMomo, type Settings } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
-/** Screen 10 — Momo profile: what Momo calls you, voice, tone, motion — plus theme and data. */
+const TONE_TOAST = { sparkle: "กรุ๊งกริ๊ง ♪", bubble: "ป๊อป ป๊อป ♪", hop: "ปุ๊กปิ๊ก ♪" } as const;
+
+/** Screen 10 — Momo profile: voice, sounds, motion — plus theme and data. */
 export default function ProfilePage() {
   const s = useMomo();
   const set = s.updateSettings;
   const showToast = useUI((u) => u.showToast);
-  const { call, voice, tone, reduceMotion, theme } = s.settings;
+  const { call, voice, tone, uiSounds, greeting, reduceMotion, theme } = s.settings;
   const [confirmReset, setConfirmReset] = useState(false);
   const sweet = voice === "sweet";
 
@@ -29,10 +31,6 @@ export default function ProfilePage() {
 
       <Card className="flex flex-col gap-[14px] p-4">
         <div className="flex flex-col gap-2">
-          <span className="text-[15px] font-extrabold">โมโม่เรียกเราว่า</span>
-          <Segmented label="โมโม่เรียกเราว่า" value={call} options={[["แพรวา", "แพรวา"], ["แพรว", "แพรว"], ["หนู", "หนู"]]} onChange={(v) => set({ call: v })} />
-        </div>
-        <div className="flex flex-col gap-2">
           <span className="text-[15px] font-extrabold">สไตล์การพูด</span>
           <Segmented<Settings["voice"]> label="สไตล์การพูด" value={voice} options={[["sweet", "หวาน ๆ"], ["plain", "เรียบ ๆ"]]} onChange={(v) => set({ voice: v })} />
           <span className="rounded-[14px] bg-(--bg-app) px-3 py-[10px] text-[13px] leading-[20px] text-(--text-secondary)">
@@ -41,16 +39,26 @@ export default function ProfilePage() {
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-[15px] font-extrabold">เสียงแจ้งเตือน</span>
+          <div data-sound="none">
           <Segmented<Settings["tone"]>
             label="เสียงแจ้งเตือน"
             value={tone}
-            options={[["bell", "กระดิ่ง"], ["pop", "ป๊อป"], ["off", "ปิดเสียง"]]}
+            options={[["sparkle", "กรุ๊งกริ๊ง"], ["bubble", "ป๊อปฟอง"], ["hop", "ปุ๊กปิ๊ก"], ["off", "ปิด"]]}
             onChange={(v) => {
               set({ tone: v });
               playTone(v);
-              showToast(v === "off" ? "ปิดเสียงแล้ว แจ้งเตือนยังขึ้นตามปกติ" : "กรุ๊งกริ๊ง ♪", "reminder");
+              showToast(v === "off" ? "ปิดเสียงแล้ว แจ้งเตือนยังขึ้นตามปกติ" : TONE_TOAST[v], "reminder");
             }}
           />
+          </div>
+        </div>
+        <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
+          <RowLabel title="เสียงตอนกดปุ่ม" sub="ปิ๊ก ๆ เบา ๆ ทุกครั้งที่แตะ" />
+          <Switch checked={uiSounds} onChange={(v) => set({ uiSounds: v })} label="เสียงตอนกดปุ่ม" />
+        </div>
+        <div className="flex items-center gap-3">
+          <RowLabel title="โมโม่ทักทายตอนเปิดแอป" sub="เสียงกรุ๊งกริ๊ง + โมโม่พูดสวัสดีแพรวา" />
+          <span data-sound="none" className="contents"><Switch checked={greeting} onChange={(v) => { set({ greeting: v }); if (v) playGreeting(); }} label="โมโม่ทักทายตอนเปิดแอป" /></span>
         </div>
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
           <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับหู ไม่กระพริบตา" />

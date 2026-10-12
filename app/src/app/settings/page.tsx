@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "@/components/momo/Icon";
 import { MomoBunny } from "@/components/momo/MomoBunny";
+import { NotificationCard } from "@/components/NotificationCard";
 import { Card, OutlineButton, PrimaryButton, RowLabel, ScreenTitle, Segmented, Switch } from "@/components/ui";
 import { addMin } from "@/lib/date";
 import { notificationCopy } from "@/lib/derive";
-import { notificationPermission, playTone, requestNotificationPermission, showSystemNotification, type Permission } from "@/lib/notify";
+import { checkNotificationPermission, notificationPermission, playTone, requestNotificationPermission, showSystemNotification, type Permission } from "@/lib/notify";
+import { isNative, rescheduleNative } from "@/lib/native";
 import { MED, useMomo, type FollowUp } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -26,11 +28,14 @@ export default function SettingsPage() {
   const { remind, qty, follow, maxFollowUps, bedtime, bedTime, privacy } = s.settings;
   // Pages only render on the client (AppShell waits for hydration), so reading the API here is safe.
   const [perm, setPerm] = useState<Permission>(notificationPermission);
+  useEffect(() => {
+    void checkNotificationPermission().then(setPerm); // the iOS app answers asynchronously
+  }, []);
   const preview = notificationCopy(s, "remind", false);
 
   const testNotify = () => {
     const { title, body } = notificationCopy(s, "remind");
-    ui.showBanner({ title, body });
+    ui.showBanner({ title, body, kind: "test" });
     playTone(s.settings.tone);
     if (perm === "granted") void showSystemNotification(title, body, { tag: "momo-test", silent: s.settings.tone === "off" });
   };
@@ -111,7 +116,10 @@ export default function SettingsPage() {
               onClick={async () => {
                 const p = await requestNotificationPermission();
                 setPerm(p);
-                if (p === "granted") ui.showToast("ขอบคุณน้า โมโม่จะเตือนเบา ๆ นะ", "welcome");
+                if (p === "granted") {
+                  ui.showToast("ขอบคุณน้า โมโม่จะเตือนเบา ๆ นะ", "welcome");
+                  void rescheduleNative(useMomo.getState());
+                }
               }}
             >
               อนุญาต
@@ -123,25 +131,15 @@ export default function SettingsPage() {
           <Switch checked={privacy} onChange={(v) => set({ privacy: v })} label="ซ่อนชื่อยา" />
         </div>
         <div className="text-[12px] text-(--text-secondary)">ตัวอย่างการแจ้งเตือน</div>
-        <div className="flex items-start gap-[10px] rounded-[20px] bg-(--surface-muted) p-3">
-          <div className="h-[38px] w-[38px] flex-none overflow-hidden rounded-[10px] bg-(--surface-soft)">
-            <MomoBunny crop="head" still size={38} />
-          </div>
-          <div className="flex-1">
-            <div className="flex justify-between text-[12px] text-(--text-secondary)">
-              <span className="font-extrabold text-(--text-primary)">MOMO</span>
-              <span>{remind}</span>
-            </div>
-            <div className="text-[14px] leading-[20px] font-extrabold">{preview.title}</div>
-            <div className="text-[13px] leading-[18px] text-(--text-secondary)">{preview.body}</div>
-          </div>
-        </div>
-        <OutlineButton className="h-11 rounded-[14px] text-[14px]" onClick={testNotify}>
+        <NotificationCard kind="remind" title={preview.title} body={preview.body} time={remind} />
+        <OutlineButton className="h-11 rounded-[14px] text-[14px]" onClick={testNotify} data-sound="none">
           <Icon name="bell" size={16} />
           ลองส่งการแจ้งเตือน
         </OutlineButton>
         <div className="text-[12px] leading-[18px] text-(--text-secondary)">
-          โมโม่เตือนได้ตอนที่แอปเปิดอยู่หรือยังทำงานเบื้องหลัง บน iPhone ให้กด “แชร์ → เพิ่มไปยังหน้าจอโฮม” ก่อน แล้วค่อยอนุญาตการแจ้งเตือน
+          {isNative()
+            ? "โมโม่ตั้งเวลาเตือนไว้กับ iPhone ล่วงหน้า 14 วัน เด้งตรงเวลาแม้ปิดแอปหรือไม่มีเน็ต"
+            : <>โมโม่เตือนได้ตอนที่แอปเปิดอยู่หรือยังทำงานเบื้องหลัง บน iPhone ให้กด “แชร์ → เพิ่มไปยังหน้าจอโฮม” ก่อน แล้วค่อยอนุญาตการแจ้งเตือน</>}
         </div>
       </Card>
 
