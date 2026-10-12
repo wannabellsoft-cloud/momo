@@ -87,15 +87,14 @@ const TONES = {
 const toneOf = (m: MomoState): Tone =>
   m === "taken" || m === "welcome" ? TONES.success : m === "nostock" || m === "refill" || m === "error" || m === "missed" ? TONES.warn : m === "reminder" ? TONES.pink : TONES.calm;
 
-/** Toast: Momo peeking over a tinted card, tone icon and a countdown line · aria-live polite ·
+/** Toast (top of the screen): Momo peeking over a tinted card, tone icon and a countdown line · aria-live polite ·
     2.8 s, paused while hovered or pressed · tap to dismiss. */
 export function Toast() {
   const toast = useUI((u) => u.toast);
   const hide = useUI((u) => u.hideToast);
   const [shown, setShown] = useState(toast);
   const [paused, setPaused] = useState(false);
-  const bannerOpen = useUI((u) => !!u.banner);
-  const visible = !!toast && !bannerOpen; // the notification card uses the same spot
+  const visible = !!toast; // top of the screen; the notification card rises from the bottom
   // keep the last message rendered while the toast fades out
   if (toast && toast !== shown) setShown(toast);
   useEffect(() => {
@@ -105,7 +104,7 @@ export function Toast() {
   }, [toast, paused, hide]);
   const tone = toneOf(shown?.momo ?? "taken");
   return (
-    <div className="pointer-events-none fixed inset-x-0 z-[90] mx-auto max-w-[480px] px-4" style={{ bottom: "calc(max(14px, calc(env(safe-area-inset-bottom) - 12px)) + 82px)" }}>
+    <div className="pointer-events-none fixed inset-x-0 z-[90] mx-auto max-w-[480px] px-4" style={{ top: "calc(max(12px, env(safe-area-inset-top)) + 12px)" }}>
       <div
         role="status"
         aria-live="polite"
@@ -114,7 +113,7 @@ export function Toast() {
         onMouseLeave={() => setPaused(false)}
         className={cx(
           "relative cursor-pointer transition-all duration-[320ms] ease-(--ease-spring)",
-          visible ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "translate-y-4 scale-[.96] opacity-0",
+          visible ? "pointer-events-auto translate-y-0 scale-100 opacity-100" : "-translate-y-6 scale-[.96] opacity-0",
         )}
       >
         <div className={cx("relative flex min-h-[60px] items-center gap-3 overflow-hidden rounded-[22px] border-[1.5px] border-solid py-[10px] pr-3 pl-[74px] shadow-(--shadow-toast)", tone.bg, tone.ring)}>
