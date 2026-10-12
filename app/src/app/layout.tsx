@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Momo",
-  description: "Your little sprout who cares. · เพื่อนตัวเล็กที่คอยดูแลแพรวา",
+  description: "Your little bunny who cares. · เพื่อนตัวเล็กที่คอยดูแลแพรวา",
   applicationName: "Momo",
   appleWebApp: { capable: true, title: "Momo", statusBarStyle: "default" },
   icons: { icon: `${BASE}/icons/icon-192.png`, apple: `${BASE}/icons/apple-touch-icon.png` },

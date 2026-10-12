@@ -76,7 +76,7 @@ export function derive(s: MomoData, now: Date) {
 
 /* ─── Momo's voice (Design System “Voice”). Rotate without repeating the last line. ─── */
 export const VOICE = {
-  reminder: (call: string) => [`${call}า ได้เวลากินยาแล้วน้า 🌱💕`, `ติ๊กต็อก ๆ ได้เวลาแล้วนะ${call}`, "โมโม่มาเตือนแล้วน้า ถึงเวลาดูแลตัวเองแล้ว ♡", `${call}จ๋า ได้เวลาแล้วนะ โมโม่รออยู่ตรงนี้`],
+  reminder: (call: string) => [`${call}า ได้เวลากินยาแล้วน้า 🐰💕`, `ติ๊กต็อก ๆ ได้เวลาแล้วนะ${call}`, "โมโม่มาเตือนแล้วน้า ถึงเวลาดูแลตัวเองแล้ว ♡", `${call}จ๋า ได้เวลาแล้วนะ โมโม่รออยู่ตรงนี้`],
   follow: () => ["โมโม่แวะมาถามนิดนึง กินยาไปหรือยังเอ่ย?", "ถ้ากินแล้ว กดบอกโมโม่หน่อยน้า", "โมโม่ยังรออยู่นะ ไม่รีบ ๆ", "ถ้ากินไปแล้ว แตะบันทึกได้เลยนะ"],
   taken: (call: string) => [`เย้ วันนี้${call}ดูแลตัวเองแล้ว ♡`, "เก่งมากเลย โมโม่จดไว้ให้แล้วนะ", "บันทึกแล้วน้า วันนี้เรียบร้อย ♡", "โมโม่ดีใจด้วยน้า"],
   bedtime: () => ["พักผ่อนเยอะ ๆ นะ ฝันดีน้า 🌙", "วันนี้เหนื่อยแล้ว นอนหลับฝันดีนะ", "โมโม่ไปนอนก่อนน้า เจอกันพรุ่งนี้ ♡"],
@@ -98,7 +98,7 @@ export function notificationCopy(s: MomoData, kind: "remind" | "follow" | "bedti
   const title =
     kind === "bedtime" ? (rotate ? pickLine("bedtime", call) : VOICE.bedtime()[0])
     : kind === "follow" ? (rotate ? pickLine("follow", call) : VOICE.follow()[0])
-    : sweet ? (rotate ? pickLine("reminder", call) : `${call}า ได้เวลากินยาแล้วน้า 🌱`)
+    : sweet ? (rotate ? pickLine("reminder", call) : `${call}า ได้เวลากินยาแล้วน้า 🐰`)
     : `ถึงเวลากินยาแล้ว ${call}`;
   const body = kind === "bedtime" ? "ราตรีสวัสดิ์จากโมโม่" : privacy ? "แตะเพื่อเปิดโมโม่" : `Pristiq 50 mg · ${qty} เม็ด`;
   return { title, body };
@@ -107,7 +107,7 @@ export function notificationCopy(s: MomoData, kind: "remind" | "follow" | "bedti
 /** System (OS) notification: the OS draws the card, so we make the content fuller —
     title "Momo", then Momo's line, a detail line, and the tap hint (as in the design):
       Momo
-      แพรวาา ได้เวลากินยาแล้วน้า 🌱💕
+      แพรวาา ได้เวลากินยาแล้วน้า 🐰💕
       ถึงเวลาดูแลตัวเองแล้ว · 08:00 น.
       แตะเพื่อเปิดโมโม่
     The drug name only appears when lock-screen privacy is off. */

@@ -27,7 +27,7 @@ export default function ProfilePage() {
         <div className="text-[28px] leading-[36px] font-extrabold">
           โมโม่ <span className="text-[15px] text-(--action-soft-text)">Momo</span>
         </div>
-        <div className="text-[14px] leading-[22px]">ต้นอ่อนโมจิตัวเล็กของ{call} ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย</div>
+        <div className="text-[14px] leading-[22px]">กระต่ายโมจิตัวเล็กของ{call} ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย</div>
       </div>
 
       <Card className="flex flex-col gap-[14px] p-4">
@@ -67,7 +67,7 @@ export default function ProfilePage() {
         </div>
         <VoicePicker />
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
-          <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับใบ ไม่กระพริบตา" />
+          <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับหู ไม่กระพริบตา" />
           <Switch checked={reduceMotion} onChange={(v) => set({ reduceMotion: v })} label="ลดการเคลื่อนไหว" />
         </div>
       </Card>

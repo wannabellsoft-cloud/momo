@@ -1,4 +1,4 @@
-# Momo 🌱 — app
+# Momo 🐰 — app
 
 The production PWA built from the Claude Design handoff in `../project` (the prototype is `Momo Prototype.dc.html`, the specs are in `HANDOFF.md`). Momo is a local-first medication companion for Praewa. All data stays on the device.
 
@@ -47,9 +47,9 @@ Limitation: there is no push server, so reminders only fire while Momo is open o
 
 ## Mascot (2.5D Momo)
 
-Momo is a soft cream mochi/sprout with two sage leaves. There is one character master, `src/components/momo/momo-character.ts`. It is a layered SVG string builder with no React, used by both the app and `npm run icons`. The reference sheet was a flat raster that could not be rigged, so Momo is redrawn as vectors. Each part is its own group, so CSS can move it:
+Momo is a soft cream mochi bunny with long floppy ears (the "Floppy Ears" board). There is one character master, `src/components/momo/momo-character.ts`. It is a layered SVG string builder with no React, used by both the app and `npm run icons`. The board is a flat raster that could not be rigged, and the SVGs in the asset pack were rough approximations, so Momo is redrawn as vectors to match the board. Each part is its own group, so CSS can move it:
 
-`m-shadow` · `m-feet` · `m-arm(-l/-r/-wave/-up-l/-up-r)` · `m-leaves` (`m-leaf-l/-r`) · `m-body` + shade + highlight · `m-cheeks` · `m-eyes`/`m-blink` · `m-brows` · `m-mouth` · props (`m-prop`, `m-beat`, `m-ring`, `m-zz`, `m-spark`, `m-conf`, `m-dot`).
+`m-shadow` · `m-feet` · `m-arm(-l/-r/-up-l/-up-r)` · `m-body` + shade + highlight · `m-cheeks` · `m-ears` (`m-ear-l/-r`) · `m-eyes`/`m-blink` · `m-brows` · `m-mouth` · props (`m-prop`, `m-beat`, `m-ring`, `m-zz`, `m-spark`, `m-conf`, `m-dot`).
 
 Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` · brown `#59443D` · background `#FFFAF6`.
 
@@ -62,8 +62,8 @@ Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` 
 - **Sizes:** `xs` 40 · `sm` 64 · `md` 120 · `lg` 200 · `xl` 320, or `px`.
 - **Accessibility:** the alt text is a Thai description of the state. Pass `alt=""` when nearby text carries the meaning.
 - **Motion:** CSS only, animating `transform` and `opacity` ("Momo 2.5D" block in `globals.css`). States:
-  - idle: breathing, blinking, leaf sway
-  - reminder: waving arm, pill bob, ringing bell
+  - idle: breathing, blinking, ear flop
+  - reminder: hugs the capsule, pill bob, ringing bell
   - happy: hop and heartbeat
   - missed: slow sway and "…" dots
   - sleeping: slow breathing and drifting Zz
@@ -80,7 +80,7 @@ Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` 
   - night with nothing pending → sleeping
   - otherwise → idle
 - **Old state names:** `MomoBunny` maps the app's situation names (taken, nostock, error…) onto these states.
-- **Icons:** `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from the same master.
+- **Icons:** the app icon is winking Momo hugging a capsule on peach-pink, as on the board. `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from the same master.
 
 ## Sounds
 

@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Momo · โมโม่",
     short_name: "Momo",
-    description: "Your little sprout who cares. · เพื่อนตัวเล็กที่คอยดูแลแพรวา",
+    description: "Your little bunny who cares. · เพื่อนตัวเล็กที่คอยดูแลแพรวา",
     lang: "th",
     start_url: `${BASE}/`,
     scope: `${BASE}/`,

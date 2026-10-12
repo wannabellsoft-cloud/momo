@@ -12,7 +12,7 @@ import { MomoMascot } from "./momo/MomoMascot";
 import { PrimaryButton, cx } from "./ui";
 
 const OB: { momo: MomoState; tint: string; en: string; title: string; body: string }[] = [
-  { momo: "welcome", tint: "var(--surface-soft)", en: "Meet Momo", title: "สวัสดีแพรวา โมโม่เองนะ", body: "โมโม่เป็นต้นอ่อนโมจิตัวเล็กที่จะอยู่ข้าง ๆ คอยเตือนและดูแลแพรวาทุกวัน" },
+  { momo: "welcome", tint: "var(--surface-soft)", en: "Meet Momo", title: "สวัสดีแพรวา โมโม่เองนะ", body: "โมโม่เป็นกระต่ายโมจิตัวเล็กที่จะอยู่ข้าง ๆ คอยเตือนและดูแลแพรวาทุกวัน" },
   { momo: "reminder", tint: "var(--warning-bg)", en: "Gentle reminders", title: "เตือนเบา ๆ ตามเวลาที่ตั้งไว้", body: "โมโม่จะไม่บันทึกแทน จนกว่าแพรวาจะกดยืนยันเอง ปัดแจ้งเตือนทิ้งก็ไม่นับว่ากินนะ" },
   { momo: "waiting", tint: "var(--surface-secondary)", en: "Private by default", title: "เรื่องของเรา เก็บไว้ในเครื่องนี้", body: "ข้อมูลยาอยู่ในเครื่องของแพรวาเท่านั้น และซ่อนชื่อยาบนหน้าจอล็อกได้" },
 ];
@@ -48,7 +48,7 @@ export function Welcome() {
         <div className="mt-2 flex items-start gap-[2px] text-[56px] leading-[60px] font-extrabold tracking-[-1.5px]">
           momo<span className="text-[22px] leading-[30px] text-(--pink-400)">♥</span>
         </div>
-        <div className="text-[17px] leading-[26px]">Your little sprout who cares.</div>
+        <div className="text-[17px] leading-[26px]">Your little bunny who cares.</div>
         <div className="text-[15px] leading-[24px] text-(--text-secondary)">เพื่อนตัวเล็กที่คอยดูแลแพรวา</div>
         <div className="absolute inset-x-0 bottom-0 mx-auto max-w-[480px] px-6" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 40px)" }}>
           <PrimaryButton className="w-full" data-sound="none" onClick={start}>เริ่มต้นกับโมโม่ ♡</PrimaryButton>
