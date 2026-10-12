@@ -1,0 +1,90 @@
+import { addMin, atTime, dayKey } from "./date";
+import { LOW_THRESHOLD, SUPPLY_WARN_DAYS, TABLETS_PER_BOX, left, type MomoData } from "./store";
+import type { MomoState } from "@/components/momo/MomoBunny";
+
+export type DayStatus = "taken" | "pending" | "upcoming" | "missed" | "future" | "untracked";
+
+/** Follow-up times (HH:mm) for today, while no dose is recorded. */
+export function followUpTimes(s: MomoData): string[] {
+  const { follow, maxFollowUps, remind } = s.settings;
+  if (!follow) return [];
+  return Array.from({ length: maxFollowUps }, (_, k) => addMin(remind, follow * (k + 1)));
+}
+
+export function dayStatus(s: MomoData, key: string, now: Date): DayStatus {
+  const today = dayKey(now);
+  if (key > today) return "future";
+  if (s.doses[key]) return "taken";
+  if (key === today) return now >= atTime(now, s.settings.remind) ? "pending" : "upcoming";
+  if (key < s.trackingSince) return "untracked";
+  return "missed";
+}
+
+export function derive(s: MomoData, now: Date) {
+  const today = dayKey(now);
+  const todayDose = s.doses[today];
+  const status = dayStatus(s, today, now);
+  const pending = status === "pending";
+  const sweet = s.settings.voice === "sweet";
+  const call = s.settings.call;
+
+  const opened = s.packs.reduce((a, p) => a + left(p), 0);
+  const low = opened < LOW_THRESHOLD;
+  const noStock = low && s.reserve === 0;
+  const perDay = Math.max(1, s.settings.qty);
+  const supplyDays = Math.floor((opened + s.reserve * TABLETS_PER_BOX) / perDay);
+  const openedDays = Math.floor(opened / perDay);
+  const supplyLow = supplyDays < SUPPLY_WARN_DAYS;
+
+  const homeMomo: MomoState = noStock && !todayDose ? "nostock" : todayDose ? "taken" : pending ? "reminder" : "idle";
+  const bubble =
+    homeMomo === "taken" ? (sweet ? `เย้ วันนี้${call}ดูแลตัวเองแล้ว ♡` : "วันนี้บันทึกเรียบร้อยแล้ว")
+    : homeMomo === "reminder" ? (sweet ? `${call}า ได้เวลากินยาแล้วน้า ♡` : `ถึงเวลากินยาแล้ว ${call}`)
+    : homeMomo === "nostock" ? (pending ? "ได้เวลากินยาแล้วน้า แล้วยาก็ใกล้หมดด้วยนะ" : "ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้เตรียมเพิ่มนะ")
+    : sweet ? `โมโม่อยู่ตรงนี้นะ เจอกันตอน ${s.settings.remind} น้า` : `เตือนครั้งถัดไป ${s.settings.remind} น.`;
+
+  // Next reminder: today's reminder, else the next follow-up still ahead, else tomorrow.
+  let nextReminder: string;
+  if (todayDose) nextReminder = `พรุ่งนี้ ${s.settings.remind} น.`;
+  else if (!pending) nextReminder = `วันนี้ ${s.settings.remind} น.`;
+  else if (!s.settings.follow) nextReminder = "ปิดการเตือนซ้ำอยู่";
+  else {
+    const nf = followUpTimes(s).find((t) => atTime(now, t) > now);
+    nextReminder = nf ? `เตือนซ้ำ ${nf} น.` : `พรุ่งนี้ ${s.settings.remind} น.`;
+  }
+
+  const refillTitle = s.reserve > 0 ? "ยาในแผงเหลือน้อยแล้ว" : "ยาใกล้หมด และไม่มีกล่องสำรอง";
+  const refillBody = s.reserve > 0 ? `เหลือ ${opened} เม็ด · เตรียมเปิดกล่องใหม่ได้เลยนะ` : `เหลือ ${opened} เม็ด · ไปซื้อหรือรับยาเพิ่มเร็ว ๆ นี้นะ`;
+
+  return { today, todayDose, status, pending, sweet, call, opened, low, noStock, supplyDays, openedDays, supplyLow, homeMomo, bubble, nextReminder, refillTitle, refillBody };
+}
+
+/* ─── Momo's voice (Design System “Voice”). Rotate without repeating the last line. ─── */
+export const VOICE = {
+  reminder: (call: string) => [`${call}า ได้เวลากินยาแล้วน้า 🐰💕`, `ติ๊กต็อก ๆ ได้เวลาแล้วนะ${call}`, "โมโม่มาเตือนแล้วน้า ถึงเวลาดูแลตัวเองแล้ว ♡", `${call}จ๋า ได้เวลาแล้วนะ โมโม่รออยู่ตรงนี้`],
+  follow: () => ["โมโม่แวะมาถามนิดนึง กินยาไปหรือยังเอ่ย?", "ถ้ากินแล้ว กดบอกโมโม่หน่อยน้า", "โมโม่ยังรออยู่นะ ไม่รีบ ๆ", "ถ้ากินไปแล้ว แตะบันทึกได้เลยนะ"],
+  taken: (call: string) => [`เย้ วันนี้${call}ดูแลตัวเองแล้ว ♡`, "เก่งมากเลย โมโม่จดไว้ให้แล้วนะ", "บันทึกแล้วน้า วันนี้เรียบร้อย ♡", "โมโม่ดีใจด้วยน้า"],
+  bedtime: () => ["พักผ่อนเยอะ ๆ นะ ฝันดีน้า 🌙", "วันนี้เหนื่อยแล้ว นอนหลับฝันดีนะ", "โมโม่ไปนอนก่อนน้า เจอกันพรุ่งนี้ ♡"],
+} as const;
+
+const lastPick: Record<string, number> = {};
+export function pickLine(kind: keyof typeof VOICE, call: string): string {
+  const lines = VOICE[kind](call);
+  let i = Math.floor(Math.random() * lines.length);
+  if (lines.length > 1 && i === lastPick[kind]) i = (i + 1) % lines.length;
+  lastPick[kind] = i;
+  return lines[i];
+}
+
+/** Notification title/body for a reminder kind, honouring voice + lock-screen privacy. */
+export function notificationCopy(s: MomoData, kind: "remind" | "follow" | "bedtime", rotate = true) {
+  const { call, voice, privacy, qty } = s.settings;
+  const sweet = voice === "sweet";
+  const title =
+    kind === "bedtime" ? (rotate ? pickLine("bedtime", call) : VOICE.bedtime()[0])
+    : kind === "follow" ? (rotate ? pickLine("follow", call) : VOICE.follow()[0])
+    : sweet ? (rotate ? pickLine("reminder", call) : `${call}า ได้เวลากินยาแล้วน้า 🐰`)
+    : `ถึงเวลากินยาแล้ว ${call}`;
+  const body = kind === "bedtime" ? "ราตรีสวัสดิ์จากโมโม่" : privacy ? "แตะเพื่อเปิดโมโม่" : `Pristiq 50 mg · ${qty} เม็ด`;
+  return { title, body };
+}
