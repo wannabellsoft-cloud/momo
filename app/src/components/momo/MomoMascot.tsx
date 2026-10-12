@@ -3,12 +3,26 @@
 import Image from "next/image";
 import { useState } from "react";
 import { BASE } from "@/lib/base";
-import { MASCOT_ALT, MASCOT_ASSETS, MASCOT_FALLBACK, type MascotState } from "./mascot-manifest";
+import { MASCOT_ALT, MASCOT_ASSETS, MASCOT_FALLBACK, MASCOT_STYLE, type MascotState } from "./mascot-manifest";
+import type { MomoState } from "./momo-art";
 import { MomoVector } from "./MomoBunny";
 
 export type { MascotState } from "./mascot-manifest";
 
 const SIZES = { sm: 56, md: 112, lg: 170, hero: 220 } as const;
+
+/** Semantic state → closest pose of the vector Momo. */
+const TO_VECTOR: Record<MascotState, MomoState> = {
+  welcome: "welcome",
+  reminder: "reminder",
+  waiting: "waiting",
+  success: "taken",
+  refill: "refill",
+  noStock: "nostock",
+  sleep: "sleep",
+  question: "error",
+  celebrate: "welcome",
+};
 
 export interface MomoMascotProps {
   state: MascotState;
@@ -38,6 +52,7 @@ export function MomoMascot({ state, size = "md", px, className, priority, alt, v
   const dim = px ?? SIZES[size];
   const [failed, setFailed] = useState<Set<string>>(() => new Set());
   const use: MascotState | null = !failed.has(state) ? state : !failed.has(MASCOT_FALLBACK) ? MASCOT_FALLBACK : null;
+  if (MASCOT_STYLE === "vector") return <MomoVector state={TO_VECTOR[state]} size={dim} still={!animate} className={className} />;
 
   return (
     <span className={`relative inline-block flex-none ${animate ? "mascot-breathe" : ""} ${className ?? ""}`} style={{ width: dim, height: dim }}>
@@ -65,7 +80,7 @@ export function MomoMascot({ state, size = "md", px, className, priority, alt, v
 /** Circular face for avatars, notification and app chrome. */
 export function MomoAvatar({ px, className, alt = "" }: { px: number; className?: string; alt?: string }) {
   const [failed, setFailed] = useState(false);
-  if (failed) return <MomoVector crop="head" still size={px} className={className} />;
+  if (failed || MASCOT_STYLE === "vector") return <MomoVector crop="head" still size={px} className={className} />;
   return (
     <Image
       src={BASE + MASCOT_ASSETS.avatar.src}

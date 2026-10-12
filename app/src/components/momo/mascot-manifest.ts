@@ -6,6 +6,10 @@
 // their original cream background and are shown as soft tiles. When clean transparent
 // renders exist, drop them into public/mascot/momo/ with the same names (or update the paths
 // here) — the MomoMascot API does not change.
+/** Which art the app shows. "vector": the original drawn Momo (current choice — the concept-sheet
+    crops looked worse). Switch to "image" once real renders (e.g. from the Meshy 3D model) are in place. */
+export const MASCOT_STYLE: "vector" | "image" = "vector";
+
 export const MASCOT_STATES = ["welcome", "reminder", "waiting", "success", "refill", "noStock", "sleep", "question", "celebrate"] as const;
 export type MascotState = (typeof MASCOT_STATES)[number];
 
