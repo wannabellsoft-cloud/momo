@@ -41,7 +41,7 @@ export function TakenCard({ time }: { time: string | null }) {
         </span>
       </span>
       <span className="taken-bob relative -my-2 flex-none">
-        <MomoMascot state={fresh ? "celebrate" : "success"} px={62} alt="" />
+        <MomoMascot state={fresh ? "success" : "happy"} px={62} alt="" />
       </span>
     </div>
 

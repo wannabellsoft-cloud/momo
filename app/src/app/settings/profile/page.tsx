@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const s = useMomo();
   const set = s.updateSettings;
   const showToast = useUI((u) => u.showToast);
-  const { call, voice, tone, uiSounds, greeting, music, reduceMotion, theme, mascot } = s.settings;
+  const { call, voice, tone, uiSounds, greeting, music, reduceMotion, theme } = s.settings;
   const [confirmReset, setConfirmReset] = useState(false);
   const sweet = voice === "sweet";
 
@@ -27,7 +27,7 @@ export default function ProfilePage() {
         <div className="text-[28px] leading-[36px] font-extrabold">
           โมโม่ <span className="text-[15px] text-(--action-soft-text)">Momo</span>
         </div>
-        <div className="text-[14px] leading-[22px]">กระต่ายตัวเล็กของ{call} ชอบดอกไม้สีชมพูกับการงีบตอนบ่าย</div>
+        <div className="text-[14px] leading-[22px]">ต้นอ่อนโมจิตัวเล็กของ{call} ชอบแดดอุ่น ๆ กับการงีบตอนบ่าย</div>
       </div>
 
       <Card className="flex flex-col gap-[14px] p-4">
@@ -67,17 +67,13 @@ export default function ProfilePage() {
         </div>
         <VoicePicker />
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
-          <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับหู ไม่กระพริบตา" />
+          <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับใบ ไม่กระพริบตา" />
           <Switch checked={reduceMotion} onChange={(v) => set({ reduceMotion: v })} label="ลดการเคลื่อนไหว" />
         </div>
       </Card>
 
       <Card className="flex flex-col gap-[14px] p-4">
         <div className="flex flex-col gap-2">
-          <span className="text-[15px] font-extrabold">หน้าตาโมโม่</span>
-          <Segmented<Settings["mascot"]> label="หน้าตาโมโม่" value={mascot} options={[["3d", "3D ตุ๊กตา"], ["vector", "วาดเส้น"]]} onChange={(v) => set({ mascot: v })} />
-        </div>
-        <div className="flex flex-col gap-2 border-t border-solid border-(--border-subtle) pt-3">
           <span className="text-[15px] font-extrabold">ธีม</span>
           <Segmented<Settings["theme"]> label="ธีม" value={theme} options={[["time", "ตามเวลา"], ["system", "ตามเครื่อง"], ["light", "สว่าง"], ["dark", "มืด"]]} onChange={(v) => set({ theme: v })} />
         </div>

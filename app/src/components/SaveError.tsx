@@ -28,7 +28,7 @@ export function SaveError() {
     <div className={cx("fixed inset-0 z-[100] flex items-center justify-center bg-(--overlay) p-5 transition-opacity duration-[240ms]", open ? "opacity-100" : "pointer-events-none opacity-0")} aria-hidden={!open}>
       <div role="alertdialog" aria-modal="true" aria-labelledby="save-error-title" className="flex w-full max-w-[440px] flex-col items-center gap-[10px] rounded-[28px] bg-(--surface-card) px-5 py-7 text-center shadow-(--shadow-float)">
         <div className="flex h-[180px] w-[180px] items-center justify-center rounded-full bg-(--surface-secondary)">
-          <MomoBunny state={retrying ? "loading" : "error"} size={150} />
+          <MomoBunny state={retrying ? "loading" : "error"} still={!open} size={150} />
         </div>
         <div className="flex h-7 items-center gap-[6px] rounded-full bg-(--info-bg) px-3 text-[12px] font-extrabold text-(--info-fg)">
           <Icon name="info" size={14} stroke={2.6} />

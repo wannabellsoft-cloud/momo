@@ -48,7 +48,6 @@ export type Settings = {
   uiSounds: boolean; // cute sounds on taps
   greeting: boolean; // Momo says hello when the app opens
   music: boolean; // gentle background music while the app is open
-  mascot: "3d" | "vector"; // Momo's look
   ttsVoice: string | null; // device voice name; null = best female Thai voice
   ttsPitch: "normal" | "cute" | "tiny";
   reduceMotion: boolean;
@@ -85,7 +84,6 @@ export const DEFAULT_SETTINGS: Settings = {
   uiSounds: true,
   greeting: true,
   music: true,
-  mascot: "3d",
   ttsVoice: null,
   ttsPitch: "cute",
   reduceMotion: false,

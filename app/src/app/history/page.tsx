@@ -61,7 +61,7 @@ export default function HistoryPage() {
       cls: "bg-(--dose-taken-bg) text-(--dose-taken-fg)",
       momo: "taken",
     },
-    missed: { icon: "info", status: "ไม่มีบันทึก", detail: "วันนี้ไม่ได้กดบันทึกไว้", cls: "bg-(--dose-missed-bg) text-(--dose-missed-fg)", momo: "waiting" },
+    missed: { icon: "info", status: "ไม่มีบันทึก", detail: "วันนี้ไม่ได้กดบันทึกไว้", cls: "bg-(--dose-missed-bg) text-(--dose-missed-fg)", momo: "missed" },
     pending: { icon: "clock", status: "รอบันทึก", detail: `เวลาเตือน ${remind} น.`, cls: "bg-(--dose-pending-bg) text-(--dose-pending-fg)", momo: "reminder" },
     upcoming: { icon: "clock", status: "ยังไม่ถึงเวลา", detail: `โมโม่จะเตือนตอน ${remind} น.`, cls: "bg-(--dose-pending-bg) text-(--dose-pending-fg)", momo: "idle" },
     future: { icon: "calendar", status: "ยังไม่ถึงวัน", detail: `โมโม่จะเตือนตอน ${remind} น.`, cls: "bg-(--surface-muted) text-(--text-secondary)", momo: "sleep" },

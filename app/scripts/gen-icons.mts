@@ -1,64 +1,51 @@
-// Renders the PWA icons, plus the iOS app icon and launch splash when ios/ exists, from Momo's
-// vector art (Design System “App icon”: Momo's head on Pink Light, no text). Run: npm run icons
+// Renders the PWA icons, notification art, plus the iOS app icon and launch splash when ios/ exists,
+// from the 2.5D Momo master (src/components/momo/momo-character.ts). Run: npm run icons
 import { chromium } from "playwright-core";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
-import { momoSvgMarkup, momoViewBox } from "../src/components/momo/momo-art.ts";
-import { MASCOT_DEFAULT_STYLE } from "../src/components/momo/mascot-manifest.ts";
+import { existsSync, mkdirSync } from "node:fs";
+import { momoSvg, momoViewBox, type MascotState } from "../src/components/momo/momo-character.ts";
 
 const OUT = new URL("../public/icons/", import.meta.url).pathname;
 const IOS = new URL("../ios/App/App/Assets.xcassets/", import.meta.url).pathname;
 mkdirSync(OUT, { recursive: true });
 
-// [path, size, background, art scale (share of the canvas the art occupies), art]
-type Art = "head" | "welcome" | "icon3d" | "welcome3d";
-const THREE_D = MASCOT_DEFAULT_STYLE === "3d";
-const APP: Art = THREE_D ? "icon3d" : "head";
-const ICONS: [string, number, string, number, Art?][] = [
-  ["icon-192.png", 192, "#FFDCE9", 1, APP],
-  ["icon-512.png", 512, "#FFDCE9", 1, APP],
-  ["apple-touch-icon.png", 180, "#FFDCE9", 1, APP],
-  ["icon-maskable-512.png", 512, "#FFDCE9", 1, APP], // full-bleed art; the face sits inside the safe zone
-  ["badge-96.png", 96, "transparent", 1, "head"],
-].map(([f, ...r]) => [OUT + f, ...r] as [string, number, string, number, Art]);
-// System notification art (Chromium shows `icon` + a large `image`; iOS shows the app icon).
-// Uses the mascot renders in public/mascot/momo/ (or the vector art when MASCOT_DEFAULT_STYLE is "vector").
-const MASCOT_DIR = new URL("../public/mascot/momo/", import.meta.url).pathname;
-const mascotUri = (state: string) => `data:image/webp;base64,${readFileSync(MASCOT_DIR + state + ".webp").toString("base64")}`;
-const NOTIF: [string, string][] = [["remind", "reminder"], ["follow", "waiting"], ["bedtime", "sleep"]];
-const EXTRA: { file: string; w: number; h: number; html: string }[] = [];
-for (const [kind, state] of NOTIF) {
-  const vectorState = { reminder: "reminder", waiting: "waiting", sleep: "sleep" }[state] as "reminder" | "waiting" | "sleep";
-  const art = (px: number) => MASCOT_DEFAULT_STYLE === "vector"
-    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox()}" width="${px}" height="${px}">${momoSvgMarkup(vectorState, undefined, "n")}</svg>`
-    : `<img src="${mascotUri(state)}" width="${px}" height="${px}" style="display:block;object-fit:contain">`;
-  EXTRA.push({ file: OUT + `notif-${kind}.png`, w: 192, h: 192, html: `<div style="width:192px;height:192px;border-radius:50%;background:#FFDCE9;display:flex;align-items:center;justify-content:center;overflow:hidden">${art(170)}</div>` });
-  EXTRA.push({
-    file: OUT + `notif-banner-${kind}.png`, w: 720, h: 360,
-    html: `<div style="position:relative;width:720px;height:360px;overflow:hidden;background:linear-gradient(135deg,#FFE3EE 0%,#FFF3F7 52%,#F1EBFF 100%);display:flex;align-items:center;justify-content:center">
-      <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:#FFDCE9;"></div>
-      <div style="position:absolute;left:80px;top:60px;width:120px;height:44px;border-radius:24px;background:#fff;opacity:.8"></div>
-      <div style="position:absolute;right:90px;top:250px;width:90px;height:34px;border-radius:24px;background:#fff;opacity:.7"></div>
-      ${[[120, 230, 30], [590, 80, 26], [620, 270, 20], [170, 120, 18], [520, 190, 16]].map(([x, y, f]) => `<div style="position:absolute;left:${x}px;top:${y}px;font:800 ${f}px sans-serif;color:#F9A3C1">♥</div>`).join("")}
-      <div style="position:relative">${art(290)}</div></div>`,
-  });
+const BG = "radial-gradient(circle at 50% 38%, #FFFAF6 0%, #FFEDE3 60%, #FFDCCB 100%)"; // cream → peach, like the reference sheet
+const art = (state: MascotState, px: number, opts: { crop?: "head"; props?: boolean } = {}) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox(opts.crop)}" width="${px}" height="${px}" style="display:block;overflow:visible">${momoSvg(state, "i" + state, { props: opts.props ?? false })}</svg>`;
+
+// [path, size, background, html]
+const ICONS: [string, number, string, (size: number) => string][] = [];
+const appIcon = (size: number) => `<div style="margin-top:${Math.round(size * 0.04)}px">${art("idle", Math.round(size * 0.92), { crop: "head" })}</div>`;
+for (const [f, size] of [["icon-192.png", 192], ["icon-512.png", 512], ["apple-touch-icon.png", 180], ["icon-maskable-512.png", 512]] as const) {
+  ICONS.push([OUT + f, size, BG, f.includes("maskable") ? (s) => art("idle", Math.round(s * 0.8), { crop: "head" }) : appIcon]);
 }
+ICONS.push([OUT + "badge-96.png", 96, "transparent", (s) => art("idle", s, { crop: "head" })]);
 if (existsSync(IOS)) {
   // App Store icons must be opaque; the splash is one square image iOS crops to fit.
-  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, "#FFDCE9", 1, APP]);
-  for (const f of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) ICONS.push([IOS + "Splash.imageset/" + f, 2732, "#FFDCE9", 0.3, THREE_D ? "welcome3d" : "welcome"]);
+  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, BG, appIcon]);
+  for (const f of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) ICONS.push([IOS + "Splash.imageset/" + f, 2732, "#FFFAF6", (s) => art("idle", Math.round(s * 0.3))]);
+}
+
+// System notification art (Chromium shows `icon` + a large `image`; iOS shows the app icon).
+const NOTIF: [string, MascotState][] = [["remind", "reminder"], ["follow", "idle"], ["bedtime", "sleeping"]];
+const EXTRA: { file: string; w: number; h: number; html: string }[] = [];
+for (const [kind, state] of NOTIF) {
+  EXTRA.push({ file: OUT + `notif-${kind}.png`, w: 192, h: 192, html: `<div style="width:192px;height:192px;border-radius:50%;background:${BG};display:flex;align-items:center;justify-content:center;overflow:hidden">${art(state, 172, { props: true })}</div>` });
+  EXTRA.push({
+    file: OUT + `notif-banner-${kind}.png`, w: 720, h: 360,
+    html: `<div style="position:relative;width:720px;height:360px;overflow:hidden;background:linear-gradient(135deg,#FFF3EC 0%,#FFFAF6 52%,#EEF6EF 100%);display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;width:300px;height:300px;border-radius:50%;background:#FFE6D9;"></div>
+      <div style="position:absolute;left:80px;top:60px;width:120px;height:44px;border-radius:24px;background:#fff;opacity:.8"></div>
+      <div style="position:absolute;right:90px;top:250px;width:90px;height:34px;border-radius:24px;background:#fff;opacity:.7"></div>
+      ${[[120, 230, 30], [590, 80, 26], [620, 270, 20], [170, 120, 18], [520, 190, 16]].map(([x, y, f]) => `<div style="position:absolute;left:${x}px;top:${y}px;font:800 ${f}px sans-serif;color:#FFBFC7">♥</div>`).join("")}
+      <div style="position:relative">${art(state, 300, { props: true })}</div></div>`,
+  });
 }
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const page = await browser.newPage();
-for (const [file, size, bg, scale, art = "head"] of ICONS) {
-  const px = Math.round(size * scale);
-  const svg = art === "icon3d" || art === "welcome3d"
-    ? `<img src="${mascotUri(art === "icon3d" ? "icon" : "welcome")}" width="${px}" height="${px}" style="display:block">`
-    : art === "head"
-    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox("head")}" width="${px}" height="${px}">${momoSvgMarkup("idle", "head", "i")}</svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox()}" width="${px}" height="${px}">${momoSvgMarkup("welcome", undefined, "i")}</svg>`;
+for (const [file, size, bg, html] of ICONS) {
   await page.setViewportSize({ width: size, height: size });
-  await page.setContent(`<html><body style="margin:0;width:${size}px;height:${size}px;background:${bg};display:flex;align-items:center;justify-content:center">${svg}</body></html>`);
+  await page.setContent(`<html><body style="margin:0;width:${size}px;height:${size}px;background:${bg};display:flex;align-items:center;justify-content:center;overflow:hidden">${html(size)}</body></html>`);
   await page.screenshot({ path: file, omitBackground: bg === "transparent" });
   console.log("wrote", file.replace(new URL("..", import.meta.url).pathname, ""));
 }

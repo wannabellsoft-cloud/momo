@@ -1,102 +1,81 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
-import { BASE } from "@/lib/base";
-import { useMomo } from "@/lib/store";
-import { MASCOT_ALT, MASCOT_ASSETS, MASCOT_FALLBACK, type MascotState } from "./mascot-manifest";
-import type { MomoState } from "./momo-art";
-import { MomoVector } from "./MomoBunny";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { MASCOT_ALT, momoSvg, momoViewBox, type MascotState } from "./momo-character";
 
-export type { MascotState } from "./mascot-manifest";
+export { MASCOT_STATES, type MascotState } from "./momo-character";
 
-const SIZES = { sm: 56, md: 112, lg: 170, hero: 220 } as const;
-
-/** Semantic state → closest pose of the vector Momo. */
-const TO_VECTOR: Record<MascotState, MomoState> = {
-  welcome: "welcome",
-  reminder: "reminder",
-  waiting: "waiting",
-  success: "taken",
-  refill: "refill",
-  noStock: "nostock",
-  sleep: "sleep",
-  question: "error",
-  celebrate: "welcome",
-};
+export const MASCOT_SIZES = { xs: 40, sm: 64, md: 120, lg: 200, xl: 320 } as const;
 
 export interface MomoMascotProps {
-  state: MascotState;
-  size?: keyof typeof SIZES;
+  state?: MascotState;
+  size?: keyof typeof MASCOT_SIZES;
   /** Exact pixel size; overrides `size`. */
   px?: number;
-  className?: string;
-  /** Load eagerly (above-the-fold hero). Everything else is lazy. */
-  priority?: boolean;
-  /** Defaults to a Thai description of the pose. Pass "" when the mascot is purely decorative. */
+  /** Per-state motion (breathing, blinking, waving…). Off automatically with reduced motion and while offscreen. */
+  animated?: boolean;
+  /** Pill, heart, note, blanket, sparkles… Off → Momo's pose and face only. */
+  showProps?: boolean;
+  /** Defaults to a Thai description of the state. Pass "" when the text next to Momo carries the meaning. */
   alt?: string;
-  /** plain: transparent render as-is (default) · soft: fade edges · tile: rounded square · circle: avatar-style. */
-  variant?: "plain" | "soft" | "tile" | "circle";
-  /** Gentle breathing. Off automatically with reduced motion. */
-  animate?: boolean;
+  className?: string;
 }
 
-const VARIANT = {
-  plain: "",
-  soft: "mascot-soft",
-  tile: "rounded-[28%]",
-  circle: "rounded-full",
-} as const;
+/** Pauses CSS animation while the element is offscreen, so idle loops never render out of view. */
+function useOnscreen<T extends Element>(enabled: boolean) {
+  const ref = useRef<T>(null);
+  const [on, setOn] = useState(true);
+  useEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting), { rootMargin: "40px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [enabled]);
+  return [ref, on] as const;
+}
 
-/** Momo as an image (3D render) or the drawn vector Momo, per the user's choice. Reserved square box → no layout shift.
-    Missing state → fallback state → original vector Momo. */
-export function MomoMascot({ state, size = "md", px, className, priority, alt, variant = "plain", animate = true }: MomoMascotProps) {
-  const style = useMomo((s) => s.settings.mascot);
-  const dim = px ?? SIZES[size];
-  const [failed, setFailed] = useState<Set<string>>(() => new Set());
-  const use: MascotState | null = !failed.has(state) ? state : !failed.has(MASCOT_FALLBACK) ? MASCOT_FALLBACK : null;
-  if (style === "vector") return <MomoVector state={TO_VECTOR[state]} size={dim} still={!animate} className={className} />;
+const svgId = (raw: string) => "m" + raw.replace(/[^a-zA-Z0-9]/g, "");
 
+/** Momo — the one character used everywhere. Layered inline SVG + CSS motion (globals.css "Momo 2.5D"). */
+export function MomoMascot({ state = "idle", size = "md", px, animated = true, showProps = true, alt, className }: MomoMascotProps) {
+  const id = svgId(useId());
+  const dim = px ?? MASCOT_SIZES[size];
+  const [ref, onscreen] = useOnscreen<SVGSVGElement>(animated);
+  const html = useMemo(() => momoSvg(state, id, { props: showProps }), [state, id, showProps]);
+  const label = alt ?? MASCOT_ALT[state];
   return (
-    <span className={`relative inline-block flex-none ${animate ? "mascot-breathe" : ""} ${className ?? ""}`} style={{ width: dim, height: dim }}>
-      {use ? (
-        <Image
-          key={use}
-          src={BASE + MASCOT_ASSETS[use].src}
-          alt={alt ?? MASCOT_ALT[state]}
-          width={dim}
-          height={dim}
-          sizes={`${dim}px`}
-          priority={priority}
-          loading={priority ? undefined : "lazy"}
-          draggable={false}
-          className={`block h-full w-full object-cover select-none ${VARIANT[variant]}`}
-          onError={() => setFailed((f) => new Set(f).add(use))}
-        />
-      ) : (
-        <MomoVector state="idle" size={dim} still={!animate} />
-      )}
-    </span>
+    <svg
+      ref={ref}
+      viewBox={momoViewBox()}
+      xmlns="http://www.w3.org/2000/svg"
+      role={label ? "img" : undefined}
+      aria-label={label || undefined}
+      aria-hidden={label ? undefined : true}
+      data-state={state}
+      data-animated={animated && onscreen ? "true" : "false"}
+      className={`momo25 flex-none select-none ${className ?? ""}`}
+      style={{ width: dim, height: dim }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }
 
-/** Circular face for avatars, notification and app chrome. */
-export function MomoAvatar({ px, className, alt = "" }: { px: number; className?: string; alt?: string }) {
-  const style = useMomo((s) => s.settings.mascot);
-  const [failed, setFailed] = useState(false);
-  if (failed || style === "vector") return <MomoVector crop="head" still size={px} className={className} />;
+/** Momo's face (head crop) for avatars and chrome. Static. */
+export function MomoAvatar({ px, state = "idle", className, alt = "" }: { px: number; state?: MascotState; className?: string; alt?: string }) {
+  const id = svgId(useId());
+  const html = useMemo(() => momoSvg(state, id, { props: false }), [state, id]);
   return (
-    <Image
-      src={BASE + MASCOT_ASSETS.avatar.src}
-      alt={alt}
-      width={px}
-      height={px}
-      sizes={`${px}px`}
-      loading="lazy"
-      draggable={false}
-      className={`block flex-none rounded-full bg-(--surface-soft) object-cover select-none ${className ?? ""}`}
+    <svg
+      viewBox={momoViewBox("head")}
+      xmlns="http://www.w3.org/2000/svg"
+      role={alt ? "img" : undefined}
+      aria-label={alt || undefined}
+      aria-hidden={alt ? undefined : true}
+      data-animated="false"
+      className={`momo25 flex-none select-none ${className ?? ""}`}
       style={{ width: px, height: px }}
-      onError={() => setFailed(true)}
+      dangerouslySetInnerHTML={{ __html: html }}
     />
   );
 }

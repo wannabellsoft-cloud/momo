@@ -1,4 +1,4 @@
-# Momo 🐰 — app
+# Momo 🌱 — app
 
 The production PWA built from the Claude Design handoff in `../project` (the prototype is `Momo Prototype.dc.html`, the specs are in `HANDOFF.md`). Momo is a local-first medication companion for Praewa. All data stays on the device.
 
@@ -36,7 +36,7 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 | 12 Error · offline | `src/components/SaveError.tsx` (failed save + retry), offline chip on Home |
 
 - Tokens: `src/app/globals.css` holds `project/tokens/momo-tokens.css` (light and dark) plus a few app tokens for values the prototype used without a name. Components use them through Tailwind's `bg-(--token)` syntax, so dark mode works everywhere.
-- Mascot and icons: `src/components/momo/` is a 1:1 port of `momo-kit.js`. To use real plush renders, add PNGs to `public/momo/` and list them in `MOMO_RENDERS` in `MomoBunny.tsx`.
+- Mascot and icons: `src/components/momo/` (see "Mascot" below).
 - Domain rules (HANDOFF §2): `src/lib/store.ts`. Taking a dose and removing a tablet are separate records, the blister uses snake order, there is one dose per day, restore/undo are audited, and opening a box creates two packs without deleting the old ones. `src/lib/derive.ts` covers refill, supply and next-reminder logic plus Momo's notification copy.
 
 ## Reminders
@@ -45,25 +45,42 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 
 Limitation: there is no push server, so reminders only fire while Momo is open or still alive in the background. On iPhone the app must be added to the Home Screen first (iOS 16.4+). Reliable delivery to a fully closed app needs Web Push: VAPID keys, a small server that stores the subscription and sends on a schedule, and a `push` handler in `sw.js`.
 
-## Mascot (3D Momo)
+## Mascot (2.5D Momo)
 
-Momo's 3D model is `assets-src/momo.glb`. It is a Meshy "Blush Bunny" export: textured, with a Mixamo-style rig, ~12 MB. `npm run mascot:render` turns it into transparent 768×768 WebP stills in `public/mascot/momo/` (avatar 512), then regenerates the notification images. The script is `scripts/mascot/render-states.mjs`, with three.js running in headless Chromium:
+Momo is a soft cream mochi/sprout with two sage leaves. There is one character master, `src/components/momo/momo-character.ts`. It is a layered SVG string builder with no React, used by both the app and `npm run icons`. The reference sheet was a flat raster that could not be rigged, so Momo is redrawn as vectors. Each part is its own group, so CSS can move it:
 
-- Each state sets a camera angle, a lean and **bone offsets**: waving arm, arms forward holding a prop, both arms up, head tilt or droop.
-- Pastel props are drawn over the render: alarm clock, heart, med box, shopping note, blanket + Zz + moon, "?", confetti.
-- To change a pose or prop, edit `STATES` in that file and re-run. Ear bones share weights with the arms at extreme angles, so keep arm offsets moderate.
+`m-shadow` · `m-feet` · `m-arm(-l/-r/-wave/-up-l/-up-r)` · `m-leaves` (`m-leaf-l/-r`) · `m-body` + shade + highlight · `m-cheeks` · `m-eyes`/`m-blink` · `m-brows` · `m-mouth` · props (`m-prop`, `m-beat`, `m-ring`, `m-zz`, `m-spark`, `m-conf`, `m-dot`).
 
-`MomoMascot` (`src/components/momo/MomoMascot.tsx`) shows these images via `next/image`:
+Palette: cream `#FFF9F3` · peach `#FFDCCB` · pink `#FFBFC7` · sage `#A8CFAF` · brown `#59443D` · background `#FFFAF6`.
 
 ```tsx
-<MomoMascot state="reminder" size="lg" priority />   // welcome · reminder · waiting · success · refill · noStock · sleep · question · celebrate
+<MomoMascot state="reminder" size="md" />   // idle · reminder · happy · missed · sleeping · refill · loading · success
+<MomoMascot state="happy" px={62} animated={false} showProps={false} alt="" />
+<MomoAvatar px={48} />                        // face crop, static
 ```
 
-- Sizes `sm` 56 · `md` 112 · `lg` 170 · `hero` 220, or `px`. The box is reserved, so the layout doesn't shift. Non-hero images load lazily, and the alt text is in Thai.
-- Fallback: missing state → `waiting` → original vector Momo.
-- Breathing motion turns off with "ลดการเคลื่อนไหว" or `prefers-reduced-motion`.
-- Momo's profile has **หน้าตาโมโม่: 3D ตุ๊กตา / วาดเส้น**, so the original vector Momo is one tap away.
-- The PWA/iOS app icon is still the vector icon. Render one from the model if wanted (`render3d` + `npm run icons`).
+- **Sizes:** `xs` 40 · `sm` 64 · `md` 120 · `lg` 200 · `xl` 320, or `px`.
+- **Accessibility:** the alt text is a Thai description of the state. Pass `alt=""` when nearby text carries the meaning.
+- **Motion:** CSS only, animating `transform` and `opacity` ("Momo 2.5D" block in `globals.css`). States:
+  - idle: breathing, blinking, leaf sway
+  - reminder: waving arm, pill bob, ringing bell
+  - happy: hop and heartbeat
+  - missed: slow sway and "…" dots
+  - sleeping: slow breathing and drifting Zz
+  - refill: note tilt
+  - loading: float
+  - success: jump with arms up and confetti
+- **No wasted rendering:** motion only runs on `data-animated="true"`. The component turns it off when `animated={false}`, when Momo is offscreen (IntersectionObserver) and for avatars. "ลดการเคลื่อนไหว" and `prefers-reduced-motion` stop all of it.
+- **No Rive:** there is no real Rive asset, so none is used. To move to Rive later, keep the `MomoMascot` API and swap the inner renderer.
+- **Real events** (`homeMomo` in `src/lib/derive.ts`, display only):
+  - dose recorded → happy (success right after tapping)
+  - due → reminder
+  - still no record an hour after the last follow-up → missed
+  - low stock → refill
+  - night with nothing pending → sleeping
+  - otherwise → idle
+- **Old state names:** `MomoBunny` maps the app's situation names (taken, nostock, error…) onto these states.
+- **Icons:** `npm run icons` renders the app icons, badge, notification images and iOS icon/splash from the same master.
 
 ## Sounds
 

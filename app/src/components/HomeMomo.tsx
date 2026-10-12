@@ -23,7 +23,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
   // Wave + say hello when the app greets Praewa on launch (not again when returning to Home later).
   if (greet && greet.key !== seenGreet) {
     setSeenGreet(greet.key);
-    if (greet.key > mountedAt - 4000) setOverride({ line: greet.line + " ♡", momo: "welcome", until: greet.key + 4200 });
+    if (greet.key > mountedAt - 4000) setOverride({ line: greet.line + " ♡", momo: "happy", until: greet.key + 4200 });
   }
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
     let i = Math.floor(Math.random() * TAP_LINES.length);
     if (i === lastLine.current) i = (i + 1) % TAP_LINES.length;
     lastLine.current = i;
-    setOverride({ line: TAP_LINES[i], momo: "celebrate", until: Date.now() + 2800 });
+    setOverride({ line: TAP_LINES[i], momo: "success", until: Date.now() + 2800 });
     setJump((j) => j + 1);
     const now = Date.now();
     setBurst((b) => [
@@ -75,7 +75,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
         ))}
         <span className="momo-enter block">
           <span key={jump} className={jump ? "momo-jump block" : "momo-idle-hop block"}>
-            <MomoMascot state={momo} size="lg" priority alt="" />
+            <MomoMascot state={momo} px={170} alt="" />
           </span>
         </span>
       </button>
