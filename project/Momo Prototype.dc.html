@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Momo · Prototype</title>
+<script src="./momo-kit.js"></script>
+<style>
+@font-face{font-family:"LINE Seed Sans TH";font-weight:400;font-display:swap;src:url("https://db.onlinewebfonts.com/t/0a54bd29f535bbdd5c69fdd2976d7b66.woff2") format("woff2")}
+@font-face{font-family:"LINE Seed Sans TH";font-weight:700 800;font-display:swap;src:url("https://db.onlinewebfonts.com/t/3976453f9da88f461c6a8fc2d21b87f2.woff2") format("woff2")}
+body{margin:0;background:#F6EDF1}
+a{color:#C4466F}a:hover{color:#A8385C}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+input{font-family:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid #7360D0;outline-offset:2px}
+.scroll::-webkit-scrollbar{display:none}
+</style>
+</helmet>
+<div style="min-height:100vh;font-family:'LINE Seed Sans TH','Anuphan','IBM Plex Sans Thai','Noto Sans Thai',-apple-system,sans-serif;color:#674454;display:flex;flex-wrap:wrap;gap:40px;justify-content:center;align-items:flex-start;padding:40px 24px">
+
+  <!-- PHONE -->
+  <div style="width:393px;height:852px;border-radius:60px;background:#3A2A31;padding:11px;box-shadow:0 40px 80px -30px rgba(103,68,84,.45);flex:none">
+    <div style="position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#FFF8F2">
+
+      <!-- status bar -->
+      <div style="position:absolute;top:0;left:0;right:0;height:50px;z-index:40;display:flex;align-items:center;justify-content:space-between;padding:6px 30px 0 34px;font-weight:800;font-size:16px;pointer-events:none">
+        <span>8:15</span>
+        <div style="position:absolute;left:50%;top:11px;transform:translateX(-50%);width:120px;height:34px;border-radius:20px;background:#140C10"></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="display:flex;gap:2px;align-items:flex-end"><span style="width:3px;height:5px;background:#674454;border-radius:1px"></span><span style="width:3px;height:7px;background:#674454;border-radius:1px"></span><span style="width:3px;height:9px;background:#674454;border-radius:1px"></span><span style="width:3px;height:11px;background:#674454;border-radius:1px"></span></div>
+          <div style="width:24px;height:12px;border:1.5px solid #674454;border-radius:4px;padding:1.5px"><div style="width:70%;height:100%;background:#674454;border-radius:1.5px"></div></div>
+        </div>
+      </div>
+
+      <!-- notification banner -->
+      <div onClick="{{ tapBanner }}" style="{{ bannerStyle }}">
+        <div style="width:38px;height:38px;border-radius:10px;background:#FFDCE9;flex:none;overflow:hidden">
+          <x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="38px,38px" style="width:38px;height:38px"></x-import>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#7D6571"><span style="font-weight:800;color:#674454">MOMO</span><span>ตอนนี้</span></div>
+          <div style="font-size:14px;line-height:20px;font-weight:800">{{ bannerTitle }}</div>
+          <div style="font-size:13px;line-height:18px;color:#7D6571">{{ bannerBody }}</div>
+        </div>
+      </div>
+
+      <!-- SCREEN 01 SPLASH -->
+      <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="01 Splash" style="position:absolute;inset:0;background:#FFDCE9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:40px">
+          <div style="position:absolute;top:120px;left:40px;width:90px;height:34px;border-radius:20px;background:#FFF3F7;opacity:.8"></div>
+          <div style="position:absolute;top:180px;right:30px;width:70px;height:26px;border-radius:20px;background:#FFF3F7;opacity:.7"></div>
+          <x-import component-from-global-scope="momo-bunny" state="welcome" still="{{ stillAttr }}" hint-size="220px,220px" style="width:220px;height:220px"></x-import>
+          <div style="font-size:56px;line-height:60px;font-weight:800;letter-spacing:-1.5px;color:#674454;margin-top:8px;display:flex;align-items:flex-start;gap:2px">momo<span style="font-size:22px;color:#F47FA7;line-height:30px">♥</span></div>
+          <div style="font-size:17px;line-height:26px;color:#674454">Your little bunny who cares.</div>
+          <div style="font-size:15px;line-height:24px;color:#7D6571">กระต่ายตัวเล็กที่คอยดูแลแพรวา</div>
+          <button onClick="{{ goOnboarding }}" style="position:absolute;bottom:56px;left:24px;right:24px;height:56px;border:none;border-radius:20px;background:#C4466F;color:#fff;font-size:17px;font-weight:800;box-shadow:0 4px 12px -4px rgba(196,70,111,.45);cursor:pointer">เริ่มต้นกับโมโม่ ♡</button>
+        </div>
+      </sc-if>
+
+      <!-- SCREEN 02 ONBOARDING -->
+      <sc-if value="{{ isOnboarding }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="02 Onboarding" style="position:absolute;inset:0;background:#FFF8F2;display:flex;flex-direction:column;padding:64px 24px 40px">
+          <div style="display:flex;justify-content:flex-end"><button onClick="{{ finishOnboarding }}" style="border:none;background:none;font-size:15px;color:#7D6571;height:44px;padding:0 8px;cursor:pointer">ข้าม</button></div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;text-align:center">
+            <div style="width:260px;height:260px;border-radius:50%;background:{{ ob.tint }};display:flex;align-items:center;justify-content:center">
+              <x-import component-from-global-scope="momo-bunny" state="{{ ob.momo }}" still="{{ stillAttr }}" hint-size="210px,210px" style="width:210px;height:210px"></x-import>
+            </div>
+            <div style="font-size:12px;letter-spacing:1.4px;font-weight:800;color:#C4466F;text-transform:uppercase">{{ ob.en }}</div>
+            <div style="font-size:28px;line-height:38px;font-weight:800;text-wrap:pretty">{{ ob.title }}</div>
+            <div style="font-size:16px;line-height:26px;color:#7D6571;max-width:300px;text-wrap:pretty">{{ ob.body }}</div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">
+            <sc-for list="{{ obDots }}" as="d" hint-placeholder-count="3"><span style="{{ d.style }}"></span></sc-for>
+          </div>
+          <button onClick="{{ obNext }}" style="height:56px;border:none;border-radius:20px;background:#C4466F;color:#fff;font-size:17px;font-weight:800;box-shadow:0 4px 12px -4px rgba(196,70,111,.45);cursor:pointer">{{ ob.cta }}</button>
+        </div>
+      </sc-if>
+
+      <!-- APP SCROLL AREA -->
+      <sc-if value="{{ inApp }}" hint-placeholder-val="{{ true }}">
+        <div class="scroll" style="position:absolute;inset:0;overflow-y:auto;padding:58px 20px 120px;scrollbar-width:none">
+
+          <!-- SCREEN 03 HOME -->
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+            <div data-screen-label="03 Home" style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-top:8px">
+                <div>
+                  <div style="font-size:28px;line-height:38px;font-weight:800">สวัสดี{{ call }} ☀️</div>
+                  <div style="font-size:15px;line-height:24px;color:#7D6571">วันจันทร์ 12 ตุลาคม · วันนี้ดูแลตัวเองหรือยัง?</div>
+                </div>
+                <button onClick="{{ goProfile }}" aria-label="โปรไฟล์โมโม่" style="width:48px;height:48px;border-radius:50%;border:none;background:#FFDCE9;padding:0;overflow:hidden;cursor:pointer;flex:none">
+                  <x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="48px,48px" style="width:48px;height:48px"></x-import>
+                </button>
+              </div>
+
+              <div style="position:relative;border-radius:28px;background:#FFDCE9;padding:20px 20px 0;min-height:250px;overflow:hidden">
+                <div style="position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:#FFE9F0"></div>
+                <div style="position:relative;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                  <span style="{{ statusChip.style }}"><x-import component-from-global-scope="momo-icon" name="{{ statusChip.icon }}" size="14" stroke="2.6" hint-size="14px,14px"></x-import>{{ statusChip.label }}</span>
+                </div>
+                <div style="position:relative;display:flex;align-items:flex-end;gap:4px;margin-top:6px">
+                  <div style="width:170px;height:170px;flex:none;margin-left:-10px">
+                    <x-import component-from-global-scope="momo-bunny" state="{{ homeMomo }}" still="{{ stillAttr }}" hint-size="170px,170px" style="width:170px;height:170px"></x-import>
+                  </div>
+                  <div style="position:relative;align-self:flex-start;margin-top:12px;background:#fff;border-radius:20px 20px 20px 6px;padding:12px 14px;font-size:15px;line-height:23px;font-weight:800;box-shadow:0 8px 24px -12px rgba(103,68,84,.2);text-wrap:pretty">{{ bubble }}</div>
+                </div>
+              </div>
+
+              <div style="margin-top:-36px;position:relative;background:#fff;border-radius:24px;padding:16px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16);margin-left:8px;margin-right:8px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:20px;line-height:28px;font-weight:800">Pristiq 50 mg</div>
+                  <div style="font-size:13px;line-height:20px;color:#7D6571">Desvenlafaxine · {{ qty }} เม็ด · {{ remind }} น.</div>
+                </div>
+                <div style="width:44px;height:44px;border-radius:14px;background:#E3F1FC;color:#2D5F86;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="pill" size="22" hint-size="22px,22px"></x-import></div>
+              </div>
+
+              <sc-if value="{{ todayNotTaken }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ quickConfirm }}" style="height:56px;border:none;border-radius:20px;background:#C4466F;color:#fff;font-size:17px;font-weight:800;box-shadow:0 4px 12px -4px rgba(196,70,111,.45);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" style-active="transform:scale(.98)">บันทึกว่ากินยาแล้ว ♡</button>
+              </sc-if>
+              <sc-if value="{{ todayTaken }}" hint-placeholder-val="{{ false }}">
+                <div style="height:56px;border-radius:20px;background:#DDF3E8;color:#2C7651;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px"><x-import component-from-global-scope="momo-icon" name="check" size="20" stroke="2.8" hint-size="20px,20px"></x-import>วันนี้กินยาแล้ว · {{ todayAt }} น.</div>
+              </sc-if>
+
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+                <button onClick="{{ goBlister }}" style="text-align:left;border:none;background:#DDF3E8;border-radius:24px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:13px;line-height:20px;color:#2C7651;font-weight:800">ยาในแผง ({{ packLetters }})</span>
+                  <span style="font-size:32px;line-height:40px;font-weight:800;font-variant-numeric:tabular-nums">{{ opened }} <span style="font-size:17px">เม็ด</span></span>
+                  <span style="font-size:12px;line-height:18px;color:#2C7651">{{ openedNote }}</span>
+                </button>
+                <button onClick="{{ goInventory }}" style="text-align:left;border:none;background:#E9E1FF;border-radius:24px;padding:16px;cursor:pointer;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-size:13px;line-height:20px;color:#5E4CB8;font-weight:800">กล่องสำรอง</span>
+                  <span style="font-size:32px;line-height:40px;font-weight:800;font-variant-numeric:tabular-nums">{{ reserve }} <span style="font-size:17px">กล่อง</span></span>
+                  <span style="font-size:12px;line-height:18px;color:#5E4CB8">{{ reserveNote }}</span>
+                </button>
+              </div>
+
+              <sc-if value="{{ showRefill }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ goInventory }}" style="text-align:left;border:none;border-radius:24px;background:#FFF0BD;padding:14px 16px;display:flex;gap:12px;align-items:center;cursor:pointer">
+                  <div style="width:56px;height:56px;flex:none"><x-import component-from-global-scope="momo-bunny" state="{{ refillMomo }}" still="" hint-size="56px,56px" style="width:56px;height:56px"></x-import></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:15px;line-height:22px;font-weight:800;color:#80570A"><x-import component-from-global-scope="momo-icon" name="alert" size="16" hint-size="16px,16px"></x-import>{{ refillTitle }}</div>
+                    <div style="font-size:13px;line-height:20px;color:#674454">{{ refillBody }}</div>
+                  </div>
+                  <x-import component-from-global-scope="momo-icon" name="right" size="18" hint-size="18px,18px"></x-import>
+                </button>
+              </sc-if>
+
+              <div style="background:#fff;border-radius:24px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="width:40px;height:40px;border-radius:12px;background:#FFF3F7;color:#C4466F;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="bell" size="20" hint-size="20px,20px"></x-import></div>
+                <div style="flex:1">
+                  <div style="font-size:13px;line-height:20px;color:#7D6571">เตือนครั้งถัดไป</div>
+                  <div style="font-size:16px;line-height:24px;font-weight:800">{{ nextReminder }}</div>
+                </div>
+                <button onClick="{{ goSettings }}" style="height:44px;padding:0 14px;border-radius:999px;border:none;background:#FFF3F7;color:#A8385C;font-size:14px;font-weight:800;cursor:pointer">แก้ไข</button>
+              </div>
+              <div style="font-size:12px;line-height:18px;color:#7D6571;text-align:center">ข้อมูลตัวอย่าง · Demo data</div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 04 BLISTER -->
+          <sc-if value="{{ isBlister }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="04 Blister" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">BLISTER</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">แผงยา</div>
+              </div>
+              <div role="tablist" class="scroll" style="display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px;scrollbar-width:none">
+                <sc-for list="{{ packTabs }}" as="p" hint-placeholder-count="2">
+                  <button role="tab" aria-selected="{{ p.selected }}" onClick="{{ p.onClick }}" style="{{ p.style }}">
+                    <span style="font-size:16px;line-height:22px;font-weight:800">{{ p.name }}</span>
+                    <span style="font-size:12px;line-height:16px;opacity:.9">{{ p.loc }} · เหลือ {{ p.left }}</span>
+                  </button>
+                </sc-for>
+              </div>
+
+              <div style="background:#fff;border-radius:28px;padding:16px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16);display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+                  <div>
+                    <div style="font-size:18px;line-height:26px;font-weight:800">Pristiq 50 mg</div>
+                    <div style="font-size:13px;line-height:20px;color:#7D6571">Desvenlafaxine · {{ cur.name }}</div>
+                  </div>
+                  <button onClick="{{ cycleLoc }}" style="height:44px;padding:0 12px;border-radius:999px;border:1.5px solid #EBDDE3;background:#fff;font-size:13px;font-weight:800;display:flex;gap:6px;align-items:center;cursor:pointer;color:#674454;white-space:nowrap;flex:none"><x-import component-from-global-scope="momo-icon" name="pin" size="16" hint-size="16px,16px"></x-import>{{ cur.loc }}</button>
+                </div>
+                <div style="border-radius:20px;background:#ECE7EA;padding:14px 10px;display:flex;flex-direction:column;gap:6px;box-shadow:inset 0 1px 0 #fff,inset 0 -2px 6px rgba(103,68,84,.08)">
+                  <sc-for list="{{ rows }}" as="row" hint-placeholder-count="3">
+                    <div style="display:flex;align-items:center;gap:4px">
+                      <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;flex:1">
+                        <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="5">
+                          <button onClick="{{ c.onClick }}" aria-label="{{ c.aria }}" style="border:none;background:none;padding:4px 0;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-height:64px">
+                            <span style="{{ c.pillStyle }}">
+                              <sc-if value="{{ c.icon }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="momo-icon" name="{{ c.icon }}" size="18" stroke="3" hint-size="18px,18px"></x-import></sc-if>
+                            </span>
+                            <span style="{{ c.numStyle }}">{{ c.n }}</span>
+                          </button>
+                        </sc-for>
+                      </div>
+                      <span style="width:20px;color:#B6A3AD;display:flex;justify-content:center"><x-import component-from-global-scope="momo-icon" name="{{ row.arrow }}" size="16" stroke="2.4" hint-size="16px,16px"></x-import></span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;line-height:18px;color:#7D6571">
+                  <span style="display:flex;gap:6px;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 0 2.5px #F47FA7"></span>ถัดไป</span>
+                  <span style="display:flex;gap:6px;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:#fff;border:1px solid #D7BFCA"></span>ยังอยู่</span>
+                  <span style="display:flex;gap:6px;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:#DDF3E8;color:#2C7651;font-size:10px;display:flex;align-items:center;justify-content:center">✓</span>กินแล้ว</span>
+                  <span style="display:flex;gap:6px;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:#E9E1FF;color:#5E4CB8;font-size:10px;display:flex;align-items:center;justify-content:center">–</span>แกะออก (ไม่ได้กิน)</span>
+                </div>
+              </div>
+
+              <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ openNext }}" style="border:none;text-align:left;border-radius:24px;background:#FFDCE9;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer">
+                  <span style="width:52px;height:52px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #F47FA7;display:flex;align-items:center;justify-content:center;color:#C4466F"><x-import component-from-global-scope="momo-icon" name="pill" size="24" hint-size="24px,24px"></x-import></span>
+                  <span style="flex:1"><span style="display:block;font-size:13px;line-height:20px;color:#A8385C;font-weight:800">เม็ดถัดไป</span><span style="display:block;font-size:22px;line-height:30px;font-weight:800">ลำดับที่ {{ nextN }}</span></span>
+                  <x-import component-from-global-scope="momo-icon" name="right" size="20" hint-size="20px,20px"></x-import>
+                </button>
+              </sc-if>
+              <sc-if value="{{ curEmpty }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:24px;background:#E9E1FF;padding:14px 16px;font-size:14px;line-height:22px;color:#5E4CB8">แผงนี้หมดแล้ว เลือกแผงอื่นด้านบน หรือ <button onClick="{{ goInventory }}" style="border:none;background:none;padding:0;font-weight:800;color:#5E4CB8;text-decoration:underline;cursor:pointer;font-size:14px">เปิดกล่องใหม่</button></div>
+              </sc-if>
+
+              <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800"><x-import component-from-global-scope="momo-icon" name="list" size="18" hint-size="18px,18px"></x-import>บันทึกการเปลี่ยนแปลง</div>
+                <sc-for list="{{ audit }}" as="a" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;font-size:13px;line-height:20px;border-top:1px solid #F3E4EA;padding-top:8px"><span style="color:#7D6571;flex:none;width:44px;font-variant-numeric:tabular-nums">{{ a.t }}</span><span>{{ a.text }}</span></div>
+                </sc-for>
+                <sc-if value="{{ auditEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;line-height:20px;color:#7D6571">ยังไม่มีการเปลี่ยนแปลงวันนี้ แตะเม็ดยาเพื่อบันทึกหรือแก้ไข</div></sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 06 HISTORY -->
+          <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="06 History" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">HISTORY</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">ประวัติการกินยา</div>
+              </div>
+              <div style="background:#fff;border-radius:28px;padding:16px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                  <button aria-label="เดือนก่อน" style="width:44px;height:44px;border:none;border-radius:50%;background:#FFF3F7;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.5"><x-import component-from-global-scope="momo-icon" name="left" size="18" hint-size="18px,18px"></x-import></button>
+                  <div style="font-size:17px;font-weight:800;background:#FFF3F7;padding:8px 18px;border-radius:999px">ตุลาคม 2026</div>
+                  <button aria-label="เดือนถัดไป" style="width:44px;height:44px;border:none;border-radius:50%;background:#FFF3F7;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.5"><x-import component-from-global-scope="momo-icon" name="right" size="18" hint-size="18px,18px"></x-import></button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center;font-size:12px;color:#7D6571;margin-bottom:4px">
+                  <span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px">
+                  <sc-for list="{{ calCells }}" as="d" hint-placeholder-count="35">
+                    <button onClick="{{ d.onClick }}" aria-label="{{ d.aria }}" style="{{ d.style }}">
+                      <span>{{ d.n }}</span>
+                      <span style="{{ d.dotStyle }}"><sc-if value="{{ d.icon }}" hint-placeholder-val="{{ false }}"><x-import component-from-global-scope="momo-icon" name="{{ d.icon }}" size="10" stroke="3.4" hint-size="10px,10px"></x-import></sc-if></span>
+                    </button>
+                  </sc-for>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:#7D6571">
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#2C7651"></span>กินแล้ว</span>
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#80570A"></span>รอบันทึก</span>
+                  <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;border:2px dashed #7360D0"></span>ไม่มีบันทึก</span>
+                </div>
+              </div>
+
+              <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="flex:1">
+                    <div style="font-size:20px;line-height:28px;font-weight:800">{{ selTitle }}</div>
+                    <div style="font-size:13px;line-height:20px;color:#7D6571">{{ selDate }}</div>
+                  </div>
+                  <div style="width:72px;height:72px"><x-import component-from-global-scope="momo-bunny" state="{{ selMomo }}" still="" hint-size="72px,72px" style="width:72px;height:72px"></x-import></div>
+                </div>
+                <div style="{{ selRowStyle }}">
+                  <x-import component-from-global-scope="momo-icon" name="{{ selIcon }}" size="20" stroke="2.6" hint-size="20px,20px"></x-import>
+                  <div><div style="font-size:15px;line-height:22px;font-weight:800">{{ selStatus }}</div><div style="font-size:13px;line-height:20px">{{ selDetail }}</div></div>
+                </div>
+                <sc-if value="{{ selMissed }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;line-height:21px;color:#674454;background:#FFF3F7;border-radius:16px;padding:12px">ถ้าลืมกินยา ไม่ต้องกินเพิ่มเป็นสองเท่านะ ทำตามคำแนะนำของแพทย์หรือเภสัชกร ถ้าไม่แน่ใจ ปรึกษาได้เสมอ</div>
+                  <button onClick="{{ backfill }}" style="height:48px;border-radius:16px;border:1.5px solid #EBDDE3;background:#fff;font-size:15px;font-weight:800;cursor:pointer;color:#674454">กินแล้ว แต่ลืมบันทึก</button>
+                </sc-if>
+                <sc-if value="{{ selPending }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ quickConfirm }}" style="height:52px;border:none;border-radius:18px;background:#C4466F;color:#fff;font-size:16px;font-weight:800;cursor:pointer">บันทึกว่ากินยาแล้ว ♡</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 07 INVENTORY -->
+          <sc-if value="{{ isInventory }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="07 Inventory" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">INVENTORY</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">สต็อกยา</div>
+              </div>
+              <div style="position:relative;border-radius:28px;background:#FFDCE9;padding:16px 16px 16px 120px;min-height:120px;display:flex;align-items:center">
+                <div style="position:absolute;left:6px;bottom:4px;width:112px;height:112px"><x-import component-from-global-scope="momo-bunny" state="{{ invMomo }}" still="{{ stillAttr }}" hint-size="112px,112px" style="width:112px;height:112px"></x-import></div>
+                <div style="background:#fff;border-radius:18px 18px 18px 6px;padding:10px 12px;font-size:14px;line-height:21px;font-weight:800;text-wrap:pretty">{{ invBubble }}</div>
+              </div>
+
+              <div style="background:#DDF3E8;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;color:#2C7651;font-weight:800">ยาในแผงที่เปิดแล้ว</span><span style="font-size:12px;color:#2C7651">{{ supplyText }}</span></div>
+                <div style="font-size:40px;line-height:44px;font-weight:800;font-variant-numeric:tabular-nums">{{ opened }} <span style="font-size:18px">เม็ด</span></div>
+                <div style="height:10px;border-radius:999px;background:#fff;overflow:hidden"><div style="{{ openedBar }}"></div></div>
+                <sc-for list="{{ packSummary }}" as="p" hint-placeholder-count="2">
+                  <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.7);border-radius:14px;padding:8px 12px;font-size:14px">
+                    <span style="font-weight:800">{{ p.name }}</span><span style="color:#7D6571;flex:1">{{ p.loc }}</span><span style="font-weight:800;font-variant-numeric:tabular-nums">{{ p.left }}/15</span>
+                  </div>
+                </sc-for>
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:4px">
+                  <span style="font-size:13px;color:#2C7651;font-weight:800">การเก็บยา</span>
+                  <div style="display:flex;background:#fff;border-radius:999px;padding:3px">
+                    <button onClick="{{ setSeparate }}" style="{{ modeSep }}">แยกที่เก็บ</button>
+                    <button onClick="{{ setCombined }}" style="{{ modeComb }}">รวมที่เดียว</button>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#E9E1FF;border-radius:24px;padding:16px;display:flex;align-items:center;gap:12px">
+                <div style="flex:1">
+                  <div style="font-size:13px;color:#5E4CB8;font-weight:800">กล่องสำรอง (ยังไม่เปิด)</div>
+                  <div style="font-size:40px;line-height:44px;font-weight:800;font-variant-numeric:tabular-nums">{{ reserve }} <span style="font-size:18px">กล่อง</span></div>
+                  <div style="font-size:12px;color:#5E4CB8">1 กล่อง = 2 แผง × 15 เม็ด</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:4px">
+                  <button onClick="{{ decReserve }}" aria-label="ลดกล่องสำรอง" style="width:44px;height:44px;border-radius:50%;border:none;background:#F4F0FF;color:#5E4CB8;display:flex;align-items:center;justify-content:center;cursor:pointer"><x-import component-from-global-scope="momo-icon" name="minus" size="18" stroke="2.6" hint-size="18px,18px"></x-import></button>
+                  <span style="min-width:22px;text-align:center;font-weight:800;font-size:18px">{{ reserve }}</span>
+                  <button onClick="{{ incReserve }}" aria-label="เพิ่มกล่องสำรอง" style="width:44px;height:44px;border-radius:50%;border:none;background:#F4F0FF;color:#5E4CB8;display:flex;align-items:center;justify-content:center;cursor:pointer"><x-import component-from-global-scope="momo-icon" name="plus" size="18" stroke="2.6" hint-size="18px,18px"></x-import></button>
+                </div>
+              </div>
+
+              <button onClick="{{ goOpenBox }}" style="{{ openBoxBtn }}">
+                <x-import component-from-global-scope="momo-icon" name="box" size="22" hint-size="22px,22px"></x-import>
+                <span style="display:flex;flex-direction:column;align-items:flex-start"><span style="font-size:17px;font-weight:800;line-height:24px">เปิดกล่องใหม่</span><span style="font-size:12px;line-height:16px;opacity:.9">เพิ่ม 2 แผง × 15 เม็ด</span></span>
+              </button>
+
+              <sc-if value="{{ showRefill }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:20px;background:#FFF0BD;padding:12px 14px;display:flex;gap:10px;color:#80570A">
+                  <x-import component-from-global-scope="momo-icon" name="alert" size="20" hint-size="20px,20px"></x-import>
+                  <div><div style="font-size:14px;line-height:21px;font-weight:800">{{ refillTitle }}</div><div style="font-size:13px;line-height:20px;color:#674454">{{ refillBody }}</div></div>
+                </div>
+              </sc-if>
+
+              <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="font-size:15px;font-weight:800">ประวัติสต็อก</div>
+                <sc-for list="{{ log }}" as="l" hint-placeholder-count="2">
+                  <div style="display:flex;gap:10px;align-items:center;font-size:13px;line-height:20px;border-top:1px solid #F3E4EA;padding-top:8px">
+                    <span style="flex:1"><span style="display:block">{{ l.text }}</span><span style="color:#7D6571;font-size:12px">{{ l.t }}</span></span>
+                    <span style="font-weight:800;font-variant-numeric:tabular-nums">{{ l.d }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 08 OPEN NEW BOX -->
+          <sc-if value="{{ isOpenBox }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="08 Open new box" style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;gap:8px;padding-top:4px">
+                <button onClick="{{ goInventory }}" aria-label="กลับ" style="width:44px;height:44px;border-radius:50%;border:none;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px -12px rgba(103,68,84,.2)"><x-import component-from-global-scope="momo-icon" name="left" size="20" hint-size="20px,20px"></x-import></button>
+                <div><div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">OPEN NEW BOX</div><div style="font-size:22px;line-height:30px;font-weight:800">เปิดกล่องใหม่</div></div>
+              </div>
+              <div style="border-radius:28px;background:#E9E1FF;padding:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center">
+                <div style="width:150px;height:150px"><x-import component-from-global-scope="momo-bunny" state="refill" still="{{ stillAttr }}" hint-size="150px,150px" style="width:150px;height:150px"></x-import></div>
+                <div style="font-size:18px;line-height:28px;font-weight:800">โมโม่จะช่วยแกะกล่องให้นะ</div>
+                <div style="font-size:14px;line-height:22px;color:#5E4CB8">กล่องสำรอง {{ reserve }} → {{ reserveAfter }} กล่อง · ได้แผงใหม่ 2 แผง (+30 เม็ด)</div>
+              </div>
+              <sc-for list="{{ newPacks }}" as="np" hint-placeholder-count="2">
+                <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:17px;font-weight:800">{{ np.name }}</span><span style="font-size:13px;color:#7D6571">15 เม็ด</span></div>
+                  <div style="font-size:13px;color:#7D6571">เก็บไว้ที่</div>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <sc-for list="{{ np.opts }}" as="o" hint-placeholder-count="3">
+                      <button onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="{{ o.style }}">{{ o.label }}</button>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="font-size:13px;line-height:20px;color:#7D6571;padding:0 4px">แผงที่เปิดอยู่เดิมจะไม่ถูกลบ เม็ดที่เหลือยังนับรวมเหมือนเดิม</div>
+              <button onClick="{{ openBox }}" style="{{ confirmBoxBtn }}">{{ confirmBoxLabel }}</button>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 09 SETTINGS -->
+          <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="09 Reminder settings" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">REMINDERS</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">ตั้งค่าการเตือน</div>
+              </div>
+              <div style="background:#fff;border-radius:24px;padding:4px 16px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <label style="display:flex;align-items:center;gap:12px;min-height:60px;border-bottom:1px solid #F3E4EA">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">เวลาเตือนกินยา</span><span style="display:block;font-size:12px;color:#7D6571">Pristiq 50 mg · ทุกวัน</span></span>
+                  <input type="time" value="{{ remind }}" onChange="{{ onRemind }}" style="height:44px;border:none;border-radius:14px;background:#FFF3F7;padding:0 12px;font-size:17px;font-weight:800;color:#674454">
+                </label>
+                <div style="display:flex;align-items:center;gap:12px;min-height:60px;border-bottom:1px solid #F3E4EA">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">จำนวนต่อครั้ง</span><span style="display:block;font-size:12px;color:#7D6571">ตามที่แพทย์สั่ง</span></span>
+                  <div style="display:flex;align-items:center;gap:4px;background:#FFF3F7;border-radius:999px;padding:3px">
+                    <button onClick="{{ decQty }}" aria-label="ลด" style="width:40px;height:40px;border-radius:50%;border:none;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="minus" size="16" hint-size="16px,16px"></x-import></button>
+                    <span style="min-width:44px;text-align:center;font-weight:800">{{ qty }} เม็ด</span>
+                    <button onClick="{{ incQty }}" aria-label="เพิ่ม" style="width:40px;height:40px;border-radius:50%;border:none;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-icon" name="plus" size="16" hint-size="16px,16px"></x-import></button>
+                  </div>
+                </div>
+                <div style="padding:12px 0;border-bottom:1px solid #F3E4EA;display:flex;flex-direction:column;gap:8px">
+                  <span style="font-size:15px;font-weight:800">เตือนซ้ำถ้ายังไม่บันทึก</span>
+                  <div style="display:flex;background:#FFF3F7;border-radius:999px;padding:3px">
+                    <sc-for list="{{ followOpts }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button></sc-for>
+                  </div>
+                  <span style="font-size:12px;line-height:18px;color:#7D6571">{{ followNote }}</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;min-height:60px">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">ข้อความราตรีสวัสดิ์</span><span style="display:block;font-size:12px;color:#7D6571">ไม่เกี่ยวกับการบันทึกยา · {{ bedTime }} น.</span></span>
+                  <button onClick="{{ toggleBedtime }}" role="switch" aria-checked="{{ bedtime }}" aria-label="ข้อความราตรีสวัสดิ์" style="{{ bedTrack }}"><span style="{{ bedKnob }}"></span></button>
+                </div>
+              </div>
+
+              <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">การแจ้งเตือน</span><span style="display:block;font-size:12px;color:#7D6571">{{ permText }}</span></span>
+                  <sc-if value="{{ permNeeded }}" hint-placeholder-val="{{ true }}"><button onClick="{{ grantPerm }}" style="height:44px;padding:0 16px;border-radius:999px;border:none;background:#C4466F;color:#fff;font-weight:800;font-size:14px;cursor:pointer">อนุญาต</button></sc-if>
+                  <sc-if value="{{ permGranted }}" hint-placeholder-val="{{ false }}"><span style="display:flex;gap:6px;align-items:center;height:32px;padding:0 12px;border-radius:999px;background:#DDF3E8;color:#2C7651;font-size:13px;font-weight:800"><x-import component-from-global-scope="momo-icon" name="check" size="14" stroke="3" hint-size="14px,14px"></x-import>เปิดอยู่</span></sc-if>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;border-top:1px solid #F3E4EA;padding-top:12px">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">ซ่อนชื่อยาบนหน้าจอล็อก</span><span style="display:block;font-size:12px;color:#7D6571">แนะนำให้เปิดไว้</span></span>
+                  <button onClick="{{ togglePrivacy }}" role="switch" aria-checked="{{ privacy }}" aria-label="ซ่อนชื่อยา" style="{{ privTrack }}"><span style="{{ privKnob }}"></span></button>
+                </div>
+                <div style="font-size:12px;color:#7D6571">ตัวอย่างการแจ้งเตือน</div>
+                <div style="border-radius:20px;background:#F6EDF1;padding:12px;display:flex;gap:10px;align-items:flex-start">
+                  <div style="width:38px;height:38px;border-radius:10px;background:#FFDCE9;flex:none;overflow:hidden"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="38px,38px" style="width:38px;height:38px"></x-import></div>
+                  <div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:12px;color:#7D6571"><span style="font-weight:800;color:#674454">MOMO</span><span>{{ remind }}</span></div><div style="font-size:14px;line-height:20px;font-weight:800">{{ previewTitle }}</div><div style="font-size:13px;line-height:18px;color:#7D6571">{{ previewBody }}</div></div>
+                </div>
+                <button onClick="{{ simReminder }}" style="height:44px;border-radius:14px;border:1.5px solid #EBDDE3;background:#fff;font-size:14px;font-weight:800;cursor:pointer;color:#674454;display:flex;align-items:center;justify-content:center;gap:6px"><x-import component-from-global-scope="momo-icon" name="bell" size="16" hint-size="16px,16px"></x-import>ลองส่งการแจ้งเตือน</button>
+              </div>
+
+              <button onClick="{{ goProfile }}" style="text-align:left;border:none;background:#fff;border-radius:24px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <span style="width:48px;height:48px;border-radius:50%;background:#FFDCE9;overflow:hidden;flex:none"><x-import component-from-global-scope="momo-bunny" crop="head" still="" hint-size="48px,48px" style="width:48px;height:48px"></x-import></span>
+                <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">โปรไฟล์โมโม่</span><span style="display:block;font-size:12px;color:#7D6571">การพูด เสียงเตือน และการเคลื่อนไหว</span></span>
+                <x-import component-from-global-scope="momo-icon" name="right" size="18" hint-size="18px,18px"></x-import>
+              </button>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 10 PROFILE -->
+          <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="10 Momo profile" style="display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:center;gap:8px;padding-top:4px">
+                <button onClick="{{ goSettings }}" aria-label="กลับ" style="width:44px;height:44px;border-radius:50%;border:none;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px -12px rgba(103,68,84,.2)"><x-import component-from-global-scope="momo-icon" name="left" size="20" hint-size="20px,20px"></x-import></button>
+                <div><div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">MOMO PROFILE</div><div style="font-size:22px;line-height:30px;font-weight:800">โปรไฟล์โมโม่</div></div>
+              </div>
+              <div style="border-radius:28px;background:#FFDCE9;padding:20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px">
+                <div style="width:170px;height:170px"><x-import component-from-global-scope="momo-bunny" state="idle" still="{{ stillAttr }}" hint-size="170px,170px" style="width:170px;height:170px"></x-import></div>
+                <div style="font-size:28px;line-height:36px;font-weight:800">โมโม่ <span style="font-size:15px;color:#A8385C">Momo</span></div>
+                <div style="font-size:14px;line-height:22px;color:#674454">กระต่ายตัวเล็กของ{{ call }} ชอบดอกไม้สีชมพูกับการงีบตอนบ่าย</div>
+              </div>
+              <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:15px;font-weight:800">โมโม่เรียกเราว่า</span>
+                  <div style="display:flex;background:#FFF3F7;border-radius:999px;padding:3px"><sc-for list="{{ callOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div></div>
+                <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:15px;font-weight:800">สไตล์การพูด</span>
+                  <div style="display:flex;background:#FFF3F7;border-radius:999px;padding:3px"><sc-for list="{{ styleOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+                  <span style="font-size:13px;line-height:20px;color:#7D6571;background:#FFF8F2;border-radius:14px;padding:10px 12px">“{{ stylePreview }}”</span></div>
+                <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:15px;font-weight:800">เสียงแจ้งเตือน</span>
+                  <div style="display:flex;background:#FFF3F7;border-radius:999px;padding:3px"><sc-for list="{{ toneOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div></div>
+                <div style="display:flex;align-items:center;gap:12px;border-top:1px solid #F3E4EA;padding-top:12px">
+                  <span style="flex:1"><span style="display:block;font-size:15px;font-weight:800">ลดการเคลื่อนไหว</span><span style="display:block;font-size:12px;color:#7D6571">โมโม่จะนั่งนิ่ง ๆ ไม่ขยับหู ไม่กระพริบตา</span></span>
+                  <button onClick="{{ toggleReduce }}" role="switch" aria-checked="{{ reduce }}" aria-label="ลดการเคลื่อนไหว" style="{{ redTrack }}"><span style="{{ redKnob }}"></span></button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 11 EMPTY STATES -->
+          <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="11 Empty states" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">EMPTY STATES</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">ยังไม่มีข้อมูล</div>
+              </div>
+              <div style="display:flex;background:#fff;border-radius:999px;padding:3px;box-shadow:0 8px 24px -12px rgba(103,68,84,.16)"><sc-for list="{{ emptyOpts }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+              <div style="background:#fff;border-radius:28px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="width:180px;height:180px;border-radius:50%;background:{{ empty.tint }};display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-bunny" state="{{ empty.momo }}" still="{{ stillAttr }}" hint-size="150px,150px" style="width:150px;height:150px"></x-import></div>
+                <div style="font-size:20px;line-height:30px;font-weight:800">{{ empty.title }}</div>
+                <div style="font-size:15px;line-height:24px;color:#7D6571;max-width:280px;text-wrap:pretty">{{ empty.body }}</div>
+                <button onClick="{{ empty.onClick }}" style="margin-top:8px;height:52px;padding:0 24px;border:none;border-radius:18px;background:#C4466F;color:#fff;font-size:16px;font-weight:800;cursor:pointer">{{ empty.cta }}</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- SCREEN 12 ERROR / OFFLINE -->
+          <sc-if value="{{ isError }}" hint-placeholder-val="{{ false }}">
+            <div data-screen-label="12 Error and offline" style="display:flex;flex-direction:column;gap:16px">
+              <div style="padding-top:8px">
+                <div style="font-size:12px;letter-spacing:1.2px;font-weight:800;color:#C4466F">ERROR · OFFLINE</div>
+                <div style="font-size:28px;line-height:38px;font-weight:800">มีอะไรสะดุดนิดหน่อย</div>
+              </div>
+              <div style="display:flex;background:#fff;border-radius:999px;padding:3px;box-shadow:0 8px 24px -12px rgba(103,68,84,.16)"><sc-for list="{{ errOpts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.onClick }}" style="{{ o.style }}">{{ o.label }}</button></sc-for></div>
+              <div style="background:#fff;border-radius:28px;padding:28px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 1px 2px rgba(103,68,84,.04),0 8px 24px -12px rgba(103,68,84,.16)">
+                <div style="width:180px;height:180px;border-radius:50%;background:#E9E1FF;display:flex;align-items:center;justify-content:center"><x-import component-from-global-scope="momo-bunny" state="{{ errMomo }}" still="{{ stillAttr }}" hint-size="150px,150px" style="width:150px;height:150px"></x-import></div>
+                <div style="display:flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:999px;background:#E3F1FC;color:#2D5F86;font-size:12px;font-weight:800"><x-import component-from-global-scope="momo-icon" name="{{ err.icon }}" size="14" stroke="2.6" hint-size="14px,14px"></x-import>{{ err.chip }}</div>
+                <div style="font-size:20px;line-height:30px;font-weight:800">{{ err.title }}</div>
+                <div style="font-size:15px;line-height:24px;color:#7D6571;max-width:290px;text-wrap:pretty">{{ err.body }}</div>
+                <button onClick="{{ retry }}" style="margin-top:8px;height:52px;padding:0 24px;border:none;border-radius:18px;background:#C4466F;color:#fff;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px"><x-import component-from-global-scope="momo-icon" name="refresh" size="18" hint-size="18px,18px"></x-import>{{ retryLabel }}</button>
+                <button onClick="{{ goHome }}" style="height:44px;padding:0 16px;border:none;background:none;font-size:14px;font-weight:800;color:#A8385C;cursor:pointer">{{ err.secondary }}</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- bottom nav -->
+      <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+        <nav aria-label="เมนูหลัก" style="position:absolute;left:12px;right:12px;bottom:22px;height:68px;border-radius:26px;background:rgba(255,255,255,.96);box-shadow:0 12px 32px -12px rgba(103,68,84,.28);display:flex;align-items:center;justify-content:space-around;padding:0 6px;z-index:20">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+            <button onClick="{{ n.onClick }}" aria-current="{{ n.current }}" style="border:none;background:none;width:64px;height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;padding:0">
+              <span style="{{ n.iconWrap }}"><x-import component-from-global-scope="momo-icon" name="{{ n.icon }}" size="22" hint-size="22px,22px"></x-import></span>
+              <span style="{{ n.labelStyle }}">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </nav>
+      </sc-if>
+      <div style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#674454;opacity:.85;z-index:60;pointer-events:none"></div>
+
+      <!-- SCREEN 05 CONFIRMATION SHEET -->
+      <div onClick="{{ closeSheet }}" style="{{ overlayStyle }}"></div>
+      <div role="dialog" aria-modal="true" aria-label="ยืนยันการกินยา" data-screen-label="05 Dose confirmation" style="{{ sheetStyle }}">
+        <div style="width:40px;height:5px;border-radius:3px;background:#EBDDE3;margin:0 auto 14px"></div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="background:#ECE7EA;border-radius:14px;padding:8px;display:grid;grid-template-columns:repeat(5,12px);gap:4px;flex:none">
+            <sc-for list="{{ miniCells }}" as="m" hint-placeholder-count="15"><span style="{{ m.style }}"></span></sc-for>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;line-height:20px;color:#7D6571">{{ sh.packLine }}</div>
+            <div style="font-size:22px;line-height:30px;font-weight:800">เม็ดที่ {{ sh.n }}</div>
+            <div style="font-size:13px;line-height:20px;color:#7D6571">Pristiq 50 mg · Desvenlafaxine</div>
+          </div>
+          <div style="width:64px;height:64px;flex:none"><x-import component-from-global-scope="momo-bunny" state="{{ sh.momo }}" still="" hint-size="64px,64px" style="width:64px;height:64px"></x-import></div>
+        </div>
+
+        <sc-if value="{{ sh.isNew }}" hint-placeholder-val="{{ true }}">
+          <div style="font-size:20px;line-height:30px;font-weight:800;margin-top:16px;text-wrap:pretty">{{ sh.question }}</div>
+          <div role="radiogroup" style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+            <button role="radio" aria-checked="{{ sh.choiceDose }}" onClick="{{ chooseDose }}" style="{{ sh.doseStyle }}">
+              <span style="{{ sh.doseDot }}"></span><span style="flex:1;text-align:left"><span style="display:block;font-size:15px;font-weight:800">กินเม็ดนี้แล้ว</span><span style="display:block;font-size:12px;color:#7D6571">บันทึกการกินยาของวันนี้ + แกะเม็ดออกจากแผง</span></span>
+            </button>
+            <button role="radio" aria-checked="{{ sh.choiceRemove }}" onClick="{{ chooseRemove }}" style="{{ sh.removeStyle }}">
+              <span style="{{ sh.removeDot }}"></span><span style="flex:1;text-align:left"><span style="display:block;font-size:15px;font-weight:800">แค่แกะเม็ดออก</span><span style="display:block;font-size:12px;color:#7D6571">เช่น ทำหล่น หรือย้ายไปตลับยา · ไม่นับว่ากิน</span></span>
+            </button>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <div style="flex:1;background:#FFF8F2;border-radius:16px;padding:10px 12px"><div style="font-size:12px;color:#7D6571">วันที่</div><div style="font-size:15px;font-weight:800">วันนี้ · 12 ต.ค. 2026</div></div>
+            <label style="flex:1;background:#FFF8F2;border-radius:16px;padding:10px 12px;display:block"><span style="display:block;font-size:12px;color:#7D6571">เวลา</span><input type="time" value="{{ sheetTime }}" onChange="{{ onSheetTime }}" style="border:none;background:none;font-size:15px;font-weight:800;color:#674454;padding:0;width:100%"></label>
+          </div>
+          <sc-if value="{{ sh.warn }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:8px;margin-top:10px;background:#FFF0BD;color:#80570A;border-radius:14px;padding:10px 12px;font-size:13px;line-height:20px"><x-import component-from-global-scope="momo-icon" name="info" size="16" hint-size="16px,16px"></x-import><span>{{ sh.warn }}</span></div>
+          </sc-if>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">
+            <button onClick="{{ confirmSheet }}" style="height:56px;border:none;border-radius:20px;background:#C4466F;color:#fff;font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px -4px rgba(196,70,111,.45)">{{ sh.confirmLabel }}</button>
+            <button onClick="{{ closeSheet }}" style="height:48px;border:none;border-radius:16px;background:#FFF3F7;color:#A8385C;font-size:16px;font-weight:800;cursor:pointer">ยกเลิก</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ sh.isDetail }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ sh.detailRow }}">
+            <x-import component-from-global-scope="momo-icon" name="{{ sh.detailIcon }}" size="20" stroke="2.6" hint-size="20px,20px"></x-import>
+            <div><div style="font-size:15px;font-weight:800">{{ sh.detailTitle }}</div><div style="font-size:13px;line-height:20px">{{ sh.detailBody }}</div></div>
+          </div>
+          <div style="font-size:13px;line-height:20px;color:#7D6571;margin-top:12px">แก้ไขได้ถ้าบันทึกผิด ทุกการแก้ไขจะถูกเก็บไว้ในบันทึกการเปลี่ยนแปลง</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px">
+            <button onClick="{{ restoreTablet }}" style="height:52px;border-radius:18px;border:1.5px solid #EBDDE3;background:#fff;font-size:15px;font-weight:800;cursor:pointer;color:#674454;display:flex;align-items:center;justify-content:center;gap:8px"><x-import component-from-global-scope="momo-icon" name="undo" size="18" hint-size="18px,18px"></x-import>เม็ดนี้ยังอยู่ในแผง</button>
+            <sc-if value="{{ sh.canUnDose }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ unDose }}" style="height:52px;border-radius:18px;border:1.5px solid #EBDDE3;background:#fff;font-size:15px;font-weight:800;cursor:pointer;color:#674454">แกะออกแล้ว แต่ไม่ได้กิน</button>
+            </sc-if>
+            <button onClick="{{ closeSheet }}" style="height:48px;border:none;border-radius:16px;background:#FFF3F7;color:#A8385C;font-size:16px;font-weight:800;cursor:pointer">ปิด</button>
+          </div>
+        </sc-if>
+      </div>
+
+      <!-- toast -->
+      <div role="status" aria-live="polite" style="{{ toastStyle }}">
+        <span style="width:36px;height:36px;flex:none"><x-import component-from-global-scope="momo-bunny" state="{{ toastMomo }}" still="" hint-size="36px,36px" style="width:36px;height:36px"></x-import></span>
+        <span style="font-size:14px;line-height:20px;font-weight:800">{{ toast }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div style="width:340px;max-width:100%;display:flex;flex-direction:column;gap:16px">
+    <div>
+      <div style="font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.5px">momo <span style="color:#F47FA7">♥</span></div>
+      <div style="font-size:14px;line-height:22px;color:#7D6571">Interactive prototype · ทุกอย่างกดได้</div>
+      <div style="display:inline-flex;margin-top:8px;height:26px;align-items:center;padding:0 10px;border-radius:999px;background:#FFF0BD;color:#80570A;font-size:12px;font-weight:800">ข้อมูลตัวอย่าง · Demo data · วันนี้ 12 ต.ค. 08:15</div>
+    </div>
+    <div style="background:#fff;border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:12px;letter-spacing:1px;font-weight:800;color:#7D6571;padding:4px 8px 8px">SCREENS</div>
+      <sc-for list="{{ screenList }}" as="s" hint-placeholder-count="12">
+        <button onClick="{{ s.onClick }}" style="{{ s.style }}"><span style="width:26px;font-variant-numeric:tabular-nums;color:#B6A3AD;font-weight:800">{{ s.num }}</span><span style="flex:1">{{ s.th }}</span><span style="font-size:12px;color:#7D6571">{{ s.en }}</span></button>
+      </sc-for>
+    </div>
+    <div style="background:#fff;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font-size:12px;letter-spacing:1px;font-weight:800;color:#7D6571">DEMO SCENARIOS</div>
+      <sc-for list="{{ scenarios }}" as="s" hint-placeholder-count="3">
+        <button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button>
+      </sc-for>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button onClick="{{ simReminder }}" style="flex:1;height:44px;border-radius:14px;border:none;background:#FFDCE9;color:#A8385C;font-weight:800;font-size:13px;cursor:pointer">แจ้งเตือนกินยา</button>
+        <button onClick="{{ simFollow }}" style="flex:1;height:44px;border-radius:14px;border:none;background:#E9E1FF;color:#5E4CB8;font-weight:800;font-size:13px;cursor:pointer">เตือนซ้ำ</button>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startScreen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;splash&quot;,&quot;onboarding&quot;,&quot;home&quot;,&quot;blister&quot;,&quot;history&quot;,&quot;inventory&quot;,&quot;openbox&quot;,&quot;settings&quot;,&quot;profile&quot;,&quot;empty&quot;,&quot;error&quot;],&quot;default&quot;:&quot;home&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;scenario&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;low&quot;,&quot;nostock&quot;,&quot;plenty&quot;],&quot;default&quot;:&quot;low&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;reduceMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const LOCS = { bedroom: 'ห้องนอน', work: 'ห้องทำงาน', bag: 'กระเป๋า' };
+const LOC_KEYS = ['bedroom', 'work', 'bag'];
+const NOW = '08:15', TODAY = 12;
+const PAST = { 1: '08:12', 2: '08:05', 3: '08:31', 4: '08:02', 5: '08:20', 6: '09:10', 8: '08:14', 9: '08:03', 10: '08:40', 11: '08:09' };
+const LETTERS = 'ABCDEFGHIJKLMNOP';
+const SCREENS = [
+  ['splash', 'Splash', 'หน้าเปิดแอป'], ['onboarding', 'Onboarding', 'แนะนำโมโม่'], ['home', 'Home', 'หน้าหลัก'],
+  ['blister', 'Blister', 'แผงยา'], ['confirm', 'Confirm', 'ยืนยันการกินยา'], ['history', 'History', 'ประวัติ'],
+  ['inventory', 'Inventory', 'สต็อกยา'], ['openbox', 'Open box', 'เปิดกล่องใหม่'], ['settings', 'Reminders', 'ตั้งค่าการเตือน'],
+  ['profile', 'Profile', 'โปรไฟล์โมโม่'], ['empty', 'Empty', 'หน้าว่าง'], ['error', 'Error', 'ออฟไลน์ / ผิดพลาด'],
+];
+const OB = [
+  { momo: 'welcome', tint: '#FFDCE9', en: 'Meet Momo', title: 'สวัสดีแพรวา โมโม่เองนะ', body: 'โมโม่เป็นกระต่ายตัวเล็กที่จะอยู่ข้าง ๆ คอยเตือนและดูแลแพรวาทุกวัน', cta: 'ต่อไป' },
+  { momo: 'reminder', tint: '#FFF0BD', en: 'Gentle reminders', title: 'เตือนเบา ๆ ตามเวลาที่ตั้งไว้', body: 'โมโม่จะไม่บันทึกแทน จนกว่าแพรวาจะกดยืนยันเอง ปัดแจ้งเตือนทิ้งก็ไม่นับว่ากินนะ', cta: 'ต่อไป' },
+  { momo: 'waiting', tint: '#E9E1FF', en: 'Private by default', title: 'เรื่องของเรา เก็บไว้ในเครื่องนี้', body: 'ข้อมูลยาอยู่ในเครื่องของแพรวาเท่านั้น และซ่อนชื่อยาบนหน้าจอล็อกได้', cta: 'เริ่มใช้งาน ♡' },
+];
+function mk(id, loc, used) { return { id, loc, tablets: Array.from({ length: 15 }, (_, i) => ({ out: i < used, dose: i < used, day: null })) }; }
+function scenario(k) {
+  const doses = {}; let n = 0;
+  Object.keys(PAST).forEach(d => { doses[d] = { at: PAST[d], pack: 'A', n: ++n }; });
+  if (k === 'plenty') return { packs: [mk('A', 'bedroom', 4), mk('B', 'work', 0)], reserve: 2, doses, active: 'A' };
+  if (k === 'nostock') return { packs: [mk('A', 'bedroom', 10), mk('B', 'work', 14)], reserve: 0, doses, active: 'A' };
+  return { packs: [mk('A', 'bedroom', 10), mk('B', 'work', 14)], reserve: 1, doses, active: 'A' };
+}
+const left = p => p.tablets.filter(t => !t.out).length;
+const nextIdx = p => p.tablets.findIndex(t => !t.out);
+const addMin = (hm, m) => { const [h, mm] = hm.split(':').map(Number); const t = (h * 60 + mm + m) % 1440; return String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'); };
+const seg = on => ({ flex: 1, height: 40, border: 'none', borderRadius: 999, background: on ? '#fff' : 'transparent', color: on ? '#A8385C' : '#7D6571', fontWeight: 800, fontSize: 14, cursor: 'pointer', boxShadow: on ? '0 2px 8px -2px rgba(103,68,84,.2)' : 'none', transition: 'all 200ms cubic-bezier(.22,1,.36,1)' });
+const track = on => ({ width: 52, height: 32, borderRadius: 999, border: 'none', background: on ? '#C4466F' : '#EBDDE3', position: 'relative', cursor: 'pointer', flex: 'none', transition: 'background 200ms' });
+const knob = on => ({ position: 'absolute', top: 3, left: on ? 23 : 3, width: 26, height: 26, borderRadius: '50%', background: '#fff', boxShadow: '0 2px 6px rgba(103,68,84,.25)', transition: 'left 220ms cubic-bezier(.34,1.56,.64,1)' });
+
+class Component extends DCLogic {
+  state = Object.assign({
+    screen: this.props.startScreen ?? 'home', ob: 0, mode: 'separate',
+    remind: '08:00', follow: 30, qty: 1, privacy: true, perm: 'default', bedtime: false, bedTime: '22:30',
+    sheet: null, choice: 'dose', sheetTime: NOW, toast: '', toastOn: false, toastMomo: 'taken',
+    sel: TODAY, banner: null, emptyTab: 'history', errTab: 'offline', retrying: false,
+    call: 'แพรวา', voice: 'sweet', reduce: !!this.props.reduceMotion, tone: 'bell', newLocs: ['bedroom', 'work'], scen: this.props.scenario ?? 'low',
+    log: [{ t: '1 ต.ค. 2026 · 08:10', text: 'เปิดกล่องใหม่ → แผง A, B', d: '−1 กล่อง' }, { t: '28 ก.ย. 2026 · 18:40', text: 'ซื้อยาเพิ่ม', d: '+2 กล่อง' }],
+    audit: [],
+  }, scenario(this.props.scenario ?? 'low'));
+
+  go = screen => {
+    if (screen === 'confirm') { this.setState({ screen: 'blister' }, () => this.quickConfirm()); return; }
+    this.setState({ screen, sheet: null, banner: null });
+    const sc = document.querySelector('.scroll'); if (sc) sc.scrollTop = 0;
+  };
+  showToast = (toast, toastMomo = 'taken') => {
+    clearTimeout(this._t);
+    this.setState({ toast, toastOn: true, toastMomo });
+    this._t = setTimeout(() => this.setState({ toastOn: false }), 2600);
+  };
+  addAudit = text => this.setState(s => ({ audit: [{ t: s.sheetTime || NOW, text }, ...s.audit] }));
+  editPack = (id, fn) => this.setState(s => ({ packs: s.packs.map(p => p.id === id ? fn({ ...p, tablets: p.tablets.map(t => ({ ...t })) }) : p) }));
+
+  openTablet = (pack, idx) => {
+    const t = this.state.packs.find(p => p.id === pack).tablets[idx];
+    this.setState({ sheet: { pack, idx }, choice: t.out ? 'dose' : (this.state.doses[TODAY] ? 'remove' : 'dose'), sheetTime: NOW, active: pack });
+  };
+  quickConfirm = () => {
+    const s = this.state;
+    let p = s.packs.find(x => x.id === s.active && left(x) > 0) || s.packs.find(x => left(x) > 0);
+    if (!p) { this.showToast('ไม่มีเม็ดยาในแผงแล้ว เปิดกล่องใหม่ก่อนนะ', 'nostock'); return; }
+    this.openTablet(p.id, nextIdx(p));
+  };
+  confirmSheet = () => {
+    const { sheet, choice, sheetTime } = this.state; if (!sheet) return;
+    const today = this.state.doses[TODAY];
+    const n = sheet.idx + 1;
+    if (choice === 'dose' && !today) {
+      this.editPack(sheet.pack, p => { p.tablets[sheet.idx] = { out: true, dose: true, day: TODAY }; return p; });
+      this.setState(s => ({ doses: { ...s.doses, [TODAY]: { at: sheetTime, pack: sheet.pack, n } }, sheet: null }));
+      this.addAudit(`กินยา · แผง ${sheet.pack} เม็ดที่ ${n}`);
+      this.showToast(this.state.voice === 'sweet' ? `เย้ วันนี้${this.state.call}ดูแลตัวเองแล้ว ♡` : 'บันทึกการกินยาแล้ว');
+    } else {
+      this.editPack(sheet.pack, p => { p.tablets[sheet.idx] = { out: true, dose: false, day: null }; return p; });
+      this.setState({ sheet: null });
+      this.addAudit(`แกะเม็ดออก (ไม่นับว่ากิน) · แผง ${sheet.pack} เม็ดที่ ${n}`);
+      this.showToast('แกะเม็ดออกแล้ว ไม่ได้นับเป็นการกินยานะ', 'waiting');
+    }
+  };
+  restoreTablet = () => {
+    const { sheet } = this.state; if (!sheet) return;
+    const t = this.state.packs.find(p => p.id === sheet.pack).tablets[sheet.idx];
+    this.editPack(sheet.pack, p => { p.tablets[sheet.idx] = { out: false, dose: false, day: null }; return p; });
+    const patch = { sheet: null };
+    if (t.day === TODAY) { const d = { ...this.state.doses }; delete d[TODAY]; patch.doses = d; }
+    this.setState(patch);
+    this.addAudit(`แก้ไข: คืนเม็ดที่ ${sheet.idx + 1} เข้าแผง ${sheet.pack}${t.day === TODAY ? ' และยกเลิกบันทึกวันนี้' : ''}`);
+    this.showToast('แก้ไขแล้ว เม็ดนี้กลับเข้าแผงนะ', 'idle');
+  };
+  unDose = () => {
+    const { sheet } = this.state; if (!sheet) return;
+    const t = this.state.packs.find(p => p.id === sheet.pack).tablets[sheet.idx];
+    this.editPack(sheet.pack, p => { p.tablets[sheet.idx] = { out: true, dose: false, day: null }; return p; });
+    const patch = { sheet: null };
+    if (t.day === TODAY) { const d = { ...this.state.doses }; delete d[TODAY]; patch.doses = d; }
+    this.setState(patch);
+    this.addAudit(`แก้ไข: เม็ดที่ ${sheet.idx + 1} แกะออกแต่ไม่ได้กิน`);
+    this.showToast('แก้ไขแล้ว', 'idle');
+  };
+  openBox = () => {
+    const s = this.state; if (s.reserve < 1) return;
+    const base = s.packs.length;
+    const a = LETTERS[base], b = LETTERS[base + 1];
+    const combined = s.mode === 'combined';
+    const locA = s.newLocs[0], locB = combined ? s.newLocs[0] : s.newLocs[1];
+    this.setState({
+      reserve: s.reserve - 1, packs: [...s.packs, mk(a, locA, 0), mk(b, locB, 0)], active: a, screen: 'blister',
+      log: [{ t: '12 ต.ค. 2026 · ' + NOW, text: `เปิดกล่องใหม่ → แผง ${a}, ${b}`, d: '−1 กล่อง' }, ...s.log],
+    });
+    this.showToast(`เปิดกล่องแล้ว ได้แผง ${a} กับ ${b} ♡`, 'refill');
+  };
+  setReserve = d => this.setState(s => {
+    const r = Math.max(0, s.reserve + d); if (r === s.reserve) return null;
+    return { reserve: r, log: [{ t: '12 ต.ค. 2026 · ' + NOW, text: d > 0 ? 'เพิ่มกล่องสำรอง' : 'ลดกล่องสำรอง (แก้ไขจำนวน)', d: (d > 0 ? '+' : '−') + '1 กล่อง' }, ...s.log] };
+  });
+  setScenario = k => { this.setState({ ...scenario(k), scen: k, audit: [], sheet: null }); this.showToast('โหลดสถานการณ์ตัวอย่างแล้ว', 'idle'); };
+  sim = kind => {
+    const s = this.state;
+    const sweet = s.voice === 'sweet';
+    const title = kind === 'follow' ? 'โมโม่แวะมาถามนิดนึง กินยาไปหรือยังเอ่ย?' : sweet ? `${s.call}า ได้เวลากินยาแล้วน้า 🐰` : `ถึงเวลากินยาแล้ว ${s.call}`;
+    const body = s.privacy ? 'แตะเพื่อเปิดโมโม่' : `Pristiq 50 mg · ${s.qty} เม็ด`;
+    this.setState({ banner: { title, body } });
+    clearTimeout(this._b); this._b = setTimeout(() => this.setState({ banner: null }), 4200);
+  };
+
+  renderVals() {
+    const s = this.state;
+    const sweet = s.voice === 'sweet';
+    const today = s.doses[TODAY];
+    const opened = s.packs.reduce((a, p) => a + left(p), 0);
+    const low = opened < 7;
+    const pending = !today && NOW >= s.remind;
+    const homeMomo = low && s.reserve === 0 && !today ? 'nostock' : today ? 'taken' : pending ? 'reminder' : 'idle';
+    const bubble = homeMomo === 'taken' ? (sweet ? `เย้ วันนี้${s.call}ดูแลตัวเองแล้ว ♡` : 'วันนี้บันทึกเรียบร้อยแล้ว')
+      : homeMomo === 'reminder' ? (sweet ? `${s.call}า ได้เวลากินยาแล้วน้า ♡` : `ถึงเวลากินยาแล้ว ${s.call}`)
+      : homeMomo === 'nostock' ? (pending ? 'ได้เวลากินยาแล้วน้า แล้วยาก็ใกล้หมดด้วยนะ' : 'ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้เตรียมเพิ่มนะ')
+      : (sweet ? `โมโม่อยู่ตรงนี้นะ เจอกันตอน ${s.remind} น้า` : `เตือนครั้งถัดไป ${s.remind} น.`);
+    const statusChip = today
+      ? { icon: 'check', label: `กินแล้ว ${today.at} น.`, style: chip('#DDF3E8', '#2C7651') }
+      : pending ? { icon: 'clock', label: `รอบันทึก · ${s.remind} น.`, style: chip('#FFF0BD', '#80570A') }
+      : { icon: 'bell', label: `ยังไม่ถึงเวลา · ${s.remind} น.`, style: chip('#fff', '#A8385C') };
+    function chip(bg, fg) { return { display: 'inline-flex', alignItems: 'center', gap: 6, height: 30, padding: '0 12px', borderRadius: 999, background: bg, color: fg, fontSize: 13, fontWeight: 800 }; }
+    const refillTitle = s.reserve > 0 ? 'ยาในแผงเหลือน้อยแล้ว' : 'ยาใกล้หมด และไม่มีกล่องสำรอง';
+    const refillBody = s.reserve > 0 ? `เหลือ ${opened} เม็ด · เตรียมเปิดกล่องใหม่ได้เลยนะ` : `เหลือ ${opened} เม็ด · ไปซื้อหรือรับยาเพิ่มเร็ว ๆ นี้นะ`;
+    const totalSupply = opened + s.reserve * 30;
+    const days = Math.floor(totalSupply / s.qty);
+    const nextReminder = today ? `พรุ่งนี้ ${s.remind} น.` : pending ? (s.follow ? `เตือนซ้ำ ${addMin(s.remind, s.follow)} น.` : 'ปิดการเตือนซ้ำอยู่') : `วันนี้ ${s.remind} น.`;
+
+    // packs
+    const visible = s.packs.filter(p => left(p) > 0 || p.id === s.active);
+    const cur = s.packs.find(p => p.id === s.active) || s.packs[0];
+    const ni = nextIdx(cur);
+    const packTabs = visible.map(p => {
+      const on = p.id === cur.id;
+      return { name: 'แผง ' + p.id, loc: LOCS[p.loc], left: left(p), selected: on ? 'true' : 'false', onClick: () => this.setState({ active: p.id }),
+        style: { flex: 'none', minWidth: 132, padding: '0 16px', whiteSpace: 'nowrap', height: 60, borderRadius: 20, border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: on ? '#C4466F' : '#E3F1FC', color: on ? '#fff' : '#2D5F86', boxShadow: on ? '0 4px 12px -4px rgba(196,70,111,.45)' : 'none', transition: 'all 200ms' } };
+    });
+    const cell = (i) => {
+      const t = cur.tablets[i]; const isNext = i === ni;
+      const st = !t.out ? (isNext ? 'next' : 'in') : t.dose ? 'taken' : 'removed';
+      const pill = { width: 46, height: 46, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 240ms cubic-bezier(.22,1,.36,1)' };
+      if (st === 'in' || st === 'next') Object.assign(pill, { background: 'radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F7F3F5 55%, #E3DBDF 100%)', boxShadow: st === 'next' ? '0 0 0 3px #F47FA7, 0 0 0 7px rgba(244,127,167,.25), 0 3px 6px rgba(103,68,84,.18)' : '0 3px 6px rgba(103,68,84,.18), inset 0 -2px 3px rgba(103,68,84,.08)' });
+      if (st === 'taken') Object.assign(pill, { background: '#DDF3E8', color: '#2C7651', boxShadow: 'inset 0 2px 4px rgba(44,118,81,.15)', border: '1.5px dashed #A9E0C4' });
+      if (st === 'removed') Object.assign(pill, { background: '#E9E1FF', color: '#5E4CB8', boxShadow: 'inset 0 2px 4px rgba(94,76,184,.12)', border: '1.5px dashed #C9BBF7' });
+      const labels = { next: 'ถัดไป ยังอยู่ในแผง', in: 'ยังอยู่ในแผง', taken: 'กินแล้ว', removed: 'แกะออก ไม่ได้กิน' };
+      return { n: i + 1, icon: st === 'taken' ? 'check' : st === 'removed' ? 'minus' : null, pillStyle: pill,
+        numStyle: { fontSize: 12, lineHeight: '16px', fontWeight: 800, color: st === 'next' ? '#C4466F' : '#7D6571' },
+        aria: `เม็ดที่ ${i + 1} ${labels[st]}`, onClick: () => this.openTablet(cur.id, i) };
+    };
+    const rows = [0, 1, 2].map(r => ({ arrow: r === 1 ? 'left' : 'right', cells: [0, 1, 2, 3, 4].map(c => cell(r * 5 + (r % 2 === 0 ? c : 4 - c))) }));
+
+    // sheet
+    const sheet = s.sheet;
+    let sh = { packLine: '', n: '', momo: 'reminder', isNew: false, isDetail: false };
+    let miniCells = [];
+    if (sheet) {
+      const p = s.packs.find(x => x.id === sheet.pack); const t = p.tablets[sheet.idx]; const n = sheet.idx + 1;
+      const pn = nextIdx(p);
+      miniCells = [];
+      for (let r = 0; r < 3; r++) for (let c = 0; c < 5; c++) {
+        const i = r * 5 + (r % 2 === 0 ? c : 4 - c); const tt = p.tablets[i];
+        miniCells.push({ style: { width: 12, height: 12, borderRadius: '50%', background: i === sheet.idx ? '#C4466F' : tt.out ? 'transparent' : '#fff', border: tt.out && i !== sheet.idx ? '1px dashed #B6A3AD' : 'none' } });
+      }
+      const dot = on => ({ width: 22, height: 22, borderRadius: '50%', flex: 'none', border: on ? '7px solid #C4466F' : '2px solid #D7BFCA', background: '#fff', transition: 'all 150ms' });
+      const opt = (on, dis) => ({ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', borderRadius: 18, border: on ? '2px solid #F47FA7' : '2px solid #F3E4EA', background: on ? '#FFF3F7' : '#fff', cursor: dis ? 'not-allowed' : 'pointer', opacity: dis ? .45 : 1, color: '#674454' });
+      const warn = !t.out && today && s.choice === 'dose' ? '' : !t.out && today ? `วันนี้บันทึกกินยาแล้วเมื่อ ${today.at} น. ไม่ต้องกินซ้ำนะ บันทึกได้เฉพาะ “แกะออก”` : !t.out && sheet.idx !== pn ? `ตามลำดับ เม็ดถัดไปคือเม็ดที่ ${pn + 1} เลือกเม็ดนี้ก็ได้นะ` : '';
+      sh = {
+        packLine: `แผง ${p.id} · ${LOCS[p.loc]}`, n, momo: t.out ? (t.dose ? 'taken' : 'waiting') : 'reminder',
+        isNew: !t.out, isDetail: t.out,
+        question: s.choice === 'dose' ? `${s.call}กินยาเม็ดนี้แล้วใช่ไหม?` : 'แกะเม็ดนี้ออกจากแผงใช่ไหม?',
+        choiceDose: s.choice === 'dose' ? 'true' : 'false', choiceRemove: s.choice === 'remove' ? 'true' : 'false',
+        doseStyle: opt(s.choice === 'dose', !!today), removeStyle: opt(s.choice === 'remove'), doseDot: dot(s.choice === 'dose'), removeDot: dot(s.choice === 'remove'),
+        warn, confirmLabel: s.choice === 'dose' ? 'ยืนยัน กินแล้ว ♡' : 'ยืนยัน แกะออก',
+        detailIcon: t.dose ? 'check' : 'minus', detailTitle: t.dose ? 'กินแล้ว' : 'แกะออก ไม่ได้กิน',
+        detailBody: t.dose ? (t.day === TODAY ? `บันทึกวันนี้ ${today ? today.at : ''} น.` : 'บันทึกก่อนหน้านี้') : 'ไม่นับเป็นการกินยา',
+        detailRow: { display: 'flex', gap: 12, alignItems: 'center', marginTop: 16, padding: '12px 14px', borderRadius: 18, background: t.dose ? '#DDF3E8' : '#E9E1FF', color: t.dose ? '#2C7651' : '#5E4CB8' },
+        canUnDose: t.dose,
+      };
+    }
+
+    // calendar
+    const calCells = [];
+    for (let i = 0; i < 4; i++) calCells.push({ n: '', style: { height: 48, border: 'none', background: 'none' }, dotStyle: { display: 'none' }, icon: null, aria: '', onClick: null });
+    for (let d = 1; d <= 31; d++) {
+      const st = d < TODAY ? (s.doses[d] ? 'taken' : 'missed') : d === TODAY ? (today ? 'taken' : 'pending') : 'future';
+      const sel = d === s.sel;
+      const bg = { taken: '#DDF3E8', missed: '#fff', pending: '#FFF0BD', future: '#fff' }[st];
+      calCells.push({
+        n: d, icon: { taken: 'check', pending: 'clock', missed: null, future: null }[st],
+        aria: `${d} ตุลาคม ${{ taken: 'กินแล้ว', missed: 'ไม่มีบันทึก', pending: 'รอบันทึก', future: '' }[st]}`,
+        onClick: () => this.setState({ sel: d }),
+        style: { height: 48, borderRadius: 14, border: st === 'missed' ? '1.5px dashed #C9BBF7' : '1.5px solid transparent', background: bg, color: st === 'future' ? '#B6A3AD' : '#674454', fontSize: 14, fontWeight: 800, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1, boxShadow: sel ? '0 0 0 2.5px #C4466F' : 'none', padding: 0 },
+        dotStyle: { height: 12, display: 'flex', alignItems: 'center', color: st === 'taken' ? '#2C7651' : '#80570A' },
+      });
+    }
+    const sd = s.sel; const sdose = s.doses[sd];
+    const selSt = sd < TODAY ? (sdose ? 'taken' : 'missed') : sd === TODAY ? (today ? 'taken' : 'pending') : 'future';
+    const selMap = {
+      taken: { icon: 'check', status: 'กินแล้ว', detail: sdose ? `บันทึกเวลา ${sdose.at} น. · แผง ${sdose.pack}${sdose.n ? ' เม็ดที่ ' + sdose.n : ''}` : '', bg: '#DDF3E8', fg: '#2C7651', momo: 'taken' },
+      missed: { icon: 'info', status: 'ไม่มีบันทึก', detail: 'วันนี้ไม่ได้กดบันทึกไว้', bg: '#E9E1FF', fg: '#5E4CB8', momo: 'waiting' },
+      pending: { icon: 'clock', status: 'รอบันทึก', detail: `เวลาเตือน ${s.remind} น.`, bg: '#FFF0BD', fg: '#80570A', momo: 'reminder' },
+      future: { icon: 'calendar', status: 'ยังไม่ถึงวัน', detail: `โมโม่จะเตือนตอน ${s.remind} น.`, bg: '#F6EDF1', fg: '#7D6571', momo: 'sleep' },
+    }[selSt];
+
+    // inventory
+    const invMomo = low ? (s.reserve > 0 ? 'refill' : 'nostock') : 'idle';
+    const invBubble = low ? (s.reserve > 0 ? 'เหลือไม่ถึง 7 เม็ดแล้วน้า เตรียมเปิดกล่องใหม่ได้เลย ♡' : 'ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้ไปรับยาเพิ่มนะ') : 'ยายังพอนะ โมโม่นับไว้ให้แล้ว ♡';
+    const btnPrimary = (on, bg = '#7360D0') => ({ height: 64, border: 'none', borderRadius: 22, background: on ? bg : '#F1E7EB', color: on ? '#fff' : '#B6A3AD', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, cursor: on ? 'pointer' : 'not-allowed', boxShadow: on ? '0 6px 16px -6px rgba(115,96,208,.55)' : 'none' });
+
+    const newPacks = [0, 1].map(k => ({
+      name: 'แผง ' + LETTERS[s.packs.length + k],
+      opts: LOC_KEYS.map(l => {
+        const on = s.newLocs[k] === l;
+        return { label: LOCS[l], on: on ? 'true' : 'false', onClick: () => this.setState(st => { const nl = [...st.newLocs]; nl[k] = l; if (st.mode === 'combined') nl[1 - k] = l; return { newLocs: nl }; }),
+          style: { height: 44, padding: '0 16px', borderRadius: 999, border: on ? '2px solid #F47FA7' : '2px solid #F3E4EA', background: on ? '#FFF3F7' : '#fff', color: on ? '#A8385C' : '#674454', fontWeight: 800, fontSize: 14, cursor: 'pointer' } };
+      }),
+    }));
+
+    const navKey = { profile: 'settings', openbox: 'inventory', empty: 'home', error: 'home' }[s.screen] || s.screen;
+    const navItems = [['home', 'หน้าหลัก', 'home'], ['blister', 'แผงยา', 'blister'], ['history', 'ประวัติ', 'calendar'], ['inventory', 'สต็อกยา', 'box'], ['settings', 'ตั้งค่า', 'settings']].map(([k, label, icon]) => {
+      const on = navKey === k;
+      return { label, icon, current: on ? 'page' : undefined, onClick: () => this.go(k),
+        iconWrap: { width: 48, height: 30, borderRadius: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', background: on ? '#FFDCE9' : 'transparent', color: on ? '#C4466F' : '#7D6571', transition: 'background 200ms' },
+        labelStyle: { fontSize: 11, lineHeight: '14px', fontWeight: 800, color: on ? '#C4466F' : '#7D6571' } };
+    });
+
+    const emptyData = {
+      history: { momo: 'waiting', tint: '#FFF3F7', title: 'ยังไม่มีประวัติการกินยา', body: 'พอแพรวากดบันทึกครั้งแรก โมโม่จะจดไว้ในปฏิทินให้นะ', cta: 'บันทึกครั้งแรก', onClick: () => this.go('home') },
+      packs: { momo: 'refill', tint: '#E9E1FF', title: 'ยังไม่มีแผงที่เปิดอยู่', body: 'เปิดกล่องใหม่ แล้วโมโม่จะสร้างแผงยา 2 แผงให้อัตโนมัติ', cta: 'เปิดกล่องใหม่', onClick: () => this.go('openbox') },
+      reserve: { momo: 'nostock', tint: '#FFF0BD', title: 'ไม่มีกล่องสำรองแล้ว', body: 'ได้ยามาเพิ่มเมื่อไหร่ บอกโมโม่ได้เลย จะนับเข้าสต็อกให้', cta: 'เพิ่มกล่องสำรอง', onClick: () => { this.setReserve(1); this.go('inventory'); } },
+    }[s.emptyTab];
+    const errData = s.errTab === 'offline'
+      ? { icon: 'wifioff', chip: 'ออฟไลน์อยู่', title: 'ตอนนี้ไม่มีอินเทอร์เน็ต', body: 'ไม่เป็นไรนะ บันทึกการกินยายังทำได้ตามปกติ โมโม่จะซิงก์ให้เมื่อกลับมาออนไลน์', secondary: 'ใช้งานต่อแบบออฟไลน์' }
+      : { icon: 'info', chip: 'บันทึกไม่สำเร็จ', title: 'โมโม่บันทึกไม่ทัน', body: 'การบันทึกครั้งล่าสุดยังไม่ถูกเก็บ ข้อมูลเดิมยังอยู่ครบ ลองอีกครั้งได้เลย', secondary: 'กลับหน้าหลัก' };
+
+    const segList = (opts, cur, set) => opts.map(([k, label]) => ({ label, style: seg(cur === k), onClick: () => set(k) }));
+    const inApp = !['splash', 'onboarding'].includes(s.screen);
+    const ob = OB[s.ob];
+    const curScreenKey = s.sheet ? 'confirm' : s.screen;
+
+    return {
+      isSplash: s.screen === 'splash', isOnboarding: s.screen === 'onboarding', inApp,
+      isHome: s.screen === 'home', isBlister: s.screen === 'blister', isHistory: s.screen === 'history', isInventory: s.screen === 'inventory',
+      isOpenBox: s.screen === 'openbox', isSettings: s.screen === 'settings', isProfile: s.screen === 'profile', isEmpty: s.screen === 'empty', isError: s.screen === 'error',
+      showNav: inApp && s.screen !== 'openbox', navItems,
+      stillAttr: s.reduce ? '' : undefined,
+      goOnboarding: () => this.setState({ screen: 'onboarding', ob: 0 }), finishOnboarding: () => this.go('home'),
+      ob, obNext: () => s.ob < 2 ? this.setState({ ob: s.ob + 1 }) : this.go('home'),
+      obDots: OB.map((_, i) => ({ style: { width: i === s.ob ? 24 : 8, height: 8, borderRadius: 999, background: i === s.ob ? '#C4466F' : '#EBDDE3', transition: 'all 240ms cubic-bezier(.22,1,.36,1)' } })),
+      call: s.call, qty: s.qty, remind: s.remind, bubble, homeMomo, statusChip,
+      todayTaken: !!today, todayNotTaken: !today, todayAt: today ? today.at : '',
+      quickConfirm: this.quickConfirm,
+      opened, reserve: s.reserve, packLetters: s.packs.filter(p => left(p) > 0).map(p => p.id).join('+') || '—',
+      openedNote: low ? 'เหลือน้อยกว่า 7 เม็ด' : `ยาพอสำหรับ ~${Math.floor(opened / s.qty)} วัน`,
+      reserveNote: s.reserve > 0 ? 'ยังไม่ได้เปิด' : 'หมดแล้ว',
+      showRefill: low, refillMomo: s.reserve > 0 ? 'refill' : 'nostock', refillTitle, refillBody, nextReminder,
+      goHome: () => this.go('home'), goBlister: () => this.go('blister'), goInventory: () => this.go('inventory'), goSettings: () => this.go('settings'), goProfile: () => this.go('profile'),
+      goOpenBox: () => s.reserve > 0 ? this.go('openbox') : this.showToast('ยังไม่มีกล่องสำรอง เพิ่มกล่องก่อนนะ', 'nostock'),
+      packTabs, cur: { name: 'แผง ' + cur.id, loc: LOCS[cur.loc] }, rows,
+      cycleLoc: () => { const nl = LOC_KEYS[(LOC_KEYS.indexOf(cur.loc) + 1) % LOC_KEYS.length]; this.editPack(cur.id, p => ({ ...p, loc: nl })); this.addAudit(`ย้ายแผง ${cur.id} ไป${LOCS[nl]}`); },
+      hasNext: ni >= 0, curEmpty: ni < 0, nextN: ni + 1, openNext: () => this.openTablet(cur.id, ni),
+      audit: s.audit.slice(0, 6), auditEmpty: s.audit.length === 0,
+      // sheet
+      sh, miniCells, sheetTime: s.sheetTime, onSheetTime: e => this.setState({ sheetTime: e.target.value }),
+      chooseDose: () => !today && this.setState({ choice: 'dose' }), chooseRemove: () => this.setState({ choice: 'remove' }),
+      confirmSheet: this.confirmSheet, closeSheet: () => this.setState({ sheet: null }), restoreTablet: this.restoreTablet, unDose: this.unDose,
+      overlayStyle: { position: 'absolute', inset: 0, background: 'rgba(62,36,48,.32)', opacity: sheet ? 1 : 0, pointerEvents: sheet ? 'auto' : 'none', transition: 'opacity 240ms', zIndex: 70 },
+      sheetStyle: { position: 'absolute', left: 0, right: 0, bottom: 0, zIndex: 80, background: '#fff', borderRadius: '28px 28px 0 0', padding: '10px 20px 34px', boxShadow: '0 -8px 40px -12px rgba(103,68,84,.30)', transform: sheet ? 'translateY(0)' : 'translateY(105%)', transition: 'transform 340ms cubic-bezier(.22,1,.36,1)' },
+      // history
+      calCells, selTitle: sd === TODAY ? 'วันนี้' : `${sd} ตุลาคม`, selDate: `${sd} ตุลาคม 2026`,
+      selMomo: selMap.momo, selIcon: selMap.icon, selStatus: selMap.status, selDetail: selMap.detail,
+      selRowStyle: { display: 'flex', gap: 12, alignItems: 'center', padding: '12px 14px', borderRadius: 18, background: selMap.bg, color: selMap.fg },
+      selMissed: selSt === 'missed', selPending: selSt === 'pending',
+      backfill: () => { this.setState(st => ({ doses: { ...st.doses, [sd]: { at: 'ไม่ระบุ', pack: '—', n: 0, late: true } } })); this.showToast('บันทึกย้อนหลังแล้ว ขอบคุณที่บอกโมโม่นะ', 'taken'); },
+      // inventory
+      invMomo, invBubble, supplyText: `รวมสำรอง ≈ ${days} วัน`,
+      openedBar: { height: '100%', width: Math.min(100, opened / 30 * 100) + '%', borderRadius: 999, background: low ? '#F4B740' : '#5DBB8E', transition: 'width 350ms cubic-bezier(.22,1,.36,1)' },
+      packSummary: s.packs.filter(p => left(p) > 0).map(p => ({ name: 'แผง ' + p.id, loc: LOCS[p.loc], left: left(p) })),
+      setSeparate: () => this.setState({ mode: 'separate' }),
+      setCombined: () => { this.setState(st => ({ mode: 'combined', packs: st.packs.map(p => ({ ...p, loc: st.packs.find(x => x.id === st.active)?.loc || 'bedroom' })) })); this.showToast('รวมแผงไว้ที่เดียวกันแล้ว', 'idle'); },
+      modeSep: { ...seg(s.mode === 'separate'), flex: 'none', padding: '0 12px', height: 36, fontSize: 13 }, modeComb: { ...seg(s.mode === 'combined'), flex: 'none', padding: '0 12px', height: 36, fontSize: 13 },
+      incReserve: () => this.setReserve(1), decReserve: () => this.setReserve(-1),
+      openBoxBtn: btnPrimary(s.reserve > 0), log: s.log.slice(0, 5),
+      newPacks, reserveAfter: Math.max(0, s.reserve - 1), openBox: this.openBox,
+      confirmBoxBtn: { ...btnPrimary(s.reserve > 0, '#C4466F'), height: 56, fontSize: 17, fontWeight: 800, boxShadow: s.reserve > 0 ? '0 4px 12px -4px rgba(196,70,111,.45)' : 'none' },
+      confirmBoxLabel: s.reserve > 0 ? 'ยืนยัน เปิดกล่อง (−1 กล่องสำรอง)' : 'ไม่มีกล่องสำรอง',
+      // settings
+      onRemind: e => this.setState({ remind: e.target.value || '08:00' }),
+      incQty: () => this.setState(st => ({ qty: Math.min(4, st.qty + 1) })), decQty: () => this.setState(st => ({ qty: Math.max(1, st.qty - 1) })),
+      followOpts: segList([[0, 'ปิด'], [15, '15 นาที'], [30, '30 นาที'], [60, '1 ชม.']], s.follow, k => this.setState({ follow: k })),
+      followNote: s.follow ? `ถ้ายังไม่บันทึก โมโม่จะแวะมาถามอีกครั้งตอน ${addMin(s.remind, s.follow)} น. (สูงสุด 2 ครั้ง) · การปัดทิ้งไม่นับว่ากินยา` : 'โมโม่จะเตือนครั้งเดียวตามเวลา',
+      bedtime: s.bedtime ? 'true' : 'false', toggleBedtime: () => this.setState({ bedtime: !s.bedtime }), bedTime: s.bedTime, bedTrack: track(s.bedtime), bedKnob: knob(s.bedtime),
+      permText: s.perm === 'granted' ? 'โมโม่ส่งแจ้งเตือนได้แล้ว' : 'ยังไม่ได้อนุญาต · โมโม่จะเตือนไม่ได้', permNeeded: s.perm !== 'granted', permGranted: s.perm === 'granted',
+      grantPerm: () => { this.setState({ perm: 'granted' }); this.showToast('ขอบคุณน้า โมโม่จะเตือนเบา ๆ นะ', 'welcome'); },
+      privacy: s.privacy ? 'true' : 'false', togglePrivacy: () => this.setState({ privacy: !s.privacy }), privTrack: track(s.privacy), privKnob: knob(s.privacy),
+      previewTitle: sweet ? `${s.call}า ได้เวลากินยาแล้วน้า 🐰` : `ถึงเวลากินยาแล้ว ${s.call}`,
+      previewBody: s.privacy ? 'แตะเพื่อเปิดโมโม่' : `Pristiq 50 mg · ${s.qty} เม็ด`,
+      simReminder: () => this.sim('remind'), simFollow: () => this.sim('follow'),
+      // profile
+      callOpts: segList([['แพรวา', 'แพรวา'], ['แพรว', 'แพรว'], ['หนู', 'หนู']], s.call, k => this.setState({ call: k })),
+      styleOpts: segList([['sweet', 'หวาน ๆ'], ['plain', 'เรียบ ๆ']], s.voice, k => this.setState({ voice: k })),
+      stylePreview: sweet ? `${s.call}า ได้เวลากินยาแล้วน้า โมโม่มาเตือนแล้วนะ ♡` : `ถึงเวลากินยาแล้ว ${s.call} · Pristiq 50 mg`,
+      toneOpts: segList([['bell', 'กระดิ่ง'], ['pop', 'ป๊อป'], ['off', 'ปิดเสียง']], s.tone, k => { this.setState({ tone: k }); this.showToast(k === 'off' ? 'ปิดเสียงแล้ว แจ้งเตือนยังขึ้นตามปกติ' : 'กรุ๊งกริ๊ง ♪', 'reminder'); }),
+      reduce: s.reduce ? 'true' : 'false', toggleReduce: () => this.setState({ reduce: !s.reduce }), redTrack: track(s.reduce), redKnob: knob(s.reduce),
+      // empty / error
+      emptyOpts: segList([['history', 'ประวัติ'], ['packs', 'แผงยา'], ['reserve', 'กล่องสำรอง']], s.emptyTab, k => this.setState({ emptyTab: k })), empty: emptyData,
+      errOpts: segList([['offline', 'ออฟไลน์'], ['error', 'บันทึกไม่สำเร็จ']], s.errTab, k => this.setState({ errTab: k })), err: errData,
+      errMomo: s.retrying ? 'loading' : 'error', retryLabel: s.retrying ? 'กำลังลองใหม่…' : 'ลองอีกครั้ง',
+      retry: () => { if (s.retrying) return; this.setState({ retrying: true }); setTimeout(() => { this.setState({ retrying: false }); this.showToast('เรียบร้อยแล้ว ข้อมูลครบนะ', 'taken'); }, 1600); },
+      // toast / banner
+      toast: s.toast, toastMomo: s.toastMomo,
+      toastStyle: { position: 'absolute', left: 16, right: 16, bottom: 104, zIndex: 90, background: '#fff', borderRadius: 20, padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 12px 32px -12px rgba(103,68,84,.35)', opacity: s.toastOn ? 1 : 0, transform: s.toastOn ? 'translateY(0) scale(1)' : 'translateY(12px) scale(.98)', transition: 'all 280ms cubic-bezier(.22,1,.36,1)', pointerEvents: 'none' },
+      bannerTitle: s.banner ? s.banner.title : '', bannerBody: s.banner ? s.banner.body : '',
+      bannerStyle: { position: 'absolute', left: 10, right: 10, top: 52, zIndex: 95, background: 'rgba(255,255,255,.97)', borderRadius: 22, padding: '10px 12px', display: 'flex', gap: 10, alignItems: 'center', boxShadow: '0 12px 32px -10px rgba(103,68,84,.35)', cursor: 'pointer', transform: s.banner ? 'translateY(0)' : 'translateY(-220px)', opacity: s.banner ? 1 : 0, transition: 'transform 380ms cubic-bezier(.22,1,.36,1)' },
+      tapBanner: () => { this.setState({ banner: null }); this.go('home'); },
+      // panel
+      screenList: SCREENS.map(([k, en, th], i) => ({ num: String(i + 1).padStart(2, '0'), en, th, onClick: () => this.go(k),
+        style: { display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 10px', borderRadius: 12, border: 'none', background: curScreenKey === k ? '#FFDCE9' : 'transparent', fontSize: 14, fontWeight: 800, cursor: 'pointer', textAlign: 'left', color: '#674454' } })),
+      scenarios: [['low', 'ใกล้หมด · มีกล่องสำรอง 1'], ['nostock', 'ใกล้หมด · ไม่มีกล่องสำรอง'], ['plenty', 'ยาเพียงพอ']].map(([k, label]) => ({ label, onClick: () => this.setScenario(k),
+        style: { height: 44, borderRadius: 14, border: s.scen === k ? '2px solid #F47FA7' : '2px solid #F3E4EA', background: s.scen === k ? '#FFF3F7' : '#fff', fontWeight: 800, fontSize: 14, cursor: 'pointer', textAlign: 'left', padding: '0 14px', color: '#674454' } })),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+name: Generate Momo voice clips
+
+# Renders Momo's lines (app/src/lib/voice-lines.ts) with a Thai neural voice and commits
+# app/public/voice/*.mp3, so Momo sounds the same on every device (iPhone web apps can't use Siri voices).
+on:
+  workflow_dispatch:
+    inputs:
+      voice:
+        description: "edge-tts voice"
+        default: "th-TH-PremwadeeNeural"
+      pitch:
+        description: "pitch, e.g. +22Hz"
+        default: "+22Hz"
+      rate:
+        description: "rate, e.g. +0%"
+        default: "+0%"
+      engine:
+        description: "edge or gtts"
+        default: "edge"
+      shift:
+        description: "gtts pitch shift"
+        default: "1.12"
+
+permissions:
+  contents: write
+
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install edge-tts gTTS
+      - name: Render clips
+        shell: bash
+        run: |
+          set -o pipefail
+          node --version; edge-tts --version || true
+          node scripts/gen-voice.mts 2>&1 | tee /tmp/voice.log
+        env:
+          MOMO_VOICE: ${{ inputs.voice }}
+          MOMO_PITCH: ${{ inputs.pitch }}
+          MOMO_RATE: ${{ inputs.rate }}
+          MOMO_ENGINE: ${{ inputs.engine }}
+          MOMO_SHIFT: ${{ inputs.shift }}
+      - name: Commit clips
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/voice
+          git diff --cached --quiet && echo "no changes" && exit 0
+          git commit -m "Momo voice clips (${{ inputs.engine }} ${{ inputs.voice }})"
+          git push
+      - name: Save log on failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan voice-log
+          git rm -rfq --cached . >/dev/null
+          cp /tmp/voice.log ../voice.log || echo "no log" > ../voice.log
+          git add -f ../voice.log
+          git commit -qm "voice log"
+          git push -f origin voice-log
