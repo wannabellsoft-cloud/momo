@@ -14,6 +14,12 @@ on:
       rate:
         description: "rate, e.g. +0%"
         default: "+0%"
+      engine:
+        description: "edge or gtts"
+        default: "edge"
+      shift:
+        description: "gtts pitch shift"
+        default: "1.12"
 
 permissions:
   contents: write
@@ -32,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install edge-tts
+      - run: pip install edge-tts gTTS
       - name: Render clips
         shell: bash
         run: |
@@ -43,13 +49,15 @@ jobs:
           MOMO_VOICE: ${{ inputs.voice }}
           MOMO_PITCH: ${{ inputs.pitch }}
           MOMO_RATE: ${{ inputs.rate }}
+          MOMO_ENGINE: ${{ inputs.engine }}
+          MOMO_SHIFT: ${{ inputs.shift }}
       - name: Commit clips
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/voice
           git diff --cached --quiet && echo "no changes" && exit 0
-          git commit -m "Momo voice clips (${{ inputs.voice }}, ${{ inputs.pitch }})"
+          git commit -m "Momo voice clips (${{ inputs.engine }} ${{ inputs.voice }})"
           git push
       - name: Save log on failure
         if: failure()

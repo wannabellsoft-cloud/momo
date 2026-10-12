@@ -141,9 +141,14 @@ const MALE = [/pattara/i, /niwat/i, /\bmale\b|ผู้ชาย/i];
 
 export type MomoVoice = { name: string; label: string; gender: "female" | "male" | "unknown"; voice: SpeechSynthesisVoice };
 
+// iOS/macOS "Enhanced"/"Premium" downloads (Settings → Accessibility → Spoken Content → Voices) sound far
+// more natural than the built-in compact voice, so they go first. Siri voices are never offered to web apps.
+const HQ = /enhanced|premium|natural|neural/i;
+
 function rank(v: SpeechSynthesisVoice) {
   const f = FEMALE.findIndex((r) => r.test(v.name));
-  if (f >= 0) return f;
+  const hq = HQ.test(v.name) || HQ.test(v.voiceURI) ? -0.5 : 0;
+  if (f >= 0) return f + hq;
   if (MALE.some((r) => r.test(v.name))) return 90;
   return 50;
 }
@@ -155,9 +160,11 @@ export function thaiVoices(): MomoVoice[] {
     .getVoices()
     .filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith("th"))
     .sort((a, b) => rank(a) - rank(b))
+    .filter((v, i, all) => all.findIndex((w) => w.name === v.name) === i) // compact + enhanced can share a name: keep the better one
     .map((v) => {
       const r = rank(v);
-      const label = v.name.replace(/^Microsoft\s+/i, "").replace(/\s*-\s*Thai.*$/i, "").replace(/\s*\(Thailand\)/i, "").trim();
+      const hq = /enhanced|premium/i.test(v.voiceURI) && !/enhanced|premium/i.test(v.name) ? " (คุณภาพสูง)" : "";
+      const label = v.name.replace(/^Microsoft\s+/i, "").replace(/\s*-\s*Thai.*$/i, "").replace(/\s*\(Thailand\)/i, "").trim() + hq;
       return { name: v.name, label, gender: r < 50 ? "female" : r >= 90 ? "male" : "unknown", voice: v };
     });
 }
