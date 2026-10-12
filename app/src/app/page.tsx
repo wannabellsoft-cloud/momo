@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Icon, type IconName } from "@/components/momo/Icon";
 import { HomeMomo } from "@/components/HomeMomo";
 import { LevelBar } from "@/components/LevelBar";
+import { PropArt } from "@/components/momo/PropArt";
 import { TakenCard } from "@/components/TakenCard";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Card, DemoLabel, PrimaryButton, cx } from "@/components/ui";
 import { isNight, thLongDay } from "@/lib/date";
-import { BASE } from "@/lib/base";
 import { derive } from "@/lib/derive";
 import { useNow, useOnline, useQuickConfirm } from "@/lib/hooks";
 import { MED, left, useMomo } from "@/lib/store";
@@ -139,8 +139,7 @@ export default function HomePage() {
 
       <Card className="flex items-center gap-3 px-4 py-[14px]">
         <div className="flex h-11 w-11 flex-none items-center justify-center rounded-[14px] bg-(--bg-subtle)">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
-          <img src={`${BASE}/mascot/props/alarm.webp`} alt="" width={30} height={34} className="alarm-wiggle h-[34px] w-[30px] object-contain" />
+          <PropArt name="alarm" size={34} className="alarm-wiggle" />
         </div>
         <div className="flex-1">
           <div className="text-[13px] leading-[20px] text-(--text-secondary)">เตือนครั้งถัดไป</div>

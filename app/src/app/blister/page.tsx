@@ -172,7 +172,7 @@ function BlisterGrid({ pack, next, onPress }: { pack: Pack; next: number; onPres
                   onClick={() => onPress(i)}
                   className="group flex min-h-16 min-w-0 cursor-pointer flex-col items-center gap-[3px] border-0 bg-transparent px-0 py-1"
                 >
-                  <Pill st={st} pointer={i !== 5 && i !== 10} />
+                  <Pill st={st} />
                   <span className={cx("text-[12px] leading-[16px] font-extrabold", st === "next" ? "text-(--action-primary)" : "text-(--text-secondary)")}>{i + 1}</span>
                 </button>,
                 c < 4 && (
@@ -196,8 +196,7 @@ function BlisterGrid({ pack, next, onPress }: { pack: Pack; next: number; onPres
   );
 }
 
-/** `pointer`: off where a turn arrow already sits above the tablet (6 and 11). */
-function Pill({ st, pointer = true }: { st: TabletState; pointer?: boolean }) {
+function Pill({ st }: { st: TabletState }) {
   const base = "flex aspect-square w-full max-w-[46px] items-center justify-center rounded-full transition-all duration-[240ms] ease-(--ease-out) group-active:scale-[.96]";
   if (st === "taken")
     return (
@@ -212,7 +211,7 @@ function Pill({ st, pointer = true }: { st: TabletState; pointer?: boolean }) {
       </span>
     );
   if (st === "next")
-    // "you are here": the tablet breathes, two ripples spread from it, a little pointer bobs above it
+    // "you are here": the tablet breathes, two ripples spread from it, twinkles around it
     return (
       <span className="relative flex aspect-square w-full max-w-[46px] items-center justify-center">
         <span aria-hidden="true" className="pill-ripple absolute inset-0 rounded-full" />
@@ -221,9 +220,6 @@ function Pill({ st, pointer = true }: { st: TabletState; pointer?: boolean }) {
           className={cx(base, "pill-next relative")}
           style={{ background: "var(--pill-gradient)", boxShadow: "0 0 0 3px var(--tablet-next), 0 0 0 7px rgba(244,127,167,.25), 0 3px 6px rgba(103,68,84,.18)" }}
         />
-        {pointer && <svg aria-hidden="true" width="14" height="10" viewBox="0 0 14 10" className="pill-pointer absolute -top-[13px] left-1/2 -ml-[7px] text-(--tablet-next)">
-          <path d="M2 2.2 C 2 1 3 .6 4 .6 H10 C 11 .6 12 1 12 2.2 C 12 3 11.6 3.4 11.2 3.9 L8 8.2 C 7.5 8.9 6.5 8.9 6 8.2 L2.8 3.9 C 2.4 3.4 2 3 2 2.2 Z" fill="currentColor" />
-        </svg>}
         <span aria-hidden="true" className="twinkle absolute -top-[2px] -right-[3px] text-[9px] leading-none text-(--tablet-next)">✦</span>
         <span aria-hidden="true" className="twinkle absolute -bottom-[1px] -left-[3px] text-[7px] leading-none text-(--tablet-next) [animation-delay:1.1s]">✦</span>
       </span>
