@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-import { addDays, dayKey, isoAt, nowIso } from "./date";
+import { addDays, addMin, dayKey, isoAt, nowIso } from "./date";
 import { useUI } from "./ui";
 
 /* ─── Domain constants ─────────────────────────────────────────────────── */
@@ -73,7 +73,7 @@ export type MomoData = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  remind: "08:00",
+  remind: "01:15",
   qty: 1,
   follow: 30,
   maxFollowUps: 2,
@@ -133,11 +133,12 @@ function emptyData(): MomoData {
 export function demoData(settings: Settings = DEFAULT_SETTINGS): MomoData {
   const today = new Date();
   const start = addDays(today, -26);
-  const openedAt = isoAt(dayKey(start), "08:10");
+  const openedAt = isoAt(dayKey(start), addMin(settings.remind, 10));
   const A = newPack(0, "bedroom", openedAt);
   const B = newPack(1, "work", openedAt);
   const doses: Record<string, Dose> = {};
-  const times = ["08:12", "08:05", "08:31", "08:02", "08:20", "09:10", "08:14", "08:03", "08:40", "08:09", "08:18", "08:07", "08:25"];
+  // minutes after the reminder time (one late day) — so the sample follows whatever time is set
+  const times = [12, 5, 31, 2, 20, 70, 14, 3, 40, 9, 18, 7, 25].map((m) => addMin(settings.remind, m));
   // Pack B (workspace) was used first: 14 tablets on days −25…−12.
   // Pack A (bedroom) after: 10 tablets on days −11…−1, with day −5 left unrecorded.
   const plan: { offset: number; pack: Pack; idx: number }[] = [];

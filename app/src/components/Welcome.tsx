@@ -4,7 +4,7 @@ import { useState } from "react";
 import { canPromptInstall, isIOS, promptInstall, shouldOfferInstall } from "@/lib/install";
 import { checkNotificationPermission, notificationPermission, requestNotificationPermission } from "@/lib/notify";
 import { playGreeting, playTone } from "@/lib/sound";
-import { useMomo } from "@/lib/store";
+import { useMomo, DEFAULT_SETTINGS } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 import { Icon } from "./momo/Icon";
 import { MomoBunny, type MomoState } from "./momo/MomoBunny";
@@ -211,7 +211,7 @@ function NotifyStep({ onDone }: { onDone: (demo: boolean) => void }) {
           <input
             type="time"
             value={remind}
-            onChange={(e) => set({ remind: e.target.value || "08:00" })}
+            onChange={(e) => set({ remind: e.target.value || DEFAULT_SETTINGS.remind })}
             className="h-11 rounded-[14px] border-0 bg-(--bg-subtle) px-3 text-[17px] font-extrabold text-(--text-primary)"
           />
         </label>

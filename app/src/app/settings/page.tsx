@@ -10,7 +10,7 @@ import { addMin } from "@/lib/date";
 import { notificationCopy, systemNotificationCopy } from "@/lib/derive";
 import { checkNotificationPermission, notificationPermission, playTone, requestNotificationPermission, showSystemNotification, type Permission } from "@/lib/notify";
 import { isNative, rescheduleNative } from "@/lib/native";
-import { MED, useMomo, type FollowUp } from "@/lib/store";
+import { MED, useMomo, type FollowUp, DEFAULT_SETTINGS } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
 const PERM_TEXT: Record<Permission, string> = {
@@ -51,7 +51,7 @@ export default function SettingsPage() {
           <input
             type="time"
             value={remind}
-            onChange={(e) => set({ remind: e.target.value || "08:00" })}
+            onChange={(e) => set({ remind: e.target.value || DEFAULT_SETTINGS.remind })}
             className="h-11 rounded-[14px] border-0 bg-(--bg-subtle) px-3 text-[17px] font-extrabold text-(--text-primary)"
           />
         </label>

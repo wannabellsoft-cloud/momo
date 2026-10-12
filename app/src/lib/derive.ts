@@ -110,10 +110,9 @@ export function notificationCopy(s: MomoData, kind: "remind" | "follow" | "bedti
 }
 
 /** System (OS) notification: the OS draws the card, so we make the content fuller —
-    title "Momo", then Momo's line, a detail line, and the tap hint (as in the design):
-      Momo
+    Momo's line as the title (iOS adds "from Momo"), then a detail line and the tap hint:
       แพรวาา ได้เวลากินยาแล้วน้า 🐰💕
-      ถึงเวลาดูแลตัวเองแล้ว · 08:00 น.
+      Pristiq 50 mg · 1 เม็ด · 01:15 น.
       แตะเพื่อเปิดโมโม่
     The drug name only appears when lock-screen privacy is off. */
 export function systemNotificationCopy(s: MomoData, kind: "remind" | "follow" | "bedtime") {
