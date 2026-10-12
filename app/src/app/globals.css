@@ -245,6 +245,8 @@ svg.momo25 { display: block; overflow: visible; }
 .moon-glow { filter: drop-shadow(0 0 10px rgba(246,231,184,.45)); animation: moon-float 6s ease-in-out infinite; }
 .music-wiggle { animation: music-wiggle 1.4s ease-in-out infinite; }
 .install-nudge { animation: install-nudge 1.4s ease-in-out infinite; }
+.toast-momo { animation: toast-momo 520ms var(--ease-spring) both; transform-origin: 50% 100%; }
+@keyframes toast-momo { 0% { transform: translateY(14px) scale(.6) rotate(-10deg); } 60% { transform: translateY(-3px) scale(1.06) rotate(3deg); } 100% { transform: none; } }
 .notif-timer { animation: notif-timer linear forwards; transform-origin: left; }
 @keyframes momo-enter { 0% { transform: translateY(24px) scale(.6); opacity: 0; } 70% { transform: translateY(-6px) scale(1.04); opacity: 1; } 100% { transform: none; } }
 @keyframes momo-idle-hop { 0%, 86%, 100% { transform: none; } 89% { transform: translateY(-14px) scale(.97, 1.04); } 92% { transform: translateY(0) scale(1.05, .95); } 95% { transform: translateY(-5px); } }
@@ -263,12 +265,12 @@ svg.momo25 { display: block; overflow: visible; }
 @keyframes taken-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-3deg); } }
 @keyframes twinkle { 0%, 100% { opacity: .25; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes notif-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
-[data-reduce-motion="true"] :is(.blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+[data-reduce-motion="true"] :is(.toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
 [data-reduce-motion="true"] .check-draw { animation: none; stroke-dashoffset: 0; }
 [data-reduce-motion="true"] :is(.momo-drift, .momo-burst) { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
+  :is(.toast-momo, .blister-lead, .momo-enter, .momo-idle-hop, .momo-jump, .bubble-pop, .notif-pop, .notif-float, .taken-shine, .check-pop, .taken-bob, .twinkle, .music-wiggle, .moon-glow) { animation: none !important; }
   .check-draw { animation: none !important; stroke-dashoffset: 0; }
   :is(.momo-drift, .momo-burst) { display: none; }
   .momo25 * { animation: none !important; }
