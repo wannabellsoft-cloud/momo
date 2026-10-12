@@ -15,6 +15,9 @@ type UI = {
   /** Bumped when Momo greets on launch — Home makes Momo wave and say the line. */
   greet: { line: string; key: number } | null;
   setGreet: (line: string) => void;
+  /** Timestamp of the last dose recorded in this session — Home celebrates. */
+  celebrate: number | null;
+  setCelebrate: () => void;
   setSaveError: (v: boolean) => void;
   openSheet: (ref: TabletRef) => void;
   closeSheet: () => void;
@@ -31,6 +34,8 @@ export const useUI = create<UI>()((set) => ({
   saveError: false,
   greet: null,
   setGreet: (line) => set({ greet: { line, key: Date.now() } }),
+  celebrate: null,
+  setCelebrate: () => set({ celebrate: Date.now() }),
   setSaveError: (saveError) => set({ saveError }),
   openSheet: (sheet) => set({ sheet }),
   closeSheet: () => set({ sheet: null }),

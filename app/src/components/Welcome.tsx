@@ -25,14 +25,15 @@ export function Welcome() {
   const offerInstall = shouldOfferInstall();
 
   const start = () => {
+    setStep(offerInstall ? "install" : 0);
     // The first tap unlocks audio on iOS — Momo says hello.
-    if (useMomo.getState().settings.greeting) {
-      playGreeting();
+    const st = useMomo.getState().settings;
+    if (st.greeting) {
+      playGreeting({ voice: st.ttsVoice, pitch: st.ttsPitch });
       try {
         sessionStorage.setItem("momo:greeted", "1");
       } catch {}
     }
-    setStep(offerInstall ? "install" : 0);
   };
 
   if (step === "splash") {

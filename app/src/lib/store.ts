@@ -47,6 +47,8 @@ export type Settings = {
   tone: "sparkle" | "bubble" | "hop" | "off"; // notification tone (in-app); see lib/sound.ts
   uiSounds: boolean; // cute sounds on taps
   greeting: boolean; // Momo says hello when the app opens
+  ttsVoice: string | null; // device voice name; null = best female Thai voice
+  ttsPitch: "normal" | "cute" | "tiny";
   reduceMotion: boolean;
   storageMode: "separate" | "combined";
   theme: "system" | "light" | "dark";
@@ -80,6 +82,8 @@ export const DEFAULT_SETTINGS: Settings = {
   tone: "sparkle",
   uiSounds: true,
   greeting: true,
+  ttsVoice: null,
+  ttsPitch: "cute",
   reduceMotion: false,
   storageMode: "separate",
   theme: "system",

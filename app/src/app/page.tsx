@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/momo/Icon";
 import { HomeMomo } from "@/components/HomeMomo";
+import { TakenCard } from "@/components/TakenCard";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Card, DemoLabel, PrimaryButton, cx } from "@/components/ui";
 import { thLongDay } from "@/lib/date";
@@ -70,10 +71,7 @@ export default function HomePage() {
       </Card>
 
       {d.todayDose ? (
-        <div className="flex h-14 items-center justify-center gap-2 rounded-[20px] bg-(--dose-taken-bg) text-[16px] font-extrabold text-(--dose-taken-fg)">
-          <Icon name="check" size={20} stroke={2.8} />
-          วันนี้กินยาแล้ว · {d.todayDose.time ?? ""} น.
-        </div>
+        <TakenCard time={d.todayDose.time} />
       ) : (
         <PrimaryButton onClick={quickConfirm}>บันทึกว่ากินยาแล้ว ♡</PrimaryButton>
       )}

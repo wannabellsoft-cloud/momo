@@ -174,6 +174,7 @@ function SheetBody({ sheetRef, open }: { sheetRef: TabletRef; open: boolean }) {
     if (choice === "dose") {
       const r = s.recordDose(sheetRef, time || hm(new Date()));
       ui.closeSheet();
+      if (r.ok) ui.setCelebrate();
       if (r.ok) ui.showToast(voice === "sweet" ? pickLine("taken", call) : "บันทึกการกินยาแล้ว", "taken");
       else ui.showToast("วันนี้บันทึกไปแล้วนะ ไม่ต้องกินซ้ำ", "waiting");
     } else {

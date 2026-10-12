@@ -122,29 +122,89 @@ function greetingLine(now = new Date()) {
   return "สวัสดีแพรวา ใกล้เวลานอนแล้วน้า";
 }
 
-function thaiVoice(): SpeechSynthesisVoice | undefined {
-  const voices = speechSynthesis.getVoices();
-  return voices.find((v) => v.lang.toLowerCase().startsWith("th")) ?? undefined;
+/* ─── Momo's voice (Web Speech TTS) ──────────────────────────────────────
+   Voices depend on the device. The API has no gender field, so we rank by known Thai voice
+   names: female first (Momo is a girl), male voices last. */
+export type TtsPitch = "normal" | "cute" | "tiny";
+export const TTS_PITCH: Record<TtsPitch, number> = { normal: 1, cute: 1.35, tiny: 1.7 };
+
+const FEMALE = [/premwadee/i, /narisa/i, /kanya/i, /achara/i, /google/i, /female|ผู้หญิง/i];
+const MALE = [/pattara/i, /niwat/i, /\bmale\b|ผู้ชาย/i];
+
+export type MomoVoice = { name: string; label: string; gender: "female" | "male" | "unknown"; voice: SpeechSynthesisVoice };
+
+function rank(v: SpeechSynthesisVoice) {
+  const f = FEMALE.findIndex((r) => r.test(v.name));
+  if (f >= 0) return f;
+  if (MALE.some((r) => r.test(v.name))) return 90;
+  return 50;
 }
 
-/** Chime + Momo speaks — higher pitch so the device voice sounds small and bunny-like. */
-export function playGreeting() {
-  playTone("sparkle");
+/** Thai voices on this device, best (female, natural) first. */
+export function thaiVoices(): MomoVoice[] {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
+  return speechSynthesis
+    .getVoices()
+    .filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith("th"))
+    .sort((a, b) => rank(a) - rank(b))
+    .map((v) => {
+      const r = rank(v);
+      const label = v.name.replace(/^Microsoft\s+/i, "").replace(/\s*-\s*Thai.*$/i, "").replace(/\s*\(Thailand\)/i, "").trim();
+      return { name: v.name, label, gender: r < 50 ? "female" : r >= 90 ? "male" : "unknown", voice: v };
+    });
+}
+
+/* For useSyncExternalStore: voices arrive asynchronously (voiceschanged). */
+let cache: { key: string; list: MomoVoice[] } = { key: "", list: [] };
+export function voicesSnapshot(): MomoVoice[] {
+  const list = thaiVoices();
+  const key = list.map((v) => v.name).join("|");
+  if (key !== cache.key) cache = { key, list };
+  return cache.list;
+}
+export function subscribeVoices(cb: () => void) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return () => {};
+  speechSynthesis.getVoices(); // kick off loading
+  speechSynthesis.addEventListener("voiceschanged", cb);
+  return () => speechSynthesis.removeEventListener("voiceschanged", cb);
+}
+
+function pickVoice(name: string | null): SpeechSynthesisVoice | undefined {
+  const list = thaiVoices();
+  return (name && list.find((v) => v.name === name)?.voice) || list[0]?.voice;
+}
+
+export function speak(text: string, opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  const speak = () => {
-    const u = new SpeechSynthesisUtterance(greetingLine());
+  const go = () => {
+    try {
+      say();
+    } catch {
+      /* speech unavailable — Momo stays quiet, nothing else is affected */
+    }
+  };
+  const say = () => {
+    const u = new SpeechSynthesisUtterance(text);
     u.lang = "th-TH";
-    const v = thaiVoice();
+    const v = pickVoice(opts.voice ?? null);
     if (v) u.voice = v;
-    u.pitch = 1.7;
-    u.rate = 1.02;
-    u.volume = 0.9;
+    u.pitch = TTS_PITCH[opts.pitch ?? "cute"];
+    u.rate = 1;
+    u.volume = 0.95;
     speechSynthesis.cancel();
     speechSynthesis.speak(u);
   };
-  // iOS only allows speech started inside the tap itself, so speak now (the chime is short).
-  if (speechSynthesis.getVoices().length) speak();
-  else speechSynthesis.addEventListener("voiceschanged", speak, { once: true });
+  // iOS only allows speech started inside the tap itself, so speak right away when voices are ready.
+  try {
+    if (speechSynthesis.getVoices().length) go();
+    else speechSynthesis.addEventListener("voiceschanged", go, { once: true });
+  } catch {}
+}
+
+/** Chime + Momo says hello in the chosen voice. */
+export function playGreeting(opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
+  playTone("sparkle");
+  speak(greetingLine(), opts);
 }
 
 export { greetingLine };
