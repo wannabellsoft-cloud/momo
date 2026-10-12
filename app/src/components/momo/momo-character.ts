@@ -65,6 +65,24 @@ const pops = (x: number, y: number, c = "#F6C76B", flip = false) => {
   return `<g class="m-motion" stroke="${c}" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M${x} ${y}l${-4 * k} -9M${x + 9 * k} ${y + 2}l${2 * k} -10M${x - 8 * k} ${y + 8}l${-8 * k} -4"/></g>`;
 };
 
+/** Momo's alarm bell: shaded gold dome, rim band, clapper, highlight and a pink bow on top (centre x, rim y). */
+const bell = (x: number, y: number, id: string) => `<g transform="translate(${x} ${y})">
+    <circle cx="0" cy="4.2" r="3.9" fill="url(#${id}bellDark)"/>
+    <circle cx="-1.2" cy="3.2" r="1.1" fill="#fff" opacity=".5"/>
+    <path d="M-13.5 0 C -12.5 -4 -11.8 -9 -11 -13 C -9.6 -20.5 -5.6 -25 0 -25 C 5.6 -25 9.6 -20.5 11 -13 C 11.8 -9 12.5 -4 13.5 0 Z" fill="url(#${id}bell)"/>
+    <path d="M-15 -1.6 C -15 -3.4 -13.6 -4 -12 -4 H12 C 13.6 -4 15 -3.4 15 -1.6 C 15 .6 13.6 1.6 12 1.6 H-12 C -13.6 1.6 -15 .6 -15 -1.6 Z" fill="url(#${id}bellDark)"/>
+    <path d="M-12 -2.4 H12" stroke="#FFE7A6" stroke-width="1.1" stroke-linecap="round" opacity=".8"/>
+    <path d="M-7.2 -9 C -7.2 -15 -5 -19.5 -1.6 -21" stroke="#fff" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".75"/>
+    <circle cx="-7" cy="-5.6" r="1.3" fill="#fff" opacity=".6"/>
+    <g transform="translate(0 -25.5)">
+      <path d="M0 0 C -2.5 -4.6 -9.5 -5.4 -9.6 -1.4 C -9.7 2.2 -3.6 2.4 0 0 Z" fill="#FF8FA3"/>
+      <path d="M0 0 C 2.5 -4.6 9.5 -5.4 9.6 -1.4 C 9.7 2.2 3.6 2.4 0 0 Z" fill="#FF8FA3"/>
+      <path d="M-.6 .6 L -4.2 6.2 L -1.6 5.4 Z M.6 .6 L 4.2 6.2 L 1.6 5.4 Z" fill="#F27089"/>
+      <circle cx="0" cy="0" r="2.3" fill="#F27089"/>
+      <path d="M-7.4 -2.6 C -6.4 -3.6 -4.6 -3.8 -3.6 -3.2" stroke="#fff" stroke-width="1" stroke-linecap="round" fill="none" opacity=".7"/>
+    </g>
+  </g>`;
+
 const POSES: Record<MascotState, Pose> = {
   idle: { eyes: "open", mouth: "open", arms: [restL, restR], props: () => pops(36, 44, "#F6C76B", true) + pops(170, 50) },
   reminder: {
@@ -78,9 +96,7 @@ const POSES: Record<MascotState, Pose> = {
       { cx: 80, cy: 172, rot: 30, rx: 12, ry: 11.5 },
       { cx: 129, cy: 151, rot: -40, rx: 12, ry: 11.5 },
     ],
-    props: (id) => `<g class="m-ring" style="transform-origin:166px 34px"><g transform="translate(166 40)">
-        <path d="M-12 8 C -12 -8 -8 -14 0 -14 C 8 -14 12 -8 12 8 L 15 12 H -15 Z" fill="url(#${id}bell)"/>
-        <circle cx="0" cy="15" r="3.6" fill="#E9A23B"/><circle cx="0" cy="-16" r="2.6" fill="#E9A23B"/><path d="M-6 -6 q2 -4 5 -5" stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".7"/></g></g>` + pops(30, 50, "#F6C76B", true),
+    props: (id) => `<g class="m-ring" style="transform-origin:166px 26px">${bell(166, 42, id)}</g>` + pops(30, 50, "#F6C76B", true),
   },
   happy: {
     eyes: "happy",
@@ -182,7 +198,8 @@ function defs(id: string) {
     <radialGradient id="${id}heart" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#FFB0AE"/><stop offset="1" stop-color="#F0505C"/></radialGradient>
     <linearGradient id="${id}pillP" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8C9B"/><stop offset="1" stop-color="#E5465E"/></linearGradient>
     <linearGradient id="${id}pillW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EDE3E3"/></linearGradient>
-    <linearGradient id="${id}bell" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFDB7E"/><stop offset="1" stop-color="#F2AE3C"/></linearGradient>
+    <radialGradient id="${id}bell" cx=".34" cy=".3" r=".9"><stop offset="0" stop-color="#FFF1BF"/><stop offset=".45" stop-color="#FFD66B"/><stop offset="1" stop-color="#E9A030"/></radialGradient>
+    <linearGradient id="${id}bellDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5BB45"/><stop offset="1" stop-color="#D68A22"/></linearGradient>
     <linearGradient id="${id}blanket" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DA6EE"/><stop offset="1" stop-color="#7D86DA"/></linearGradient>
     <filter id="${id}limbShadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="2" stdDeviation="1.8" flood-color="#C9A091" flood-opacity=".45"/></filter>
     <filter id="${id}soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter>
