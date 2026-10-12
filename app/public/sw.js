@@ -1,7 +1,7 @@
-/* Momo service worker — offline shell + notification taps.
+/* Momo service worker — offline shell, Web Push reminders and notification taps.
    Navigations: network-first, falling back to the cached page (or the cached home page).
    Static assets (/_next/static, fonts, icons): cache-first. */
-const CACHE = "momo-v9";
+const CACHE = "momo-v10";
 // Works at the domain root or under a basePath (e.g. GitHub Pages "/momo/"): everything is relative to the scope.
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const SHELL = ["/", "/blister/", "/history/", "/inventory/", "/inventory/open-box/", "/settings/", "/settings/profile/", "/manifest.webmanifest"].map((p) => BASE + p);
@@ -35,6 +35,7 @@ self.addEventListener("fetch", (e) => {
   }
 
   const path = url.pathname.slice(BASE.length);
+  if (path.startsWith("/api/")) return; // live API (Web Push) — never cached
   if (path.startsWith("/_next/static/") || path.startsWith("/icons/") || path.startsWith("/mascot/") || (path.startsWith("/voice/") && path.endsWith(".mp3"))) {
     e.respondWith(
       caches.match(req).then(
@@ -61,6 +62,28 @@ self.addEventListener("fetch", (e) => {
         return res;
       })
       .catch(() => caches.match(req)),
+  );
+});
+
+// Web Push from the server (src/server/push.ts): a reminder that arrives even when Momo is closed.
+// iOS requires every push to show a notification, so this always shows one.
+self.addEventListener("push", (e) => {
+  let d = {};
+  try {
+    d = e.data ? e.data.json() : {};
+  } catch {
+    d = { body: e.data ? e.data.text() : "" };
+  }
+  const kind = ["remind", "follow", "bedtime"].includes(d.kind) ? d.kind : "remind";
+  e.waitUntil(
+    self.registration.showNotification(d.title || "Momo", {
+      body: d.body || "",
+      tag: `momo-${kind}`,
+      renotify: true,
+      icon: `${BASE}/icons/notif-${kind}.png`,
+      badge: `${BASE}/icons/badge-96.png`,
+      data: { url: BASE + "/" },
+    }),
   );
 });
 

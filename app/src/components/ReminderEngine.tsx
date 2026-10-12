@@ -6,6 +6,7 @@ import { atTime, dayKey } from "@/lib/date";
 import { followUpTimes, notificationCopy, systemNotificationCopy } from "@/lib/derive";
 import { isNative, onNotificationTap, rescheduleNative } from "@/lib/native";
 import { playTone, registerServiceWorker, showSystemNotification } from "@/lib/notify";
+import { pushActive, pushTaken, syncPush } from "@/lib/push";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -60,7 +61,8 @@ function tick() {
       const { title, body } = notificationCopy(s, e.kind);
       useUI.getState().showBanner({ title, body, kind: e.kind });
       playTone(s.settings.tone);
-    } else {
+    } else if (!pushActive()) {
+      // with Web Push on, the server sends this one (it also arrives when Momo is closed)
       const { title, body } = systemNotificationCopy(s, e.kind);
       void showSystemNotification(title, body, { tag: `momo-${e.kind}`, silent: s.settings.tone === "off", kind: e.kind });
     }
@@ -92,8 +94,34 @@ function useNativeSchedule() {
   }, [router]);
 }
 
+/** Web Push: keep the server schedule in step with the settings, and pause it once today's dose is in. */
+function useWebPush() {
+  useEffect(() => {
+    if (isNative()) return;
+    let t: ReturnType<typeof setTimeout> | undefined;
+    const resync = () => {
+      clearTimeout(t);
+      t = setTimeout(() => void syncPush(useMomo.getState(), { create: true }), 1200);
+    };
+    resync();
+    const unsub = useMomo.subscribe((s, prev) => {
+      const today = dayKey(new Date());
+      if (!!s.doses[today] !== !!prev.doses[today]) void pushTaken(!!s.doses[today]);
+      const a = s.settings, b = prev.settings;
+      if (a.remind !== b.remind || a.follow !== b.follow || a.maxFollowUps !== b.maxFollowUps || a.bedtime !== b.bedtime || a.bedTime !== b.bedTime || a.privacy !== b.privacy || a.qty !== b.qty || a.voice !== b.voice || s.onboarded !== prev.onboarded) resync();
+    });
+    document.addEventListener("visibilitychange", resync); // new day → refresh once
+    return () => {
+      clearTimeout(t);
+      unsub();
+      document.removeEventListener("visibilitychange", resync);
+    };
+  }, []);
+}
+
 export function ReminderEngine() {
   useNativeSchedule();
+  useWebPush();
   useEffect(() => {
     if (isNative()) return; // iOS delivers scheduled notifications itself
     registerServiceWorker();

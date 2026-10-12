@@ -10,6 +10,7 @@ import { addMin } from "@/lib/date";
 import { notificationCopy, systemNotificationCopy } from "@/lib/derive";
 import { checkNotificationPermission, notificationPermission, playTone, requestNotificationPermission, showSystemNotification, type Permission } from "@/lib/notify";
 import { isNative, rescheduleNative } from "@/lib/native";
+import { pushActive, pushSupported, syncPush, testPush } from "@/lib/push";
 import { MED, useMomo, type FollowUp, DEFAULT_SETTINGS } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 
@@ -31,13 +32,28 @@ export default function SettingsPage() {
   useEffect(() => {
     void checkNotificationPermission().then(setPerm); // the iOS app answers asynchronously
   }, []);
+  // Web Push ("even when Momo is closed"): on · off · unavailable (static host, not installed, no permission)
+  const [push, setPush] = useState<"on" | "off" | "unavailable" | "busy">(() => (pushActive() ? "on" : pushSupported() ? "off" : "unavailable"));
+  useEffect(() => {
+    if (perm !== "granted") return;
+    void syncPush(useMomo.getState()).then((r) => setPush((p) => (p === "busy" ? p : r)));
+  }, [perm]);
+  const turnOnPush = async () => {
+    setPush("busy");
+    const r = await syncPush(useMomo.getState(), { create: true, force: true });
+    setPush(r);
+    ui.showToast(r === "on" ? "เปิดแล้ว ปิดแอปไว้ โมโม่ก็เตือนได้นะ ♡" : "ยังเปิดไม่ได้ ลองเพิ่มแอปไว้ที่หน้าจอโฮมก่อนนะ", r === "on" ? "welcome" : "waiting");
+  };
 
   const testNotify = () => {
     const { title, body } = notificationCopy(s, "remind");
     ui.showBanner({ title, body, kind: "test" });
     playTone(s.settings.tone);
     const sys = systemNotificationCopy(s, "remind");
-    if (perm === "granted") void showSystemNotification(sys.title, sys.body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" });
+    if (perm !== "granted") return;
+    // with Web Push on, test the real path (server → Apple → iPhone); otherwise a local notification
+    if (pushActive()) void testPush(sys.title, sys.body).then((ok) => ok || void showSystemNotification(sys.title, sys.body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" }));
+    else void showSystemNotification(sys.title, sys.body, { tag: "momo-test", silent: s.settings.tone === "off", kind: "remind" });
   };
 
   return (
@@ -120,6 +136,7 @@ export default function SettingsPage() {
                 if (p === "granted") {
                   ui.showToast("ขอบคุณน้า โมโม่จะเตือนเบา ๆ นะ", "welcome");
                   void rescheduleNative(useMomo.getState());
+                  if (pushSupported()) void syncPush(useMomo.getState(), { create: true, force: true }).then(setPush);
                 }
               }}
             >
@@ -127,6 +144,21 @@ export default function SettingsPage() {
             </PrimaryButton>
           ) : null}
         </div>
+        {!isNative() && perm === "granted" && push !== "unavailable" && (
+          <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
+            <RowLabel title="แจ้งเตือนแม้ปิดแอป" sub={push === "on" ? "เซิร์ฟเวอร์ส่งแจ้งเตือนตามเวลา แม้ปิดโมโม่อยู่" : "เปิดไว้ โมโม่เตือนได้แม้ไม่ได้เปิดแอป"} />
+            {push === "on" ? (
+              <span className="flex h-8 items-center gap-[6px] rounded-full bg-(--success-bg) px-3 text-[13px] font-extrabold text-(--success-fg)">
+                <Icon name="check" size={14} stroke={3} />
+                เปิดอยู่
+              </span>
+            ) : (
+              <PrimaryButton size="sm" onClick={turnOnPush} aria-busy={push === "busy"}>
+                {push === "busy" ? "กำลังเปิด…" : "เปิด"}
+              </PrimaryButton>
+            )}
+          </div>
+        )}
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
           <RowLabel title="ซ่อนชื่อยาบนหน้าจอล็อก" sub="แนะนำให้เปิดไว้" />
           <Switch checked={privacy} onChange={(v) => set({ privacy: v })} label="ซ่อนชื่อยา" />
@@ -138,7 +170,9 @@ export default function SettingsPage() {
         <div className="text-[12px] leading-[18px] text-(--text-secondary)">
           {isNative()
             ? "โมโม่ตั้งเวลาเตือนไว้กับ iPhone ล่วงหน้า 14 วัน เด้งตรงเวลาแม้ปิดแอปหรือไม่มีเน็ต"
-            : <>โมโม่เตือนได้ตอนที่แอปเปิดอยู่หรือยังทำงานเบื้องหลัง บน iPhone ให้กด “แชร์ → เพิ่มไปยังหน้าจอโฮม” ก่อน แล้วค่อยอนุญาตการแจ้งเตือน</>}
+            : push === "on"
+              ? "โมโม่ส่งแจ้งเตือนตามเวลาที่ตั้งไว้ทุกวัน แม้ปิดแอปอยู่ · บันทึกกินยาแล้ววันนั้นจะไม่เตือนซ้ำ"
+              : <>บน iPhone ให้กด “แชร์ → เพิ่มไปยังหน้าจอโฮม” แล้วเปิดโมโม่จากไอคอน อนุญาตการแจ้งเตือน แล้วกด “แจ้งเตือนแม้ปิดแอป”</>}
         </div>
       </Card>
 

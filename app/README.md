@@ -43,8 +43,18 @@ On iPhone: open the URL in Safari → Share → **Add to Home Screen** → open 
 
 `src/components/ReminderEngine.tsx` sends the daily reminder, up to 2 follow-ups (only while no dose is recorded) and the optional bedtime note. It shows them as Momo's in-app banner when the app is in front, and through the service worker (`public/sw.js`) otherwise. Dismissing or tapping a notification never records a dose.
 
-Limitation: there is no push server, so reminders only fire while Momo is open or still alive in the background. On iPhone the app must be added to the Home Screen first (iOS 16.4+). Reliable delivery to a fully closed app needs Web Push: VAPID keys, a small server that stores the subscription and sends on a schedule, and a `push` handler in `sw.js`.
+**Web Push (reminders while Momo is closed).** On Vercel the app also builds a small API, `src/app/api/push/*/route.api.ts`. These files are only picked up when `VERCEL` is set (the `api.ts` page extension in `next.config.ts`), so the static export for other hosts and the iOS shell is unchanged.
 
+- **QStash schedules (no database).** QStash (Upstash) keeps one daily schedule per reminder. Each schedule carries the device's push subscription and the notification text. Ids are derived from the subscription, so re-syncing overwrites them:
+  - `momo-<id>-remind`, `-f1`, `-f2`, `-bed`
+  - `-reset` at 00:00, which resumes the day's reminders
+- **Taken / undone.** Recording today's dose pauses today's dose reminders; undoing resumes them (`/api/push/taken`).
+- **`/api/push/fire/`.** QStash calls it with a signature, which is verified. It sends the push with `web-push`. A gone subscription (404/410) deletes its schedules.
+- **VAPID keys** are derived from `QSTASH_TOKEN`, so the only secrets are the QStash ones the Vercel/Upstash integration adds: `QSTASH_TOKEN`, `QSTASH_CURRENT_SIGNING_KEY`, `QSTASH_NEXT_SIGNING_KEY`, and optionally `QSTASH_URL`. Prefixed names also work. To pin your own keys, set `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`.
+- **Client.** `src/lib/push.ts` subscribes after notification permission and re-syncs when reminder settings change. Settings → "แจ้งเตือนแม้ปิดแอป" turns it on from a tap. While it is on, `ReminderEngine` leaves background notifications to the server. Check the setup at `/api/push/key/`: it should return `{"enabled":true,…}`.
+- **Requirements.** iPhone needs iOS 16.4+ and Momo opened from the Home Screen icon.
+
+Without QStash (other static hosts) reminders only fire while Momo is open or alive in the background.
 ## Mascot (Momo, floppy-ear bunny)
 
 Momo's look comes from a rendered pose sheet, `assets-src/momo-sheet.png` (a transparent PNG with 10 poses). `npm run mascot` runs `scripts/slice-mascot.py`, which needs Pillow:
