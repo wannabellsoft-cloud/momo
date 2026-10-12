@@ -52,6 +52,7 @@ export default function SettingsPage() {
             type="time"
             value={remind}
             onChange={(e) => set({ remind: e.target.value || DEFAULT_SETTINGS.remind })}
+            onBlur={() => ui.showToast(`บันทึกเวลาเตือนแล้ว · ${useMomo.getState().settings.remind} น. ♡`, "welcome")}
             className="h-11 rounded-[14px] border-0 bg-(--bg-subtle) px-3 text-[17px] font-extrabold text-(--text-primary)"
           />
         </label>
