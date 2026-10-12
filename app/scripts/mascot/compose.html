@@ -13,21 +13,57 @@ const stage = document.getElementById("stage");
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
 renderer.setSize(S, S); renderer.setPixelRatio(1);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 0.95;
 stage.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-scene.environmentIntensity = 0.35;
-scene.add(new THREE.HemisphereLight(0xfff6f0, 0xe8b9c9, 0.45));
-const key = new THREE.DirectionalLight(0xfff3ea, 2.6); key.position.set(1.4, 2.4, 2.6); scene.add(key);
-const fill = new THREE.DirectionalLight(0xffe8f1, 0.45); fill.position.set(-2.2, 0.4, 1.6); scene.add(fill);
-const rim = new THREE.DirectionalLight(0xffffff, 2.2); rim.position.set(-1.2, 1.6, -2.6); scene.add(rim);
-const rim2 = new THREE.DirectionalLight(0xffe0ec, 1.4); rim2.position.set(1.8, 0.8, -2.2); scene.add(rim2);
+scene.environmentIntensity = 0.4;
+scene.add(new THREE.HemisphereLight(0xffffff, 0xe9d6dc, 0.45));
+const key = new THREE.DirectionalLight(0xfffaf4, 2.5); key.position.set(1.4, 2.4, 2.6); scene.add(key);
+const fill = new THREE.DirectionalLight(0xf4f2ff, 0.4); fill.position.set(-2.2, 0.6, 1.8); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 1.8); rim.position.set(-1.2, 1.6, -2.6); scene.add(rim);
+const rim2 = new THREE.DirectionalLight(0xfff0f6, 1.1); rim2.position.set(1.8, 0.8, -2.2); scene.add(rim2);
 const cam = new THREE.PerspectiveCamera(28, 1, 0.05, 20);
 const gltf = await new GLTFLoader().loadAsync("/assets-src/momo.glb");
 const model = gltf.scene;
-model.traverse((o) => { if (o.isMesh) { o.material.roughness = 1; o.material.metalness = 0; if (o.material.map) o.material.map.anisotropy = 8; } });
+// Colour-correct Meshy's peach/tan fur toward warm cream; keep pinks (ears, cheeks, nose) and dark eyes.
+function creamify(tex, P) {
+  const img = tex.image; const w = img.width, h = img.height;
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const ctx = cv.getContext("2d"); ctx.drawImage(img, 0, 0);
+  const d = ctx.getImageData(0, 0, w, h); const a = d.data;
+  for (let i = 0; i < a.length; i += 4) {
+    let r = a[i] / 255, g = a[i + 1] / 255, b = a[i + 2] / 255;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, dl = mx - mn;
+    if (dl < 1e-4) continue;
+    const sat = dl / (1 - Math.abs(2 * l - 1));
+    let hue = mx === r ? ((g - b) / dl) % 6 : mx === g ? (b - r) / dl + 2 : (r - g) / dl + 4; hue *= 60; if (hue < 0) hue += 360;
+    // fur: orange/tan hues, mid-high lightness
+    const pink = (hue >= 320 || hue <= 14) && sat > 0.25;
+    if (pink) {
+      // salmon-red inner ears → soft pastel pink
+      const nh = 351, ns = Math.min(sat, 0.68), nl = Math.min(0.9, l * 0.9 + 0.12);
+      const c = (1 - Math.abs(2 * nl - 1)) * ns, x = c * (1 - Math.abs(((nh / 60) % 2) - 1)), m = nl - c / 2;
+      a[i] = (c + m) * 255; a[i + 1] = m * 255; a[i + 2] = (x + m) * 255; // hue 300–360: r=c, g=0, b=x
+      continue;
+    }
+    const fur = hue > 16 && hue < 52 && l > 0.28;
+    if (!fur) continue;
+    const t = Math.min(1, (l - 0.28) / 0.12); // soften the transition into darker detail
+    const nh = 27, ns = sat * P.sat, nl = Math.min(0.97, l * P.gain + P.lift);
+    // hsl → rgb
+    const c = (1 - Math.abs(2 * nl - 1)) * ns, x = c * (1 - Math.abs(((nh / 60) % 2) - 1)), m = nl - c / 2;
+    const [rr, gg, bb] = [c + m, x + m, m];
+    a[i] = (r + (rr - r) * t) * 255; a[i + 1] = (g + (gg - g) * t) * 255; a[i + 2] = (b + (bb - b) * t) * 255;
+  }
+  ctx.putImageData(d, 0, 0);
+  const out = new THREE.CanvasTexture(cv); out.colorSpace = THREE.SRGBColorSpace; out.flipY = tex.flipY; out.anisotropy = 8;
+  return out;
+}
+const Q = new URLSearchParams(location.search);
+const FUR = { sat: +(Q.get("sat") ?? 0.75), gain: +(Q.get("gain") ?? 0.98), lift: +(Q.get("lift") ?? 0.03) };
+model.traverse((o) => { if (o.isMesh) { o.material.roughness = 1; o.material.metalness = 0; if (o.material.map) o.material.map = creamify(o.material.map, FUR); o.material.needsUpdate = true; } });
 // skeleton: rest pose + optional animation frame + manual bone offsets (euler, radians)
 const bones = {}; model.traverse((o) => { if (o.isBone) bones[o.name.replace(/^mixamorig:?/, "")] = o; });
 const rest = {}; for (const [n, b] of Object.entries(bones)) rest[n] = b.quaternion.clone();

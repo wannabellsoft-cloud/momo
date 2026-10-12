@@ -10,14 +10,16 @@ const IOS = new URL("../ios/App/App/Assets.xcassets/", import.meta.url).pathname
 mkdirSync(OUT, { recursive: true });
 
 // [path, size, background, art scale (share of the canvas the art occupies), art]
-type Art = "head" | "welcome";
+type Art = "head" | "welcome" | "icon3d" | "welcome3d";
+const THREE_D = MASCOT_DEFAULT_STYLE === "3d";
+const APP: Art = THREE_D ? "icon3d" : "head";
 const ICONS: [string, number, string, number, Art?][] = [
-  ["icon-192.png", 192, "#FFDCE9", 1],
-  ["icon-512.png", 512, "#FFDCE9", 1],
-  ["apple-touch-icon.png", 180, "#FFDCE9", 1],
-  ["icon-maskable-512.png", 512, "#FFDCE9", 0.78], // keep inside the maskable safe zone
-  ["badge-96.png", 96, "transparent", 1],
-].map(([f, ...r]) => [OUT + f, ...r] as [string, number, string, number]);
+  ["icon-192.png", 192, "#FFDCE9", 1, APP],
+  ["icon-512.png", 512, "#FFDCE9", 1, APP],
+  ["apple-touch-icon.png", 180, "#FFDCE9", 1, APP],
+  ["icon-maskable-512.png", 512, "#FFDCE9", 1, APP], // full-bleed art; the face sits inside the safe zone
+  ["badge-96.png", 96, "transparent", 1, "head"],
+].map(([f, ...r]) => [OUT + f, ...r] as [string, number, string, number, Art]);
 // System notification art (Chromium shows `icon` + a large `image`; iOS shows the app icon).
 // Uses the mascot renders in public/mascot/momo/ (or the vector art when MASCOT_DEFAULT_STYLE is "vector").
 const MASCOT_DIR = new URL("../public/mascot/momo/", import.meta.url).pathname;
@@ -42,15 +44,17 @@ for (const [kind, state] of NOTIF) {
 }
 if (existsSync(IOS)) {
   // App Store icons must be opaque; the splash is one square image iOS crops to fit.
-  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, "#FFDCE9", 1]);
-  for (const f of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) ICONS.push([IOS + "Splash.imageset/" + f, 2732, "#FFDCE9", 0.3, "welcome"]);
+  ICONS.push([IOS + "AppIcon.appiconset/AppIcon-512@2x.png", 1024, "#FFDCE9", 1, APP]);
+  for (const f of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) ICONS.push([IOS + "Splash.imageset/" + f, 2732, "#FFDCE9", 0.3, THREE_D ? "welcome3d" : "welcome"]);
 }
 
 const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const page = await browser.newPage();
 for (const [file, size, bg, scale, art = "head"] of ICONS) {
   const px = Math.round(size * scale);
-  const svg = art === "head"
+  const svg = art === "icon3d" || art === "welcome3d"
+    ? `<img src="${mascotUri(art === "icon3d" ? "icon" : "welcome")}" width="${px}" height="${px}" style="display:block">`
+    : art === "head"
     ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox("head")}" width="${px}" height="${px}">${momoSvgMarkup("idle", "head", "i")}</svg>`
     : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox()}" width="${px}" height="${px}">${momoSvgMarkup("welcome", undefined, "i")}</svg>`;
   await page.setViewportSize({ width: size, height: size });

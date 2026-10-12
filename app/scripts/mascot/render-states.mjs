@@ -84,6 +84,11 @@ for (const [name, [pose, over]] of Object.entries(STATES)) {
   await p.locator("#stage").screenshot({ path: `${TMP}/${name}.png`, omitBackground: true });
   console.log("rendered", name);
 }
+// app icon: bigger head + hugged heart, rendered square (composited onto pink by gen-icons)
+await p.evaluate((h) => { window.pose({ bones: h }); window.render3d({ az: 0.14, el: 0.05, zoom: 1.36, cy: 0.1 }); }, HOLD);
+await p.evaluate(([u, o]) => window.setOverlay(u, o), ["", DEFS + heart(100, 160, 0.86)]);
+await p.locator("#stage").screenshot({ path: `${TMP}/icon.png`, omitBackground: true });
+console.log("rendered icon");
 // avatar: face close-up
 await p.evaluate(() => { window.pose({}); window.render3d({ az: 0.2, el: 0.04, zoom: 1.7, cy: 0.19 }); });
 await p.evaluate(() => window.setOverlay("", ""));
@@ -92,7 +97,7 @@ console.log("rendered avatar");
 await browser.close();
 server.close();
 // PNG → WebP (ImageMagick `convert`)
-for (const name of [...Object.keys(STATES), "avatar"]) {
+for (const name of [...Object.keys(STATES), "avatar", "icon"]) {
   const size = name === "avatar" ? "512x512" : "768x768";
   execFileSync("convert", [`${TMP}/${name}.png`, "-resize", size, "-quality", "88", "-define", "webp:alpha-quality=95", "-define", "webp:method=6", `${OUT}/${name}.webp`]);
 }
