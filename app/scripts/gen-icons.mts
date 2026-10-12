@@ -3,7 +3,7 @@
 import { chromium } from "playwright-core";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { momoSvgMarkup, momoViewBox } from "../src/components/momo/momo-art.ts";
-import { MASCOT_STYLE } from "../src/components/momo/mascot-manifest.ts";
+import { MASCOT_DEFAULT_STYLE } from "../src/components/momo/mascot-manifest.ts";
 
 const OUT = new URL("../public/icons/", import.meta.url).pathname;
 const IOS = new URL("../ios/App/App/Assets.xcassets/", import.meta.url).pathname;
@@ -19,16 +19,16 @@ const ICONS: [string, number, string, number, Art?][] = [
   ["badge-96.png", 96, "transparent", 1],
 ].map(([f, ...r]) => [OUT + f, ...r] as [string, number, string, number]);
 // System notification art (Chromium shows `icon` + a large `image`; iOS shows the app icon).
-// Uses the 3D-style mascot art (public/mascot/momo/*.webp) — temporary concept crops, see mascot-manifest.ts.
+// Uses the mascot renders in public/mascot/momo/ (or the vector art when MASCOT_DEFAULT_STYLE is "vector").
 const MASCOT_DIR = new URL("../public/mascot/momo/", import.meta.url).pathname;
 const mascotUri = (state: string) => `data:image/webp;base64,${readFileSync(MASCOT_DIR + state + ".webp").toString("base64")}`;
 const NOTIF: [string, string][] = [["remind", "reminder"], ["follow", "waiting"], ["bedtime", "sleep"]];
 const EXTRA: { file: string; w: number; h: number; html: string }[] = [];
 for (const [kind, state] of NOTIF) {
   const vectorState = { reminder: "reminder", waiting: "waiting", sleep: "sleep" }[state] as "reminder" | "waiting" | "sleep";
-  const art = (px: number) => MASCOT_STYLE === "vector"
+  const art = (px: number) => MASCOT_DEFAULT_STYLE === "vector"
     ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${momoViewBox()}" width="${px}" height="${px}">${momoSvgMarkup(vectorState, undefined, "n")}</svg>`
-    : `<img src="${mascotUri(state)}" width="${px}" height="${px}" style="display:block;object-fit:cover;-webkit-mask-image:radial-gradient(closest-side,#000 74%,transparent 100%)">`;
+    : `<img src="${mascotUri(state)}" width="${px}" height="${px}" style="display:block;object-fit:contain">`;
   EXTRA.push({ file: OUT + `notif-${kind}.png`, w: 192, h: 192, html: `<div style="width:192px;height:192px;border-radius:50%;background:#FFDCE9;display:flex;align-items:center;justify-content:center;overflow:hidden">${art(170)}</div>` });
   EXTRA.push({
     file: OUT + `notif-banner-${kind}.png`, w: 720, h: 360,

@@ -1,34 +1,31 @@
-// Momo 3D-style mascot — asset manifest.
+// Momo mascot — asset manifest.
 //
-// TEMPORARY ART: these files are square crops of the concept sheet from the
-// "Momo Claude Implementation Assets" pack (momo_original_concept_sheet.png). They are raster
-// concept references, NOT transparent production renders, 3D models or animations. They keep
-// their original cream background and are shown as soft tiles. When clean transparent
-// renders exist, drop them into public/mascot/momo/ with the same names (or update the paths
-// here) — the MomoMascot API does not change.
-/** Which art the app shows. "vector": the original drawn Momo (current choice — the concept-sheet
-    crops looked worse). Switch to "image" once real renders (e.g. from the Meshy 3D model) are in place. */
-export const MASCOT_STYLE: "vector" | "image" = "vector";
+// Images in public/mascot/momo/ are renders of Momo's 3D model (Meshy "Blush Bunny", textured,
+// unrigged) made with scripts/mascot/render-states.mjs: one standing pose, camera angle/lean per
+// state, and pastel props (clock, heart, med box, note, blanket…) drawn on top. Transparent
+// 768×768 WebP (avatar 512). Re-render when the model changes: `npm run mascot:render`.
+// Users can switch between the 3D Momo and the original drawn (vector) Momo in Momo's profile.
+export type MascotStyle = "3d" | "vector";
+export const MASCOT_DEFAULT_STYLE: MascotStyle = "3d";
 
 export const MASCOT_STATES = ["welcome", "reminder", "waiting", "success", "refill", "noStock", "sleep", "question", "celebrate"] as const;
 export type MascotState = (typeof MASCOT_STATES)[number];
 
 export const MASCOT_ASSETS: Record<MascotState | "avatar", { src: string; px: number }> = {
-  welcome: { src: "/mascot/momo/welcome.webp", px: 170 },
-  reminder: { src: "/mascot/momo/reminder.webp", px: 170 },
-  waiting: { src: "/mascot/momo/waiting.webp", px: 440 },
-  success: { src: "/mascot/momo/success.webp", px: 170 },
-  refill: { src: "/mascot/momo/refill.webp", px: 186 },
-  noStock: { src: "/mascot/momo/noStock.webp", px: 164 },
-  sleep: { src: "/mascot/momo/sleep.webp", px: 176 },
-  question: { src: "/mascot/momo/question.webp", px: 168 },
-  celebrate: { src: "/mascot/momo/celebrate.webp", px: 166 },
-  avatar: { src: "/mascot/momo/avatar.webp", px: 330 },
+  welcome: { src: "/mascot/momo/welcome.webp", px: 768 },
+  reminder: { src: "/mascot/momo/reminder.webp", px: 768 },
+  waiting: { src: "/mascot/momo/waiting.webp", px: 768 },
+  success: { src: "/mascot/momo/success.webp", px: 768 },
+  refill: { src: "/mascot/momo/refill.webp", px: 768 },
+  noStock: { src: "/mascot/momo/noStock.webp", px: 768 },
+  sleep: { src: "/mascot/momo/sleep.webp", px: 768 },
+  question: { src: "/mascot/momo/question.webp", px: 768 },
+  celebrate: { src: "/mascot/momo/celebrate.webp", px: 768 },
+  avatar: { src: "/mascot/momo/avatar.webp", px: 512 },
 };
 
 /** Used when a state's file is missing or fails to load. */
 export const MASCOT_FALLBACK: MascotState = "waiting";
-export const MASCOT_PRODUCTION_READY = false;
 
 export const MASCOT_ALT: Record<MascotState | "avatar", string> = {
   welcome: "โมโม่โบกมือทักทาย",

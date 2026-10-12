@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const s = useMomo();
   const set = s.updateSettings;
   const showToast = useUI((u) => u.showToast);
-  const { call, voice, tone, uiSounds, greeting, music, reduceMotion, theme } = s.settings;
+  const { call, voice, tone, uiSounds, greeting, music, reduceMotion, theme, mascot } = s.settings;
   const [confirmReset, setConfirmReset] = useState(false);
   const sweet = voice === "sweet";
 
@@ -74,6 +74,10 @@ export default function ProfilePage() {
 
       <Card className="flex flex-col gap-[14px] p-4">
         <div className="flex flex-col gap-2">
+          <span className="text-[15px] font-extrabold">หน้าตาโมโม่</span>
+          <Segmented<Settings["mascot"]> label="หน้าตาโมโม่" value={mascot} options={[["3d", "3D ตุ๊กตา"], ["vector", "วาดเส้น"]]} onChange={(v) => set({ mascot: v })} />
+        </div>
+        <div className="flex flex-col gap-2 border-t border-solid border-(--border-subtle) pt-3">
           <span className="text-[15px] font-extrabold">ธีม</span>
           <Segmented<Settings["theme"]> label="ธีม" value={theme} options={[["time", "ตามเวลา"], ["system", "ตามเครื่อง"], ["light", "สว่าง"], ["dark", "มืด"]]} onChange={(v) => set({ theme: v })} />
         </div>

@@ -11,7 +11,8 @@
     "icons": "node scripts/gen-icons.mts",
     "ios:sync": "next build && cap sync ios",
     "ios:open": "cap open ios",
-    "voice": "node scripts/gen-voice.mts"
+    "voice": "node scripts/gen-voice.mts",
+    "mascot:render": "node scripts/mascot/render-states.mjs && npm run icons"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
@@ -35,6 +36,7 @@
     "eslint-config-next": "16.4.0",
     "playwright-core": "^1.56.1",
     "tailwindcss": "^4",
+    "three": "^0.170.0",
     "typescript": "^5"
   }
 }

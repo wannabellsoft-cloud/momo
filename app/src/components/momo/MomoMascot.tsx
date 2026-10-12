@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { BASE } from "@/lib/base";
-import { MASCOT_ALT, MASCOT_ASSETS, MASCOT_FALLBACK, MASCOT_STYLE, type MascotState } from "./mascot-manifest";
+import { useMomo } from "@/lib/store";
+import { MASCOT_ALT, MASCOT_ASSETS, MASCOT_FALLBACK, type MascotState } from "./mascot-manifest";
 import type { MomoState } from "./momo-art";
 import { MomoVector } from "./MomoBunny";
 
@@ -34,25 +35,27 @@ export interface MomoMascotProps {
   priority?: boolean;
   /** Defaults to a Thai description of the pose. Pass "" when the mascot is purely decorative. */
   alt?: string;
-  /** soft: edges fade into the card (default) · tile: rounded square · circle: avatar-style. */
-  variant?: "soft" | "tile" | "circle";
+  /** plain: transparent render as-is (default) · soft: fade edges · tile: rounded square · circle: avatar-style. */
+  variant?: "plain" | "soft" | "tile" | "circle";
   /** Gentle breathing. Off automatically with reduced motion. */
   animate?: boolean;
 }
 
 const VARIANT = {
+  plain: "",
   soft: "mascot-soft",
   tile: "rounded-[28%]",
   circle: "rounded-full",
 } as const;
 
-/** Momo as an image (3D-style art). Reserved square box → no layout shift.
+/** Momo as an image (3D render) or the drawn vector Momo, per the user's choice. Reserved square box → no layout shift.
     Missing state → fallback state → original vector Momo. */
-export function MomoMascot({ state, size = "md", px, className, priority, alt, variant = "soft", animate = true }: MomoMascotProps) {
+export function MomoMascot({ state, size = "md", px, className, priority, alt, variant = "plain", animate = true }: MomoMascotProps) {
+  const style = useMomo((s) => s.settings.mascot);
   const dim = px ?? SIZES[size];
   const [failed, setFailed] = useState<Set<string>>(() => new Set());
   const use: MascotState | null = !failed.has(state) ? state : !failed.has(MASCOT_FALLBACK) ? MASCOT_FALLBACK : null;
-  if (MASCOT_STYLE === "vector") return <MomoVector state={TO_VECTOR[state]} size={dim} still={!animate} className={className} />;
+  if (style === "vector") return <MomoVector state={TO_VECTOR[state]} size={dim} still={!animate} className={className} />;
 
   return (
     <span className={`relative inline-block flex-none ${animate ? "mascot-breathe" : ""} ${className ?? ""}`} style={{ width: dim, height: dim }}>
@@ -79,8 +82,9 @@ export function MomoMascot({ state, size = "md", px, className, priority, alt, v
 
 /** Circular face for avatars, notification and app chrome. */
 export function MomoAvatar({ px, className, alt = "" }: { px: number; className?: string; alt?: string }) {
+  const style = useMomo((s) => s.settings.mascot);
   const [failed, setFailed] = useState(false);
-  if (failed || MASCOT_STYLE === "vector") return <MomoVector crop="head" still size={px} className={className} />;
+  if (failed || style === "vector") return <MomoVector crop="head" still size={px} className={className} />;
   return (
     <Image
       src={BASE + MASCOT_ASSETS.avatar.src}
@@ -90,7 +94,7 @@ export function MomoAvatar({ px, className, alt = "" }: { px: number; className?
       sizes={`${px}px`}
       loading="lazy"
       draggable={false}
-      className={`block flex-none rounded-full object-cover select-none ${className ?? ""}`}
+      className={`block flex-none rounded-full bg-(--surface-soft) object-cover select-none ${className ?? ""}`}
       style={{ width: px, height: px }}
       onError={() => setFailed(true)}
     />

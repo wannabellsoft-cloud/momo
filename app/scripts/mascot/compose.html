@@ -1,0 +1,65 @@
+<!doctype html><html><head><!-- Render stage for scripts/mascot/render-states.mjs (served from the app root). --><style>
+html,body{margin:0;background:transparent}
+#stage{position:relative;width:768px;height:768px}
+#stage canvas,#stage svg{position:absolute;inset:0;width:768px;height:768px}
+</style></head><body><div id="stage"></div>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+const S = 768;
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(S, S); renderer.setPixelRatio(1);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1.0;
+stage.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.35;
+scene.add(new THREE.HemisphereLight(0xfff6f0, 0xe8b9c9, 0.45));
+const key = new THREE.DirectionalLight(0xfff3ea, 2.6); key.position.set(1.4, 2.4, 2.6); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffe8f1, 0.45); fill.position.set(-2.2, 0.4, 1.6); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 2.2); rim.position.set(-1.2, 1.6, -2.6); scene.add(rim);
+const rim2 = new THREE.DirectionalLight(0xffe0ec, 1.4); rim2.position.set(1.8, 0.8, -2.2); scene.add(rim2);
+const cam = new THREE.PerspectiveCamera(28, 1, 0.05, 20);
+const gltf = await new GLTFLoader().loadAsync("/assets-src/momo.glb");
+const model = gltf.scene;
+model.traverse((o) => { if (o.isMesh) { o.material.roughness = 1; o.material.metalness = 0; if (o.material.map) o.material.map.anisotropy = 8; } });
+// skeleton: rest pose + optional animation frame + manual bone offsets (euler, radians)
+const bones = {}; model.traverse((o) => { if (o.isBone) bones[o.name.replace(/^mixamorig:?/, "")] = o; });
+const rest = {}; for (const [n, b] of Object.entries(bones)) rest[n] = b.quaternion.clone();
+const mixer = new THREE.AnimationMixer(model);
+window.animNames = gltf.animations.map((a) => a.name);
+window.pose = ({ anim, t = 0, bones: offs = {} } = {}) => {
+  mixer.stopAllAction();
+  for (const [n, b] of Object.entries(bones)) b.quaternion.copy(rest[n]);
+  if (anim) { const clip = gltf.animations.find((a) => a.name === anim); const act = mixer.clipAction(clip); act.play(); mixer.setTime(t); }
+  for (const [n, [x, y, z]] of Object.entries(offs)) { const b = bones[n]; if (b) b.quaternion.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z, "XYZ"))); }
+  model.updateMatrixWorld(true);
+};
+window.boneNames = Object.keys(bones);
+const box = new THREE.Box3().setFromObject(model); const size = box.getSize(new THREE.Vector3()); const c = box.getCenter(new THREE.Vector3());
+model.position.sub(c);
+const pivot = new THREE.Group(); pivot.add(model); pivot.scale.setScalar(1 / size.y);
+const root = new THREE.Group(); root.add(pivot); scene.add(root);
+
+/** Render the model. az: turn (rad), el: camera height, tilt: lean (rad), lift: hop, zoom: >1 closer, cy: look-at y */
+window.render3d = ({ az = 0.25, el = 0.12, tilt = 0, roll = 0, lift = 0, zoom = 1, cy = -0.02, cx = 0 } = {}) => {
+  root.rotation.set(roll, az, tilt); root.position.set(0, lift, 0);
+  const d = 2.55 / zoom;
+  cam.position.set(cx, cy + el * d, d); cam.lookAt(cx, cy, 0);
+  renderer.render(scene, cam);
+};
+/** Screen-space (0–200) y of the feet, for the ground shadow. */
+window.feetY = () => { const b = new THREE.Box3().setFromObject(root); const v = new THREE.Vector3(0, b.min.y, 0).project(cam); return (1 - (v.y + 1) / 2) * 200; };
+window.setOverlay = (under, over) => {
+  document.querySelectorAll("#stage svg").forEach((e) => e.remove());
+  const svg = (inner) => `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+  if (under) renderer.domElement.insertAdjacentHTML("beforebegin", svg(under));
+  if (over) stage.insertAdjacentHTML("beforeend", svg(over));
+};
+window.ready = true;
+</script></body></html>
