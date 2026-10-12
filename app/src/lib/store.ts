@@ -49,6 +49,7 @@ export type Settings = {
   greeting: boolean; // Momo says hello when the app opens
   music: boolean; // gentle background music while the app is open
   musicTrack: "box" | "lullaby" | "time"; // "time": music box by day, lullaby at night
+  seenLevel: number; // Momo level already announced (0 = not yet), see lib/exp.ts
   ttsVoice: string | null; // device voice name; null = best female Thai voice
   ttsPitch: "normal" | "cute" | "tiny";
   reduceMotion: boolean;
@@ -86,6 +87,7 @@ export const DEFAULT_SETTINGS: Settings = {
   greeting: true,
   music: true,
   musicTrack: "lullaby",
+  seenLevel: 0,
   ttsVoice: null,
   ttsPitch: "cute",
   reduceMotion: false,

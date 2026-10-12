@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { momoExp } from "@/lib/exp";
+import { useNow } from "@/lib/hooks";
+import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
 import { MomoMascot } from "./momo/MomoMascot";
+import { cx } from "./ui";
 
 const PRAISE = ["เก่งมากเลยน้า", "โมโม่ภูมิใจจัง", "ดูแลตัวเองดีมาก", "เย้ เรียบร้อย ♡"];
 
@@ -13,6 +17,9 @@ export function TakenCard({ time }: { time: string | null }) {
   const [mountedAt] = useState(() => Date.now());
   const [praise] = useState(() => PRAISE[Math.floor(Math.random() * PRAISE.length)]);
   const fresh = !!celebrate && celebrate > mountedAt - 8000;
+  const now = useNow();
+  const today = momoExp(useMomo(), now).today;
+  const why = today ? [today.onTime === "on-time" ? "ตรงเวลา" : today.onTime === "close" ? "เกือบตรงเวลา" : "", today.streak ? `ต่อเนื่อง +${today.streak}` : ""].filter(Boolean).join(" · ") : "";
   const [burst] = useState(() => Array.from({ length: 10 }, (_, k) => ({ id: k, x: 8 + Math.random() * 84, d: Math.random() * 0.35, s: 11 + Math.random() * 11, g: k % 3 === 0 ? "✦" : "♥" })));
 
   return (
@@ -39,6 +46,11 @@ export function TakenCard({ time }: { time: string | null }) {
         <span className="block text-[13px] leading-[19px] text-(--text-primary)">
           {time ? `บันทึกเวลา ${time} น.` : "บันทึกแล้ว"} · {praise}
         </span>
+        {today && (
+          <span className={cx("mt-1 inline-flex h-6 items-center gap-1 rounded-full bg-(--surface-card) px-2 text-[12px] font-extrabold text-(--action-soft-text)", fresh && "exp-pop")}>
+            +{today.total} EXP{why && <span className="font-bold text-(--text-secondary)">· {why}</span>}
+          </span>
+        )}
       </span>
       <span className="taken-bob relative -my-2 flex-none">
         <MomoMascot state={fresh ? "success" : "happy"} px={62} alt="" />

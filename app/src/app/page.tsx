@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/momo/Icon";
 import { HomeMomo } from "@/components/HomeMomo";
+import { LevelBar } from "@/components/LevelBar";
 import { TakenCard } from "@/components/TakenCard";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Card, DemoLabel, PrimaryButton, cx } from "@/components/ui";
@@ -40,6 +41,8 @@ export default function HomePage() {
           <MomoBunny crop="head" still size={48} />
         </Link>
       </div>
+
+      <LevelBar />
 
       {!online && (
         <div className="flex h-8 items-center gap-[6px] self-start rounded-full bg-(--info-bg) px-3 text-[12px] font-extrabold text-(--info-fg)">
@@ -91,7 +94,15 @@ export default function HomePage() {
       {d.todayDose ? (
         <TakenCard time={d.todayDose.time} />
       ) : (
-        <PrimaryButton onClick={quickConfirm}>บันทึกว่ากินยาแล้ว ♡</PrimaryButton>
+        <>
+          <PrimaryButton onClick={quickConfirm}>บันทึกว่ากินยาแล้ว ♡</PrimaryButton>
+          {/* small entry to the drug info, only while today's dose is still open */}
+          <Link href="/care/#missed" className="press -mt-1 flex items-center gap-2 self-center rounded-full bg-(--surface-card) px-4 py-[9px] text-[13px] leading-[18px] font-extrabold text-(--action-soft-text) no-underline shadow-(--shadow-soft)">
+            <span className="care-dot h-2 w-2 flex-none rounded-full bg-(--action-primary)" aria-hidden="true" />
+            ลืมกินยาทำไงดี? · ข้อควรระวัง
+            <Icon name="right" size={14} stroke={2.6} />
+          </Link>
+        </>
       )}
 
       <div className="grid grid-cols-2 gap-3">

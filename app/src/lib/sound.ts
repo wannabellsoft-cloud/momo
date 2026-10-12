@@ -19,12 +19,14 @@ export function audioContext(): AudioContext | null {
   return audio();
 }
 
-/** Background music registers here so voice and greetings can lower it while Momo talks. */
-let duckHandler: ((ms: number) => void) | null = null;
-export function onDuck(fn: ((ms: number) => void) | null) {
-  duckHandler = fn;
+/** Background music (to lower itself) and Momo's face (to move her mouth) listen here while Momo talks.
+    Returns an unsubscribe function. */
+const duckHandlers = new Set<(ms: number) => void>();
+export function onDuck(fn: (ms: number) => void) {
+  duckHandlers.add(fn);
+  return () => void duckHandlers.delete(fn);
 }
-const duck = (ms = 3500) => duckHandler?.(ms);
+const duck = (ms = 3500) => duckHandlers.forEach((fn) => fn(ms));
 
 function audio(): AudioContext | null {
   if (typeof window === "undefined") return null;

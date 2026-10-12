@@ -75,7 +75,7 @@ export function HomeMomo({ state, bubble }: { state: MomoState; bubble: string }
         ))}
         <span className="momo-enter block">
           <span key={jump} className={jump ? "momo-jump block" : "momo-idle-hop block"}>
-            <MomoMascot state={momo} px={170} alt="" priority />
+            <MomoMascot state={momo} px={170} alt="" priority talks />
           </span>
         </span>
       </button>

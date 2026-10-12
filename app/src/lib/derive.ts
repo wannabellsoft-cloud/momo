@@ -1,4 +1,4 @@
-import { addMin, atTime, dayKey, isNight } from "./date";
+import { addDays, addMin, atTime, dayKey, isNight } from "./date";
 import { LOW_THRESHOLD, SUPPLY_WARN_DAYS, TABLETS_PER_BOX, left, type MomoData } from "./store";
 import type { MomoState } from "@/components/momo/MomoBunny";
 
@@ -41,17 +41,22 @@ export function derive(s: MomoData, now: Date) {
   const lastCallMin = (s.settings.follow ? s.settings.follow * s.settings.maxFollowUps : 0) + 60;
   const missedNow = pending && now.getTime() >= atTime(now, s.settings.remind).getTime() + lastCallMin * 60_000;
   const night = isNight(now);
+  // Momo sulks ("นอย") after a forgotten day, until today's dose is recorded.
+  const yesterday = dayKey(addDays(now, -1));
+  const missedYesterday = yesterday >= s.trackingSince && !s.doses[yesterday] && Object.keys(s.doses).length > 0;
   const homeMomo: MomoState =
     noStock && !todayDose ? "nostock"
     : todayDose ? "taken"
     : missedNow ? "missed"
     : pending ? "reminder"
+    : missedYesterday ? "missed"
     : low || supplyLow ? "refill"
     : night ? "sleep"
     : "idle";
   const bubble =
     homeMomo === "taken" ? (sweet ? `เย้ วันนี้${call}ดูแลตัวเองแล้ว ♡` : "วันนี้บันทึกเรียบร้อยแล้ว")
-    : homeMomo === "missed" ? (sweet ? `วันนี้ยังไม่มีบันทึกนะ โมโม่เป็นห่วงน้า ♡` : "วันนี้ยังไม่มีบันทึกการกินยา")
+    : homeMomo === "missed" && !missedNow ? (sweet ? `เมื่อวาน${call}ลืมโมโม่… งอนนิดนึงนะ 😤 วันนี้เจอกัน ${s.settings.remind} น้า` : "เมื่อวานไม่มีบันทึกการกินยา")
+    : homeMomo === "missed" ? (sweet ? `${call}ยังไม่บันทึกเลย… โมโม่นอยแล้วนะ 🥺` : "วันนี้ยังไม่มีบันทึกการกินยา")
     : homeMomo === "reminder" ? (sweet ? `${call}า ได้เวลากินยาแล้วน้า ♡` : `ถึงเวลากินยาแล้ว ${call}`)
     : homeMomo === "nostock" ? (pending ? "ได้เวลากินยาแล้วน้า แล้วยาก็ใกล้หมดด้วยนะ" : "ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้เตรียมเพิ่มนะ")
     : homeMomo === "refill" ? (sweet ? "ยาเหลือน้อยแล้วน้า โมโม่จดโน้ตไว้ให้แล้ว ✎" : "ยาเหลือน้อย เตรียมเพิ่มได้เลย")
@@ -71,7 +76,7 @@ export function derive(s: MomoData, now: Date) {
   const refillTitle = s.reserve > 0 ? "ยาในแผงเหลือน้อยแล้ว" : "ยาใกล้หมด และไม่มีกล่องสำรอง";
   const refillBody = s.reserve > 0 ? `เหลือ ${opened} เม็ด · เตรียมเปิดกล่องใหม่ได้เลยนะ` : `เหลือ ${opened} เม็ด · ไปซื้อหรือรับยาเพิ่มเร็ว ๆ นี้นะ`;
 
-  return { today, todayDose, status, pending, sweet, call, opened, low, noStock, supplyDays, openedDays, supplyLow, homeMomo, bubble, nextReminder, refillTitle, refillBody };
+  return { today, todayDose, status, pending, missedYesterday, sweet, call, opened, low, noStock, supplyDays, openedDays, supplyLow, homeMomo, bubble, nextReminder, refillTitle, refillBody };
 }
 
 /* ─── Momo's voice (Design System “Voice”). Rotate without repeating the last line. ─── */

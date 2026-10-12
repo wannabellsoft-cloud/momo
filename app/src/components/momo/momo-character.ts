@@ -225,9 +225,22 @@ export function momoSvg(state: MascotState, id: string, opts: { props?: boolean;
 
 export const momoViewBox = (crop?: "head") => (crop === "head" ? "20 28 160 160" : "0 0 200 200");
 
+/** 3D prop images (public/mascot/props/) used over the rendered poses. `replace` drops the drawn effects. */
+const RASTER_FX: Partial<Record<MascotState, { replace?: boolean; items: { src: string; x: number; y: number; w: number; cls: string }[] }>> = {
+  missed: { replace: true, items: [{ src: "bubble", x: 140, y: 18, w: 46, cls: "m-float-slow" }] },
+  success: { items: [{ src: "star", x: 150, y: 6, w: 30, cls: "m-beat" }, { src: "sparkles", x: 8, y: 52, w: 32, cls: "m-spark" }] },
+  refill: { items: [{ src: "medbox", x: 10, y: 52, w: 30, cls: "m-float-slow" }] },
+  happy: { items: [{ src: "sparkles", x: 160, y: 56, w: 26, cls: "m-spark" }] },
+};
+
 /** Only the floating effects of a state (bell, Zz, sparkles, bubbles, confetti…), drawn over the
-    rendered Momo images in the same 0 0 200 200 box. */
-export function momoFx(state: MascotState, id: string) {
+    rendered Momo images in the same 0 0 200 200 box. `base` is the app's base path for prop images. */
+export function momoFx(state: MascotState, id: string, base = "") {
   const p = POSES[state];
-  return p.props ? `${defs(id)}<g class="m-props">${p.props(id)}</g>` : "";
+  const r = RASTER_FX[state];
+  const drawn = p.props && !r?.replace ? `<g class="m-props">${p.props(id)}</g>` : "";
+  const imgs = (r?.items ?? [])
+    .map((i) => `<g class="${i.cls}" style="transform-origin:${i.x + i.w / 2}px ${i.y + i.w / 2}px"><image href="${base}/mascot/props/${i.src}.webp" x="${i.x}" y="${i.y}" width="${i.w}" height="${i.w}" preserveAspectRatio="xMidYMid meet"/></g>`)
+    .join("");
+  return drawn || imgs ? `${defs(id)}${drawn}<g class="m-props">${imgs}</g>` : "";
 }

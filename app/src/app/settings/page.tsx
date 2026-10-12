@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { BASE } from "@/lib/base";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/momo/Icon";
 import { MomoBunny } from "@/components/momo/MomoBunny";
-import { NotificationCard } from "@/components/NotificationCard";
 import { Card, OutlineButton, PrimaryButton, RowLabel, ScreenTitle, Segmented, Switch } from "@/components/ui";
 import { addMin } from "@/lib/date";
 import { notificationCopy, systemNotificationCopy } from "@/lib/derive";
@@ -20,7 +20,7 @@ const PERM_TEXT: Record<Permission, string> = {
   unsupported: "เบราว์เซอร์นี้ยังไม่รองรับ · บน iPhone ให้เพิ่มโมโม่ลงหน้าโฮมก่อน",
 };
 
-/** Screen 09 — reminder time, dose quantity, follow-ups, bedtime note, permission, privacy preview. */
+/** Screen 09 — reminder time, dose quantity, follow-ups, bedtime note, permission, privacy. */
 export default function SettingsPage() {
   const s = useMomo();
   const set = s.updateSettings;
@@ -31,7 +31,6 @@ export default function SettingsPage() {
   useEffect(() => {
     void checkNotificationPermission().then(setPerm); // the iOS app answers asynchronously
   }, []);
-  const preview = notificationCopy(s, "remind", false);
 
   const testNotify = () => {
     const { title, body } = notificationCopy(s, "remind");
@@ -131,8 +130,6 @@ export default function SettingsPage() {
           <RowLabel title="ซ่อนชื่อยาบนหน้าจอล็อก" sub="แนะนำให้เปิดไว้" />
           <Switch checked={privacy} onChange={(v) => set({ privacy: v })} label="ซ่อนชื่อยา" />
         </div>
-        <div className="text-[12px] text-(--text-secondary)">ตัวอย่างการแจ้งเตือน</div>
-        <NotificationCard kind="remind" title={preview.title} body={preview.body} time={remind} />
         <OutlineButton className="h-11 rounded-[14px] text-[14px]" onClick={testNotify} data-sound="none">
           <Icon name="bell" size={16} />
           ลองส่งการแจ้งเตือน
@@ -149,6 +146,15 @@ export default function SettingsPage() {
           <MomoBunny crop="head" still size={48} />
         </span>
         <RowLabel title="โปรไฟล์โมโม่" sub="การพูด เสียงเตือน และการเคลื่อนไหว" />
+        <Icon name="right" size={18} />
+      </Link>
+
+      <Link href="/care/" className="press flex items-center gap-3 rounded-[24px] bg-(--surface-card) px-4 py-3 text-(--text-primary) no-underline shadow-(--shadow-card)">
+        <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-(--info-bg)">
+          {/* eslint-disable-next-line @next/next/no-img-element -- static export; tiny prop image */}
+          <img src={`${BASE}/mascot/props/medbox.webp`} alt="" width={30} height={30} className="h-[30px] w-[30px] object-contain" />
+        </span>
+        <RowLabel title="ข้อมูลยา Pristiq" sub="ลืมกินยาทำไงดี · ข้อควรระวัง · ผลข้างเคียง" />
         <Icon name="right" size={18} />
       </Link>
     </div>
