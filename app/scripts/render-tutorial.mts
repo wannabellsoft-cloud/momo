@@ -6,7 +6,7 @@
 //   npm run tutorial:video            # needs Playwright (Chromium) + ffmpeg
 //   npm run tutorial:video -- --still 30.5   # one frame as PNG, for checking a moment
 import { execFileSync, spawn } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -64,12 +64,13 @@ if (still > -1) {
 
 // Frames → ffmpeg (silent video)
 const silent = `${OUT}silent.mp4`;
-const enc = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(cfg.fps), "-c:v", "mjpeg", "-i", "-",
-  "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", silent], { stdio: ["pipe", "inherit", "inherit"] });
+// lossless PNG frames, then a crisp H.264 (text and flat colours: tune animation, low CRF)
+const enc = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(cfg.fps), "-c:v", "png", "-i", "-",
+  "-c:v", "libx264", "-preset", "slow", "-tune", "animation", "-crf", "17", "-profile:v", "high", "-pix_fmt", "yuv420p", "-movflags", "+faststart", silent], { stdio: ["pipe", "inherit", "inherit"] });
 const frames = Math.ceil(total * cfg.fps);
 for (let i = 0; i < frames; i++) {
   await page.evaluate((t: number) => (window as unknown as Film).render(t), i / cfg.fps);
-  const jpg = await film.screenshot({ type: "jpeg", quality: 92 });
+  const jpg = await film.screenshot({ type: "png" });
   if (!enc.stdin.write(jpg)) await new Promise((r) => enc.stdin.once("drain", r));
   if (i % 150 === 0) console.log(`frame ${i}/${frames}`);
 }
@@ -89,3 +90,12 @@ if (voiced.length) {
   execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", silent, "-c", "copy", final]);
 }
 console.log(`wrote video/first-use/out/momo-first-use.mp4 (${total.toFixed(1)} s)`);
+
+// --publish: copy into the app (public/tutorial/) with a poster frame, for the in-app guide
+if (process.argv.includes("--publish")) {
+  const pub = fileURLToPath(new URL("../public/tutorial/", import.meta.url));
+  mkdirSync(pub, { recursive: true });
+  copyFileSync(final, `${pub}momo-first-use.mp4`);
+  execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-ss", "2.5", "-i", final, "-frames:v", "1", "-vf", "scale=540:-2", "-q:v", "3", `${pub}poster.jpg`]);
+  console.log("published public/tutorial/momo-first-use.mp4 + poster.jpg");
+}

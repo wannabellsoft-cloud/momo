@@ -184,6 +184,14 @@ export default function SettingsPage() {
         <Icon name="right" size={18} />
       </Link>
 
+      <Link href="/guide/" className="press flex items-center gap-3 rounded-[24px] bg-(--surface-card) px-4 py-3 text-(--text-primary) no-underline shadow-(--shadow-card)">
+        <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-(--surface-soft) text-(--action-primary)">
+          <Icon name="play" size={22} stroke={2.2} />
+        </span>
+        <RowLabel title="วิธีเริ่มใช้งาน" sub="วิดีโอสอนใช้งานครั้งแรก · 8 ขั้นตอน" />
+        <Icon name="right" size={18} />
+      </Link>
+
       <Link href="/care/" className="press flex items-center gap-3 rounded-[24px] bg-(--surface-card) px-4 py-3 text-(--text-primary) no-underline shadow-(--shadow-card)">
         <PristiqBox width={52} />
         <RowLabel title="ข้อมูลยา Pristiq" sub="ลืมกินยาทำไงดี · ข้อควรระวัง" />

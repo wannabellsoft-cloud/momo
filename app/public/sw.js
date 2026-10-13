@@ -1,10 +1,10 @@
 /* Momo service worker — offline shell, Web Push reminders and notification taps.
    Navigations: network-first, falling back to the cached page (or the cached home page).
    Static assets (/_next/static, fonts, icons): cache-first. */
-const CACHE = "momo-v10";
+const CACHE = "momo-v11";
 // Works at the domain root or under a basePath (e.g. GitHub Pages "/momo/"): everything is relative to the scope.
 const BASE = new URL(self.registration.scope).pathname.replace(/\/$/, "");
-const SHELL = ["/", "/blister/", "/history/", "/inventory/", "/inventory/open-box/", "/settings/", "/settings/profile/", "/manifest.webmanifest"].map((p) => BASE + p);
+const SHELL = ["/", "/blister/", "/history/", "/inventory/", "/inventory/open-box/", "/settings/", "/settings/profile/", "/guide/", "/manifest.webmanifest"].map((p) => BASE + p);
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -36,6 +36,7 @@ self.addEventListener("fetch", (e) => {
 
   const path = url.pathname.slice(BASE.length);
   if (path.startsWith("/api/")) return; // live API (Web Push) — never cached
+  if (path.startsWith("/tutorial/")) return; // the guide video streams with range requests — never cached
   if (path.startsWith("/_next/static/") || path.startsWith("/icons/") || path.startsWith("/mascot/") || (path.startsWith("/voice/") && path.endsWith(".mp3"))) {
     e.respondWith(
       caches.match(req).then(
