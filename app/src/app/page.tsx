@@ -120,6 +120,18 @@ export default function HomePage() {
       </div>
 
       {s.packs.length === 0 && (
+        <Link href="/guide/" className="press flex items-center gap-3 rounded-[24px] bg-(--action-primary) px-4 py-[14px] text-(--text-on-action) no-underline shadow-(--shadow-button)">
+          <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-(--surface-card) text-(--action-primary)">
+            <Icon name="play" size={24} stroke={2.2} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="text-[16px] leading-[24px] font-extrabold">ดูวิธีเริ่มใช้งานครั้งแรก</div>
+            <div className="text-[13px] leading-[20px] opacity-90">วิดีโอสั้น ๆ โมโม่พาทำ 8 ขั้นตอน</div>
+          </div>
+          <Icon name="right" size={18} />
+        </Link>
+      )}
+      {s.packs.length === 0 && (
         <Link href="/inventory/" className="press flex items-center gap-3 rounded-[24px] bg-(--surface-secondary) px-4 py-[14px] text-(--text-primary) no-underline">
           <MomoBunny state="refill" still size={56} />
           <div className="min-w-0 flex-1">
