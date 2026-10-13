@@ -6,7 +6,7 @@
 //       → adds the voice "Momo" to your ElevenLabs account and prints its voice_id.
 //         Put that id in MOMO_ELEVEN_VOICE, then `npm run voice` and `npm run tutorial:voice`.
 //
-// MOMO_VOICE_PROMPT overrides the description below; MOMO_DESIGN_MODEL the design model (eleven_ttv_v3 speaks Thai).
+// MOMO_VOICE_PROMPT overrides the description below; MOMO_DESIGN_MODEL the design model (eleven_ttv_v3 speaks Thai; speech itself uses MOMO_ELEVEN_MODEL).
 import { mkdirSync, writeFileSync } from "node:fs";
 import { ELEVEN_API, elevenHeaders, elevenEnabled } from "./tts.mts";
 import { fileURLToPath } from "node:url";
@@ -35,7 +35,7 @@ if (save > -1) {
   const res = await fetch(`${ELEVEN_API}/text-to-voice/design`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ voice_description: DESCRIPTION, text: SAMPLE, model_id: process.env.MOMO_DESIGN_MODEL ?? "eleven_ttv_v3" }), // v3 speaks Thai
+    body: JSON.stringify({ voice_description: DESCRIPTION, text: SAMPLE, model_id: process.env.MOMO_DESIGN_MODEL ?? "eleven_ttv_v3" }), // newest design model; it speaks Thai
   });
   if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${await res.text()}`);
   const { previews } = (await res.json()) as { previews: { audio_base_64: string; generated_voice_id: string }[] };

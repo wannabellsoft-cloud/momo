@@ -5,7 +5,7 @@
 //   MOMO_TTS=elevenlabs               instead of the key, when a proxy adds it for you (Claude Code cloud
 //                                     "Network secrets": host api.elevenlabs.io, header xi-api-key, no prefix)
 //   MOMO_ELEVEN_VOICE=<voice_id>      Momo's voice (make one with `npm run voice:design`, or copy any id from the Voice Library)
-//   MOMO_ELEVEN_MODEL=eleven_v3       a model that speaks Thai
+//   MOMO_ELEVEN_MODEL=eleven_v4       a model that speaks Thai (also eleven_v4_turbo, eleven_v3)
 //   MOMO_ELEVEN_STABILITY=0.45 MOMO_ELEVEN_STYLE=0.35   tune the delivery
 //
 // Otherwise falls back to Microsoft's free neural voices through the `edge-tts` CLI (pip install edge-tts):
@@ -30,7 +30,7 @@ export function ttsInfo(): TtsInfo {
   if (elevenEnabled()) {
     const voice = process.env.MOMO_ELEVEN_VOICE;
     if (!voice) throw new Error("ElevenLabs is on but MOMO_ELEVEN_VOICE is not set. Run `npm run voice:design` or pick a voice id from ElevenLabs.");
-    return { provider: "elevenlabs", voice, model: process.env.MOMO_ELEVEN_MODEL ?? "eleven_v3" };
+    return { provider: "elevenlabs", voice, model: process.env.MOMO_ELEVEN_MODEL ?? "eleven_v4" };
   }
   return {
     provider: "edge-tts",
