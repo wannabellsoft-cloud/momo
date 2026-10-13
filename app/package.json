@@ -12,7 +12,10 @@
     "icons": "node scripts/gen-icons.mts",
     "ios:sync": "next build && cap sync ios",
     "ios:open": "cap open ios",
-    "voice": "node scripts/gen-voice.mts"
+    "voice": "node scripts/gen-voice.mts",
+    "voice:design": "node scripts/eleven-design-voice.mts",
+    "tutorial:voice": "node scripts/gen-tutorial-voice.mts",
+    "tutorial:video": "node scripts/render-tutorial.mts"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
