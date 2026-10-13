@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { Icon } from "@/components/momo/Icon";
 import { BoxStack, MiniBlister, SkyHeader, type Slot } from "@/components/inventory/InventoryArt";
 import { ReactiveMomo } from "@/components/ReactiveMomo";
@@ -9,9 +10,9 @@ import { thStamp } from "@/lib/date";
 import { derive } from "@/lib/derive";
 import { useNow } from "@/lib/hooks";
 import { LOCS, TABLETS_PER_PACK, left, nextIdx, useMomo } from "@/lib/store";
-import { momoSaysOneOf } from "@/lib/momo-voice";
+import { momoSays, momoSaysOneOf } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
-import { SAY, STOCK_TAP_LINES } from "@/lib/voice-lines";
+import { SAY, STOCK_STATUS, STOCK_TAP_LINES } from "@/lib/voice-lines";
 
 // What Momo says when tapped on Stock.
 const STOCK_LINES = STOCK_TAP_LINES;
@@ -26,11 +27,19 @@ export default function InventoryPage() {
   const active = s.packs.filter((p) => left(p) > 0);
   const firstRun = s.packs.length === 0;
 
-  const invMomo = firstRun ? "refill" : d.low ? (s.reserve > 0 ? "refill" : "nostock") : "idle";
+  const invMomo = firstRun ? "refill" : d.low ? (s.reserve > 0 ? "refill" : "nostock") : d.supplyLow ? "refill" : "idle";
   const invBubble = firstRun
-    ? s.reserve > 0 ? "มีกล่องแล้ว เปิดกล่องแรกได้เลยนะ ♡" : "ใส่จำนวนกล่องยาที่มี แล้วโมโม่จะนับให้นะ ♡"
-    : d.low ? (s.reserve > 0 ? "เหลือไม่ถึง 7 เม็ดแล้วน้า เตรียมเปิดกล่องใหม่ได้เลย ♡" : "ยาใกล้หมดแล้วน้า โมโม่ช่วยเตือนให้ไปรับยาเพิ่มนะ")
-    : "ยายังพอนะ โมโม่นับไว้ให้แล้ว ♡";
+    ? s.reserve > 0 ? STOCK_STATUS.firstBox : STOCK_STATUS.empty
+    : d.low ? (s.reserve > 0 ? STOCK_STATUS.openBox : STOCK_STATUS.buyNow)
+    : d.supplyLow ? STOCK_STATUS.buySoon
+    : STOCK_STATUS.enough;
+  // Momo tells how the stock is doing each time the screen opens
+  const said = useRef(false);
+  useEffect(() => {
+    if (said.current) return;
+    said.current = true;
+    momoSays(invBubble, { delay: 0.4 });
+  }, [invBubble]);
   const canOpen = s.reserve > 0;
   const capacity = Math.max(1, active.length) * TABLETS_PER_PACK;
   // the pack Momo is counting from (active one, else the first with tablets left), drawn in the mini blister
@@ -52,6 +61,7 @@ export default function InventoryPage() {
           bubble={invBubble}
           size={124}
           lines={STOCK_LINES}
+          talks
           bubbleCustom
           className="absolute inset-0 items-end pr-[18px] pl-[6px] [&>button]:-mb-[14px]"
           bubbleClassName="mt-[20px] flex-1 self-start rounded-[18px_18px_18px_4px] bg-(--inv-bubble) px-[15px] py-[10px] text-[15px] leading-[22px] font-extrabold text-(--inv-bubble-fg) shadow-(--inv-bubble-shadow)"
