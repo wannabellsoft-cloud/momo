@@ -10,8 +10,10 @@
 //
 // Otherwise falls back to Microsoft's free neural voices through the `edge-tts` CLI (pip install edge-tts):
 //   MOMO_VOICE=th-TH-PremwadeeNeural MOMO_PITCH=+22Hz MOMO_RATE=+0%
+// or, with MOMO_ENGINE=gtts, Google's Thai voice (pip install gTTS + ffmpeg) where Microsoft refuses the
+// connection (e.g. on GitHub's runners); MOMO_SHIFT raises its pitch, e.g. 1.12.
 import { execFileSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { rmSync, writeFileSync } from "node:fs";
 
 export const ELEVEN_API = "https://api.elevenlabs.io/v1";
 
@@ -24,7 +26,10 @@ export function elevenHeaders(extra: Record<string, string> = {}): Record<string
   return { "content-type": "application/json", ...(key ? { "xi-api-key": key } : {}), ...extra };
 }
 
-export type TtsInfo = { provider: "elevenlabs"; voice: string; model: string } | { provider: "edge-tts"; voice: string; pitch: string; rate: string };
+export type TtsInfo =
+  | { provider: "elevenlabs"; voice: string; model: string }
+  | { provider: "edge-tts"; voice: string; pitch: string; rate: string }
+  | { provider: "gtts"; voice: "google-th"; shift: number };
 
 export function ttsInfo(): TtsInfo {
   if (elevenEnabled()) {
@@ -32,6 +37,7 @@ export function ttsInfo(): TtsInfo {
     if (!voice) throw new Error("ElevenLabs is on but MOMO_ELEVEN_VOICE is not set. Run `npm run voice:design` or pick a voice id from ElevenLabs.");
     return { provider: "elevenlabs", voice, model: process.env.MOMO_ELEVEN_MODEL ?? "eleven_v4" };
   }
+  if (process.env.MOMO_ENGINE === "gtts") return { provider: "gtts", voice: "google-th", shift: Number(process.env.MOMO_SHIFT || "1.12") };
   return {
     provider: "edge-tts",
     voice: process.env.MOMO_VOICE ?? "th-TH-PremwadeeNeural",
@@ -42,6 +48,14 @@ export function ttsInfo(): TtsInfo {
 
 /** Writes `text` spoken in Momo's voice to `outPath` as MP3. */
 export async function synth(text: string, outPath: string, info: TtsInfo = ttsInfo()): Promise<void> {
+  if (info.provider === "gtts") {
+    const raw = `${outPath}.raw.mp3`;
+    execFileSync("gtts-cli", [text, "--lang", "th", "--output", raw], { stdio: "inherit" });
+    const af = info.shift === 1 ? "anull" : `asetrate=24000*${info.shift},aresample=24000,atempo=${(1 / info.shift).toFixed(4)}`;
+    execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", raw, "-af", af, "-ac", "1", "-b:a", "64k", outPath], { stdio: "inherit" });
+    rmSync(raw);
+    return;
+  }
   if (info.provider === "edge-tts") {
     execFileSync("edge-tts", ["--voice", info.voice, `--pitch=${info.pitch}`, `--rate=${info.rate}`, "--text", text, "--write-media", outPath], { stdio: "inherit" });
     return;
