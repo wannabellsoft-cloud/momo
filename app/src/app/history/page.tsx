@@ -11,6 +11,7 @@ import { dayStatus, type DayStatus } from "@/lib/derive";
 import { useNow, useQuickConfirm } from "@/lib/hooks";
 import { useMomo } from "@/lib/store";
 import { useUI } from "@/lib/ui";
+import { HISTORY_TAP_LINES, SAY } from "@/lib/voice-lines";
 
 const CELL: Record<DayStatus, { bg: string; fg: string; border: string; icon: IconName | null; aria: string }> = {
   taken: { bg: "var(--dose-taken-bg)", fg: "var(--text-primary)", border: "1.5px solid transparent", icon: "check", aria: "กินแล้ว" },
@@ -22,7 +23,7 @@ const CELL: Record<DayStatus, { bg: string; fg: string; border: string; icon: Ic
 };
 
 // What Momo says when tapped on History — encouraging, never about a specific dose.
-const HISTORY_LINES = ["โมโม่จดไว้ให้ครบเลยนะ ✎", "ดูแลตัวเองทุกวัน เก่งมากเลยน้า ♡", "วันไหนลืมก็ไม่เป็นไรนะ ค่อย ๆ ไป ♡", "ปฏิทินสวยขึ้นทุกวันเลย ✦", "โมโม่ภูมิใจในแพรวาจัง ♡"];
+const HISTORY_LINES = HISTORY_TAP_LINES;
 
 /** Screen 06 — monthly calendar with taken / pending / missed, and day details. */
 export default function HistoryPage() {
@@ -162,7 +163,7 @@ export default function HistoryPage() {
               <OutlineButton
                 className="h-12 rounded-[16px] text-[15px]"
                 onClick={() => {
-                  if (s.backfill(sel).ok) showToast("บันทึกย้อนหลังแล้ว ขอบคุณที่บอกโมโม่นะ", "taken");
+                  if (s.backfill(sel).ok) showToast(SAY.backfill, "taken");
                 }}
               >
                 กินแล้ว แต่ลืมบันทึก

@@ -47,6 +47,7 @@ export type Settings = {
   tone: "sparkle" | "bubble" | "hop" | "off"; // notification tone (in-app); see lib/sound.ts
   uiSounds: boolean; // cute sounds on taps
   greeting: boolean; // Momo says hello when the app opens
+  momoTalk: boolean; // Momo speaks when tapped and when something happens (taken, refill…)
   music: boolean; // gentle background music while the app is open
   musicTrack: "box" | "lullaby" | "time"; // "time": music box by day, lullaby at night
   seenLevel: number; // Momo level already announced (0 = not yet), see lib/exp.ts
@@ -85,6 +86,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tone: "sparkle",
   uiSounds: true,
   greeting: true,
+  momoTalk: true,
   music: true,
   musicTrack: "lullaby",
   seenLevel: 0,

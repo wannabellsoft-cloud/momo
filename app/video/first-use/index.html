@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Momo เริ่มใช้งานครั้งแรก (motion)</title>
+<!--
+  Motion graphic for the first-use tutorial. Rendered frame by frame by scripts/render-tutorial.mts:
+  the page is a pure function of time — setup(timeline) once, then render(t) for every frame.
+  Times in data-* attributes are seconds from the start of their scene.
+    data-in="s"        fade + rise in at s
+    data-show="a,b"    visible from a until b (b optional)
+    data-tap="s"       finger tap + ripple at s (place inside the target)
+    data-press="s"     button squish at s
+    data-sheet="a,b"   bottom sheet slides up at a, down at b
+    data-pulse         soft pulsing ring (next pill)
+    data-bob           gentle floating
+  Open the file in a browser to scrub: ?t=12.5 shows that moment; ?play plays it live.
+-->
+<style>
+@font-face { font-family: "Anuphan"; font-weight: 400; src: url("../../src/fonts/anuphan-thai-400-normal.woff2") format("woff2"); unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC; }
+@font-face { font-family: "Anuphan"; font-weight: 700; src: url("../../src/fonts/anuphan-thai-700-normal.woff2") format("woff2"); unicode-range: U+02D7, U+0303, U+0331, U+0E01-0E5B, U+200C-200D, U+25CC; }
+@font-face { font-family: "Anuphan"; font-weight: 400; src: url("../../src/fonts/anuphan-latin-400-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: "Anuphan"; font-weight: 700; src: url("../../src/fonts/anuphan-latin-700-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+:root{--cream:#FFF8F2;--rose:#674454;--rose2:#7D6571;--pink:#C4466F;--pink7:#A8385C;--pinksoft:#FFDCE9;--pink50:#FFF3F7;--lav:#7360D0;--lav7:#5E4CB8;--lav1:#E9E1FF;--hl:#F47FA7}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--cream)}
+body{font-family:"Anuphan",sans-serif;color:var(--rose)}
+#film{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--cream)}
+.blob{position:absolute;border-radius:50%;filter:blur(2px)}
+.progress{position:absolute;left:64px;right:64px;top:56px;height:10px;border-radius:5px;background:#F1E7EB;overflow:hidden;z-index:5}
+.progress i{display:block;height:100%;width:0;background:var(--pink);border-radius:5px}
+.brand{position:absolute;left:64px;top:96px;font-weight:700;font-size:44px;color:var(--lav7);z-index:5;letter-spacing:-.5px}
+.scene{position:absolute;inset:0;display:none}
+.head{position:absolute;left:64px;right:64px;top:170px;display:flex;flex-direction:column;gap:14px}
+.chip{align-self:flex-start;background:var(--pink);color:#fff;font-weight:700;font-size:34px;border-radius:999px;padding:8px 28px;box-shadow:0 8px 20px -8px rgba(196,70,111,.6)}
+.title{margin:0;font-size:76px;line-height:1.2;font-weight:700;color:var(--rose)}
+.stage{position:absolute;left:0;right:0;top:400px;display:flex;justify-content:center}
+.stage > .phone{zoom:2.5}
+/* caption */
+.caption{position:absolute;left:48px;right:48px;bottom:56px;min-height:250px;background:#fff;border:2px solid #F3E4EA;border-radius:44px;padding:36px 40px 36px 230px;box-shadow:0 20px 50px -24px rgba(103,68,84,.35);display:flex;align-items:center;z-index:6}
+.caption p{margin:0;font-size:44px;line-height:1.5;color:var(--rose);font-weight:700}
+.capmomo{position:absolute;left:14px;bottom:20px;width:210px;height:210px}
+.capmomo img{width:100%;height:100%;object-fit:contain}
+.wave{position:absolute;left:150px;top:-26px;display:flex;gap:6px;align-items:flex-end;height:44px;background:var(--pinksoft);border-radius:22px;padding:8px 14px}
+.wave b{width:8px;border-radius:4px;background:var(--pink);height:10px}
+/* phone (app dark theme tokens) */
+.phone{background:#0B0914;border-radius:34px;padding:8px;box-shadow:0 24px 50px -20px rgba(60,30,80,.45);width:300px;position:relative}
+.screen{background:#120F1C;border-radius:27px;padding:14px;color:#F3EEFF;display:flex;flex-direction:column;gap:10px;overflow:hidden;position:relative}
+.dcard{background:#211B35;border-radius:16px;padding:12px;position:relative}
+.meta{font-size:11px;color:#B9AED6}
+.pack{background:#18352B;border-radius:16px;padding:12px;color:#F3EEFC}
+.seg{display:flex;align-items:center;gap:6px;font-size:11px;color:#CFE9DA}
+.segon{background:#C9B6FF;color:#1A1430;border-radius:999px;padding:4px 10px;font-weight:700}
+.box{background:#2A2244;border-radius:16px;padding:12px;position:relative}
+.boxt{font-size:12px;font-weight:700;color:#D4C6FF}
+.stepper{display:flex;align-items:center;gap:8px;background:rgba(20,15,34,.6);border-radius:999px;padding:4px;color:#F3EEFC}
+.sbtn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#3A3060;color:#CFC3F0;position:relative;font-size:18px;font-weight:700;line-height:1}
+.splus{background:#C9B6FF;color:#1A1430}
+.bigbtn{background:#C4B0FF;color:#1A1230;border-radius:14px;padding:11px;font-weight:700;font-size:14px;text-align:center;position:relative}
+.softbtn{background:#2C2248;color:#D7C8FF;border-radius:14px;padding:9px;font-weight:700;font-size:13px;text-align:center}
+.okbtn{background:#1B3330;color:#9EE3C5;border-radius:14px;padding:11px;font-weight:700;font-size:14px;text-align:center}
+.tabs{display:flex;justify-content:space-between;padding:4px 0 2px;font-size:9px;color:#B9AED6}
+.tabs span{display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;padding:2px 4px;border-radius:10px}
+.num{display:flex;align-items:baseline;gap:6px;position:relative}
+.big{font-size:40px;font-weight:700;line-height:1.1}
+.stack{position:relative;display:inline-block;min-width:24px}
+.stack > *{position:absolute;left:0;bottom:0}
+.stack > *:first-child{position:relative}
+.hlbox{position:absolute;inset:-4px;border-radius:12px;box-shadow:0 0 0 3px var(--hl);pointer-events:none}
+/* blister */
+.plate{background:#2E2747;border-radius:14px;padding:10px 8px 6px;display:flex;flex-direction:column;gap:4px}
+.prow{display:flex;justify-content:space-between}
+.pcell{display:flex;flex-direction:column;align-items:center;gap:2px;width:32px;font-size:9px;font-weight:700;color:#B9AED6}
+.pslot{position:relative;width:28px;height:28px}
+.pill{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.p-in{background:radial-gradient(circle at 35% 30%,#FFFFFF 0%,#EDE8FA 55%,#CFC5E8 100%)}
+.p-next{background:radial-gradient(circle at 35% 30%,#FFFFFF 0%,#EDE8FA 55%,#CFC5E8 100%);box-shadow:0 0 0 2px #C4B0FF}
+.p-gone{border:1.5px dashed #5C4FA8;background:#1E1834;color:#C4B0FF;font-size:14px;font-weight:700}
+.pulse{position:absolute;inset:-5px;border-radius:50%;border:2px solid #C4B0FF}
+.tabsA{display:flex;gap:6px}
+.tabsA div{flex:1;border-radius:12px;padding:6px;text-align:center}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#211B35;border-radius:22px 22px 0 0;padding:8px 14px 16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 -10px 30px rgba(0,0,0,.5)}
+.opt{display:flex;align-items:center;gap:8px;border-radius:14px;padding:9px 10px;border:2px solid #2C2545;background:#211B35;position:relative}
+.opton{border-color:#C4B0FF;background:#1C1730}
+.dot{width:16px;height:16px;border-radius:50%;background:#fff;flex:none;border:2px solid #4F4580}
+.doton{border:5px solid #C4B0FF}
+.dim{position:absolute;inset:0;background:rgba(6,4,14,.6)}
+/* tap marker */
+.tap{position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none;z-index:20;opacity:0}
+.tap .f{position:absolute;left:-13px;top:-13px;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.85);box-shadow:0 0 0 3px rgba(244,127,167,.9)}
+.tap .r{position:absolute;left:-20px;top:-20px;width:40px;height:40px;border-radius:50%;border:3px solid var(--hl)}
+/* overlays in the poster palette */
+.bubble{position:absolute;background:#fff;color:var(--pink7);font-weight:700;border-radius:20px;padding:10px 16px;font-size:14px;box-shadow:0 10px 24px -10px rgba(103,68,84,.45);white-space:nowrap;z-index:15}
+.toast{position:absolute;left:12px;right:12px;top:12px;background:#2C2248;color:#F3EEFF;border-radius:14px;padding:10px 12px;font-size:12px;font-weight:700;display:flex;gap:8px;align-items:center;box-shadow:0 12px 32px -12px rgba(0,0,0,.7);z-index:12}
+.check{display:flex;align-items:center;gap:22px;font-size:44px;font-weight:700;color:var(--rose);background:#fff;border:2px solid #F3E4EA;border-radius:30px;padding:20px 30px}
+.check i{width:58px;height:58px;border-radius:50%;background:var(--pink);color:#fff;font-style:normal;font-size:30px;display:flex;align-items:center;justify-content:center;flex:none}
+</style>
+</head>
+<body>
+<div id="film">
+  <div class="blob" data-drift="0" style="width:520px;height:520px;left:-160px;top:220px;background:#FFF0F5"></div>
+  <div class="blob" data-drift="1" style="width:440px;height:440px;right:-140px;top:900px;background:#F3EEFC"></div>
+  <div class="blob" data-drift="2" style="width:300px;height:300px;left:120px;top:1300px;background:#FFF3E6"></div>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="brand">Momo</div>
+
+  <!-- INTRO -->
+  <section class="scene" data-scene="intro">
+    <div style="position:absolute;left:0;right:0;top:250px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+      <img data-in="0.1" data-bob src="../../public/mascot/happy.webp" alt="" style="width:560px;height:560px;object-fit:contain">
+      <div data-in="0.5" style="font-weight:700;font-size:190px;line-height:1;color:var(--lav7);letter-spacing:-4px">Momo</div>
+      <div data-in="0.8" style="font-weight:700;font-size:86px;color:var(--rose)">เริ่มใช้งานครั้งแรก</div>
+      <div data-in="1.1" style="margin-top:18px;background:var(--pinksoft);color:var(--pink7);font-weight:700;font-size:40px;border-radius:999px;padding:12px 36px">8 ขั้นตอนง่าย ๆ ทำตามได้เลย ♡</div>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="scene" data-scene="s1-stock-tab">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 1 / 8</span><h1 class="title" data-in="0.25">ไปที่เมนู สต็อกยา</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen" style="gap:8px">
+      <div><div style="font-size:17px;font-weight:700">สวัสดีแพรวา</div><div class="meta">วันอังคาร 13 ตุลาคม · วันนี้ดูแลตัวเองหรือยัง?</div></div>
+      <div class="dcard" style="display:flex;align-items:center;gap:8px;padding:8px 10px"><span style="color:#FFB3CF">♥</span><span style="font-size:11px">ความสนิท · เพิ่งรู้จัก</span><span class="meta" style="margin-left:auto">0/50</span></div>
+      <div class="dcard" style="display:flex;flex-direction:column;gap:6px">
+        <div class="meta">ยังไม่ถึงเวลา · 01:15 น.</div>
+        <div style="display:flex;align-items:center;gap:6px"><img src="../../public/mascot/reminder.webp" alt="" style="width:86px;height:86px;object-fit:contain"><div style="background:#2A2246;border-radius:12px;padding:8px;font-size:11px;line-height:1.45">ยาใกล้หมดแล้วนะ โมโมช่วยเตือนให้เตรียมเพิ่มนะ</div></div>
+        <div style="font-size:14px;font-weight:700">Pristiq 50 mg</div>
+        <div class="meta" style="margin-top:-6px">Desvenlafaxine · 1 เม็ด · 01:15 น.</div>
+        <div class="bigbtn" style="padding:8px;font-size:12px">บันทึกว่ากินยาแล้ว ♡</div>
+      </div>
+      <nav class="tabs">
+        <span style="color:#F3EEFF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>หน้าหลัก</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="2"/><circle cx="15.5" cy="8.5" r="2"/><circle cx="8.5" cy="15.5" r="2"/><circle cx="15.5" cy="15.5" r="2"/></svg>แผงยา</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>ประวัติ</span>
+        <span data-press="2.0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 3 7.5v9L12 21l9-4.5v-9z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>สต็อกยา<i class="hlbox" data-show="2.2"></i><i class="tap" data-tap="2.0"><b class="f"></b><b class="r"></b></i><em class="bubble" data-show="1.0,2.3" style="right:-14px;bottom:52px;font-style:normal">แตะตรงนี้</em></span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>ตั้งค่า</span>
+      </nav>
+    </div></div></div>
+  </section>
+
+  <!-- 2 + 3 share one stock screen -->
+  <section class="scene" data-scene="s2-plus">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 2 / 8</span><h1 class="title" data-in="0.25">เพิ่มจำนวนกล่องสำรอง</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen">
+      <div class="pack">
+        <div style="font-size:12px;font-weight:700;color:#8FE0B0">ยาในแผงที่เปิดแล้ว</div>
+        <div class="num"><span class="big">0</span><span style="font-size:15px">เม็ด</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#A8D8BB"><span>เหลือ 0 จาก 15 เม็ด</span><span>รวมสำรอง ≈ 30 วัน</span></div>
+        <div style="height:5px;border-radius:3px;background:rgba(0,0,0,.35);margin:8px 0 10px"></div>
+        <div class="seg"><span>การเก็บยา</span><span class="segon">แยกที่เก็บ</span><span>รวมที่เดียว</span></div>
+      </div>
+      <div class="box">
+        <div class="boxt">กล่องสำรอง (ยังไม่เปิด)</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0">
+          <div class="num"><span class="stack big"><span data-show="0,2.15">0</span><span data-show="2.15">1</span></span><span style="font-size:14px">กล่อง</span></div>
+          <div class="stepper"><span class="sbtn">−</span><span class="stack" style="font-size:13px;min-width:8px"><span data-show="0,2.15">0</span><span data-show="2.15">1</span></span><span class="sbtn splus" data-press="2.0">+<i class="tap" data-tap="2.0"><b class="f"></b><b class="r"></b></i><em class="bubble" data-show="1.0,2.3" style="right:-10px;bottom:44px;font-style:normal">แตะ +</em></span></div>
+        </div>
+        <div style="font-size:11px;color:#B5A8D6">1 กล่อง = 2 แผง × 15 เม็ด</div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <section class="scene" data-scene="s3-check">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 3 / 8</span><h1 class="title" data-in="0.25">ตรวจสอบจำนวนกล่อง</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen">
+      <div class="pack">
+        <div style="font-size:12px;font-weight:700;color:#8FE0B0">ยาในแผงที่เปิดแล้ว</div>
+        <div class="num"><span class="big">0</span><span style="font-size:15px">เม็ด</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#A8D8BB"><span>เหลือ 0 จาก 15 เม็ด</span><span>รวมสำรอง ≈ 30 วัน</span></div>
+        <div style="height:5px;border-radius:3px;background:rgba(0,0,0,.35);margin:8px 0 10px"></div>
+        <div class="seg"><span>การเก็บยา</span><span class="segon">แยกที่เก็บ</span><span>รวมที่เดียว</span></div>
+      </div>
+      <div class="box">
+        <div class="boxt">กล่องสำรอง (ยังไม่เปิด)</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0">
+          <div class="num" style="padding:0 6px"><span class="big">1</span><span style="font-size:14px">กล่อง</span><i class="hlbox" data-show="0.9"></i><em class="bubble" data-in="1.3" style="left:-6px;top:-50px;font-style:normal">เพิ่มเป็น 1 กล่องแล้ว ♡</em></div>
+          <div class="stepper"><span class="sbtn">−</span><span style="font-size:13px">1</span><span class="sbtn splus">+</span></div>
+        </div>
+        <div style="font-size:11px;color:#B5A8D6">1 กล่อง = 2 แผง × 15 เม็ด</div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="scene" data-scene="s4-open-box">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 4 / 8</span><h1 class="title" data-in="0.25">กด “เปิดกล่องใหม่”</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen" style="min-height:330px;padding-top:58px">
+      <div class="toast" data-in="2.6"><span style="color:#9EE3C5;font-size:16px">✓</span>เปิดกล่องแล้ว · เพิ่มแผง A และแผง B</div>
+      <div class="box">
+        <div class="boxt">กล่องสำรอง (ยังไม่เปิด)</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0">
+          <div class="num"><span class="stack big"><span data-show="0,2.4">1</span><span data-show="2.4">0</span></span><span style="font-size:14px">กล่อง</span></div>
+          <div class="stepper"><span class="sbtn">−</span><span class="stack" style="font-size:13px;min-width:8px"><span data-show="0,2.4">1</span><span data-show="2.4">0</span></span><span class="sbtn splus">+</span></div>
+        </div>
+        <div style="font-size:11px;color:#B5A8D6">1 กล่อง = 2 แผง × 15 เม็ด</div>
+      </div>
+      <div class="bigbtn" data-press="1.9" style="padding:14px;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px">เปิดกล่องใหม่</span><span style="font-size:11px;font-weight:400">เพิ่ม 2 แผง × 15 เม็ด</span><i class="tap" data-tap="1.9"><b class="f"></b><b class="r"></b></i><em class="bubble" data-show="0.9,2.2" style="right:10px;bottom:-40px;font-style:normal">แตะปุ่มนี้</em></div>
+      <div class="pack" data-in="3.1" style="display:flex;align-items:center;gap:10px"><span style="font-size:22px">＋</span><div><div style="font-size:12px;font-weight:700;color:#8FE0B0">ยาในแผงที่เปิดแล้ว</div><div style="font-size:16px;font-weight:700">30 เม็ด · 2 แผง</div></div></div>
+    </div></div></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="scene" data-scene="s5-blister">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 5 / 8</span><h1 class="title" data-in="0.25">ไปที่เมนู แผงยา</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen">
+      <div><div style="font-size:9px;letter-spacing:2px;color:#C4B0FF;font-weight:700">BLISTER</div><div style="font-size:16px;font-weight:700">แผงยา</div></div>
+      <div class="tabsA"><div style="background:#C4B0FF;color:#1A1230"><div style="font-size:13px;font-weight:700">แผง A</div><div style="font-size:9px">ห้องนอน · เหลือ 15</div></div><div style="background:#1D2540"><div style="font-size:13px;font-weight:700;color:#AFC8FF">แผง B</div><div class="meta" style="font-size:9px">ห้องทำงาน · เหลือ 15</div></div></div>
+      <div class="dcard" style="display:flex;flex-direction:column;gap:8px">
+        <div><div style="font-size:14px;font-weight:700">Pristiq 50 mg</div><div class="meta">Desvenlafaxine · แผง A</div></div>
+        <div class="plate" data-pills="next:1"></div>
+        <div style="display:flex;gap:10px;font-size:9px;color:#B9AED6"><span>◉ ถัดไป</span><span>● ยังอยู่</span><span>✓ กินแล้ว</span><span>◌ แกะออก</span></div>
+      </div>
+      <em class="bubble" data-in="1.6" style="left:20px;top:206px;font-style:normal">เม็ดถัดไป = เม็ดที่ 1</em>
+    </div></div></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="scene" data-scene="s6-mark-used">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 6 / 8</span><h1 class="title" data-in="0.25">ตั้งเม็ดที่กินไปแล้ว</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen" style="height:420px">
+      <div><div style="font-size:9px;letter-spacing:2px;color:#C4B0FF;font-weight:700">BLISTER</div><div style="font-size:16px;font-weight:700">แผงยา</div></div>
+      <div class="dcard" style="display:flex;flex-direction:column;gap:8px">
+        <div><div style="font-size:14px;font-weight:700">Pristiq 50 mg</div><div class="meta">Desvenlafaxine · แผง A</div></div>
+        <div class="plate" data-pills="seq" data-tap-first="1.0"></div>
+      </div>
+      <em class="bubble" data-in="5.6" style="left:30px;top:250px;font-style:normal">ทำซ้ำทีละเม็ด จนครบ ♡</em>
+      <div class="dim" data-show="1.35,5.0"></div>
+      <div class="sheet" data-sheet="1.4,5.0">
+        <div style="width:36px;height:4px;border-radius:2px;background:#3A3160;align-self:center"></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="flex:1"><div class="meta">แผง A · ห้องนอน</div><div style="font-size:18px;font-weight:700">เม็ดที่ 1</div></div><img src="../../public/mascot/reminder.webp" alt="" style="width:52px;height:52px;object-fit:contain"></div>
+        <div style="font-size:14px;font-weight:700">แกะเม็ดนี้ออกจากแผงใช่ไหม?</div>
+        <div class="opt"><span class="dot"></span><span><b style="display:block;font-size:12px">กินเม็ดนี้แล้ว</b><span class="meta" style="font-size:9px">บันทึกการกินยาของวันนี้ + แกะเม็ดออก</span></span></div>
+        <div style="position:relative">
+          <div class="opt" data-show="0,3.0"><span class="dot"></span><span><b style="display:block;font-size:12px">แค่แกะเม็ดออก</b><span class="meta" style="font-size:9px">เช่น กินไปก่อนเริ่มใช้แอป · ไม่นับว่ากิน</span></span></div>
+          <div class="opt opton" data-show="3.0" style="position:absolute;inset:0"><span class="dot doton"></span><span><b style="display:block;font-size:12px">แค่แกะเม็ดออก</b><span class="meta" style="font-size:9px">เช่น กินไปก่อนเริ่มใช้แอป · ไม่นับว่ากิน</span></span></div>
+          <i class="tap" data-tap="2.8"><b class="f"></b><b class="r"></b></i>
+        </div>
+        <div class="bigbtn" data-press="4.2" style="padding:9px;font-size:13px">ยืนยัน แกะออก<i class="tap" data-tap="4.2"><b class="f"></b><b class="r"></b></i></div>
+        <div class="softbtn">ยกเลิก</div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <!-- 7 -->
+  <section class="scene" data-scene="s7-next">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 7 / 8</span><h1 class="title" data-in="0.25">ตรวจสอบเม็ดถัดไป</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen">
+      <div class="tabsA"><div style="background:#C4B0FF;color:#1A1230"><div style="font-size:13px;font-weight:700">แผง A</div><div style="font-size:9px">ห้องนอน · เหลือ 3</div></div><div style="background:#1D2540"><div style="font-size:13px;font-weight:700;color:#AFC8FF">แผง B</div><div class="meta" style="font-size:9px">ห้องทำงาน · เหลือ 15</div></div></div>
+      <div class="dcard" style="display:flex;flex-direction:column;gap:8px">
+        <div><div style="font-size:14px;font-weight:700">Pristiq 50 mg</div><div class="meta">Desvenlafaxine · แผง A</div></div>
+        <div class="plate" data-pills="next:13"></div>
+      </div>
+      <div class="dcard" data-in="1.4" style="background:#2C2248;display:flex;align-items:center;gap:10px;padding:10px 12px">
+        <span style="width:40px;height:40px;border-radius:50%;border:2px solid #C4B0FF;color:#C4B0FF;display:flex;align-items:center;justify-content:center;font-weight:700">13</span>
+        <div style="flex:1"><div style="font-size:11px;color:#D7C8FF;font-weight:700">เม็ดถัดไป</div><div style="font-size:18px;font-weight:700">ลำดับที่ 13</div></div><span style="color:#B9AED6">›</span>
+      </div>
+      <em class="bubble" data-in="2.2" style="left:56px;top:150px;font-style:normal">วงเส้นประ = แกะออกแล้ว</em>
+    </div></div></div>
+  </section>
+
+  <!-- 8 -->
+  <section class="scene" data-scene="s8-record">
+    <div class="head"><span class="chip" data-in="0.1">ขั้นที่ 8 / 8</span><h1 class="title" data-in="0.25">บันทึกการกินยา</h1></div>
+    <div class="stage" data-in="0.3"><div class="phone"><div class="screen" style="gap:8px;padding-top:58px">
+      <div class="toast" data-in="2.7"><span style="color:#FFB3CF;font-size:16px">♥</span>บันทึกการกินยาแล้ว · ความสนิท +1</div>
+      <div><div style="font-size:17px;font-weight:700">สวัสดีแพรวา</div><div class="meta">วันอังคาร 13 ตุลาคม · วันนี้ดูแลตัวเองหรือยัง?</div></div>
+      <div class="dcard" style="display:flex;flex-direction:column;gap:6px">
+        <div class="meta">ถึงเวลาแล้ว · 01:15 น.</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="position:relative;width:96px;height:96px;flex:none"><img data-show="0,2.4" src="../../public/mascot/reminder.webp" alt="" style="position:absolute;inset:0;width:96px;height:96px;object-fit:contain"><img data-show="2.4" src="../../public/mascot/success.webp" alt="" style="position:absolute;inset:0;width:96px;height:96px;object-fit:contain"></span>
+          <div class="stack" style="flex:1;background:#2A2246;border-radius:12px;padding:8px;font-size:11px;line-height:1.45;min-height:52px"><span data-show="0,2.4">ถึงเวลาแล้ว กินยากันน้า</span><span data-show="2.4" style="left:8px;bottom:8px;right:8px">เก่งมากเลย ดูแลตัวเองดีมาก ♡</span></div>
+        </div>
+        <div style="font-size:14px;font-weight:700">Pristiq 50 mg</div>
+        <div class="meta" style="margin-top:-6px">Desvenlafaxine · 1 เม็ด · เม็ดที่ 13</div>
+        <div style="position:relative">
+          <div class="bigbtn" data-show="0,2.35" data-press="2.0">บันทึกว่ากินยาแล้ว ♡<i class="tap" data-tap="2.0"><b class="f"></b><b class="r"></b></i></div>
+          <div class="okbtn" data-show="2.35" style="position:absolute;inset:0">✓ กินแล้ว 01:15 น.</div>
+        </div>
+      </div>
+      <em class="bubble" data-show="1.0,2.2" style="right:14px;top:300px;font-style:normal">กินแล้ว แตะเลย</em>
+    </div></div></div>
+  </section>
+
+  <!-- OUTRO -->
+  <section class="scene" data-scene="outro">
+    <div style="position:absolute;left:72px;right:72px;top:190px;display:flex;flex-direction:column;gap:22px">
+      <div data-in="0.1" style="font-weight:700;font-size:72px;color:var(--rose)">สรุปง่าย ๆ ♡</div>
+      <div class="check" data-in="0.3"><i>1</i>เพิ่มกล่องสำรองในสต็อกยา</div>
+      <div class="check" data-in="0.5"><i>2</i>กด “เปิดกล่องใหม่”</div>
+      <div class="check" data-in="0.7"><i>3</i>ตั้งเม็ดที่กินไปแล้ว ในแผงยา</div>
+      <div class="check" data-in="0.9"><i>4</i>กินยาแล้ว กดบันทึกทุกวัน</div>
+    </div>
+    <div style="position:absolute;left:0;right:0;top:1060px;display:flex;flex-direction:column;align-items:center">
+      <img data-in="1.2" data-bob src="../../public/mascot/happy.webp" alt="" style="width:380px;height:380px;object-fit:contain">
+    </div>
+  </section>
+
+  <div class="caption" id="caption">
+    <div class="capmomo"><img data-bob src="../../public/mascot/idle.webp" alt=""></div>
+    <div class="wave" id="wave"><b></b><b></b><b></b><b></b><b></b></div>
+    <p id="say"></p>
+  </div>
+</div>
+
+<script>
+const clamp = (x) => Math.max(0, Math.min(1, x));
+const outBack = (x) => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const outCubic = (x) => 1 - Math.pow(1 - x, 3);
+let TL = [], TOTAL = 0;
+
+// Blister plates: rows run 1→5, 10←6, 11→15 like the real pack.
+const ORDER = [[1,2,3,4,5],[10,9,8,7,6],[11,12,13,14,15]];
+function pillHTML(n, states) {
+  // states: [{cls, show:"a,b"}]
+  const layers = states.map((s) => `<span class="pill ${s.cls}"${s.show ? ` data-show="${s.show}"` : ""}>${s.cls === "p-gone" ? "–" : ""}${s.pulse ? `<i class="pulse" data-pulse></i>` : ""}</span>`).join("");
+  return `<div class="pcell"><span class="pslot">${layers}</span><span>${n}</span></div>`;
+}
+function buildPlates() {
+  document.querySelectorAll("[data-pills]").forEach((plate) => {
+    const spec = plate.dataset.pills;
+    let fn;
+    if (spec.startsWith("next:")) {
+      const next = +spec.slice(5);
+      fn = (n) => [{ cls: n < next ? "p-gone" : n === next ? "p-next" : "p-in", pulse: n === next }];
+    } else {
+      // scene 6: pill 1 is tapped and removed, then 2 and 3 follow quickly
+      const goneAt = { 1: 5.1, 2: 5.8, 3: 6.4 };
+      fn = (n) => {
+        if (n > 4) return [{ cls: "p-in" }];
+        const prev = goneAt[n - 1] ?? 0, gone = goneAt[n];
+        const layers = [];
+        if (n > 1) layers.push({ cls: "p-in", show: `0,${prev}` });
+        layers.push({ cls: "p-next", pulse: true, show: gone ? `${prev},${gone}` : `${prev}` });
+        if (gone) layers.push({ cls: "p-gone", show: `${gone}` });
+        return layers;
+      };
+    }
+    plate.innerHTML = ORDER.map((r) => `<div class="prow">${r.map((n) => pillHTML(n, fn(n))).join("")}</div>`).join("");
+    if (plate.dataset.tapFirst) {
+      const slot = plate.querySelector(".pslot");
+      slot.insertAdjacentHTML("beforeend", `<i class="tap" data-tap="${plate.dataset.tapFirst}"><b class="f"></b><b class="r"></b></i>`);
+    }
+  });
+}
+
+function setup(timeline) {
+  TL = timeline;
+  TOTAL = timeline.reduce((m, s) => Math.max(m, s.start + s.dur), 0);
+  buildPlates();
+  for (const s of TL) s.el = document.querySelector(`[data-scene="${s.id}"]`);
+  return TOTAL;
+}
+
+const range = (v) => { const [a, b] = v.split(",").map(Number); return [a, Number.isFinite(b) ? b : Infinity]; };
+
+function renderScene(root, local) {
+  root.querySelectorAll("[data-in]").forEach((el) => {
+    const p = clamp((local - +el.dataset.in) / 0.55);
+    el.style.opacity = clamp(p * 1.6);
+    const e = outBack(p);
+    el.style.translate = `0 ${(1 - e) * 40}px`;
+  });
+  root.querySelectorAll("[data-show]").forEach((el) => {
+    const [a, b] = range(el.dataset.show);
+    el.style.opacity = Math.min(clamp((local - a) / 0.18 + (a === 0 ? 1 : 0)), clamp((b - local) / 0.18));
+  });
+  root.querySelectorAll("[data-tap]").forEach((el) => {
+    const a = local - +el.dataset.tap + 0.35; // finger arrives a bit before the tap
+    if (a < 0 || a > 1.25) { el.style.opacity = 0; return; }
+    el.style.opacity = a < 0.15 ? a / 0.15 : a > 1.0 ? (1.25 - a) / 0.25 : 1;
+    const f = el.querySelector(".f"), r = el.querySelector(".r");
+    const press = a < 0.35 ? 1.4 - outCubic(a / 0.35) * 0.4 : 1;
+    f.style.scale = press;
+    const rp = clamp((a - 0.35) / 0.6);
+    r.style.scale = 0.5 + rp * 1.7;
+    r.style.opacity = a < 0.35 ? 0 : 1 - rp;
+  });
+  root.querySelectorAll("[data-press]").forEach((el) => {
+    const a = local - +el.dataset.press;
+    el.style.scale = a < 0 || a > 0.3 ? 1 : 1 - Math.sin((a / 0.3) * Math.PI) * 0.07;
+  });
+  root.querySelectorAll("[data-sheet]").forEach((el) => {
+    const [a, b] = range(el.dataset.sheet);
+    const up = outCubic(clamp((local - a) / 0.45)), down = outCubic(clamp((local - b) / 0.35));
+    el.style.translate = `0 ${(1 - up + down) * 105}%`;
+  });
+  root.querySelectorAll("[data-pulse]").forEach((el) => {
+    const w = (local * 1.1) % 1;
+    el.style.scale = 1 + w * 0.45;
+    el.style.opacity = 0.9 * (1 - w);
+  });
+}
+
+function render(t) {
+  document.getElementById("bar").style.width = `${(t / TOTAL) * 100}%`;
+  let current = TL[0];
+  for (const s of TL) {
+    const local = t - s.start;
+    const on = local >= 0 && local < s.dur;
+    s.el.style.display = on ? "block" : "none";
+    if (!on) continue;
+    current = s;
+    const enter = outCubic(clamp(local / 0.45)), exit = clamp((local - (s.dur - 0.35)) / 0.35);
+    s.el.style.opacity = Math.min(enter, 1 - exit);
+    s.el.style.translate = `${(1 - enter) * 90 - exit * 90}px 0`;
+    renderScene(s.el, local);
+  }
+  // caption follows the current scene's line
+  const say = document.getElementById("say");
+  if (say.dataset.id !== current.id) { say.textContent = current.say; say.dataset.id = current.id; }
+  const cl = t - current.start;
+  const cap = document.getElementById("caption");
+  const ce = outCubic(clamp((cl - 0.15) / 0.4));
+  say.style.opacity = Math.min(ce, 1 - clamp((cl - (current.dur - 0.3)) / 0.3));
+  say.style.translate = `0 ${(1 - ce) * 16}px`;
+  const speaking = cl > 0.2 && cl < (current.speak ?? current.dur - 0.8);
+  document.querySelectorAll("#wave b").forEach((b, i) => {
+    b.style.height = `${speaking ? 10 + Math.abs(Math.sin(t * 9 + i * 1.3)) * 24 : 8}px`;
+  });
+  document.querySelectorAll("[data-bob]").forEach((el, i) => { el.style.translate = `0 ${Math.sin(t * 2.2 + i) * 10}px`; });
+  document.querySelectorAll("[data-drift]").forEach((el) => {
+    const k = +el.dataset.drift;
+    el.style.translate = `${Math.sin(t * 0.3 + k * 2) * 30}px ${Math.cos(t * 0.25 + k) * 24}px`;
+  });
+}
+
+window.setup = setup;
+window.render = render;
+
+// Standalone preview in a browser: default timing from script.json
+if (!navigator.webdriver) {
+  fetch("script.json").then((r) => r.json()).then((cfg) => {
+    let start = 0;
+    const tl = cfg.scenes.map((s) => { const x = { id: s.id, say: s.say, start, dur: s.min }; start += s.min; return x; });
+    setup(tl);
+    const q = new URLSearchParams(location.search);
+    if (q.has("play")) { const t0 = performance.now(); const loop = () => { const t = (performance.now() - t0) / 1000; render(t % TOTAL); requestAnimationFrame(loop); }; loop(); }
+    else render(Number(q.get("t") ?? 1));
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>

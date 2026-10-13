@@ -19,7 +19,7 @@ export default function ProfilePage() {
   const s = useMomo();
   const set = s.updateSettings;
   const showToast = useUI((u) => u.showToast);
-  const { call, voice, tone, uiSounds, greeting, music, musicTrack, reduceMotion, theme } = s.settings;
+  const { call, voice, tone, uiSounds, greeting, momoTalk, music, musicTrack, reduceMotion, theme } = s.settings;
   const [confirmReset, setConfirmReset] = useState(false);
   const sweet = voice === "sweet";
 
@@ -83,6 +83,10 @@ export default function ProfilePage() {
         <div className="flex items-center gap-3">
           <RowLabel title="โมโม่ทักทายตอนเปิดแอป" sub="เสียงกรุ๊งกริ๊ง + โมโม่พูดสวัสดีแพรวา" />
           <span data-sound="none" className="contents"><Switch checked={greeting} onChange={(v) => { set({ greeting: v }); if (v) playGreeting({ voice: s.settings.ttsVoice, pitch: s.settings.ttsPitch }); }} label="โมโม่ทักทายตอนเปิดแอป" /></span>
+        </div>
+        <div className="flex items-center gap-3">
+          <RowLabel title="โมโม่พูดตอนแตะและตอนบันทึก" sub="แตะโมโม่ กินยาแล้ว เติมสต็อก เปิดกล่องใหม่" />
+          <Switch checked={momoTalk} onChange={(v) => set({ momoTalk: v })} label="โมโม่พูดตอนแตะและตอนบันทึก" />
         </div>
         <VoicePicker />
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">

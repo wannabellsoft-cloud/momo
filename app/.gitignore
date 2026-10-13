@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .mascot-tmp/
+
+# tutorial video renders + ElevenLabs voice previews
+/video/*/out/
+/voice-design/

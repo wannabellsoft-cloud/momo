@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useQuickConfirm } from "@/lib/hooks";
+import { momoSays } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
 import { NotificationCard } from "./NotificationCard";
 
@@ -97,6 +98,12 @@ export function Toast() {
   const visible = !!toast; // top of the screen; the notification card rises from the bottom
   // keep the last message rendered while the toast fades out
   if (toast && toast !== shown) setShown(toast);
+  // Momo says the toast aloud when that line was recorded in her voice
+  const toastKey = toast?.key;
+  useEffect(() => {
+    const t = useUI.getState().toast;
+    if (t && t.key === toastKey) momoSays(t.text, { clipOnly: true });
+  }, [toastKey]);
   useEffect(() => {
     if (!toast || paused) return;
     const t = setTimeout(hide, TOAST_MS);
