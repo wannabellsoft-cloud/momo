@@ -38,9 +38,19 @@ export const SAY = {
   reserveAdded: ["เติมสต็อกแล้ว ขอบคุณน้า ♡", "เพิ่มกล่องสำรองแล้ว โมโม่นับไว้ให้นะ", "ยาพร้อมแล้ว อุ่นใจขึ้นเยอะเลย ♡"],
 } as const;
 
+/** What Momo says when the Stock screen opens: whether to buy more or not (shown in her bubble too). */
+export const STOCK_STATUS = {
+  enough: "ยายังพอนะ โมโม่นับไว้ให้แล้ว ยังไม่ต้องซื้อเพิ่มน้า ♡",
+  buySoon: "ยาในแผงยังพอ แต่อีกไม่ถึงสองอาทิตย์จะหมดแล้วน้า เตรียมซื้อเพิ่มได้เลยนะ",
+  openBox: "ยาในแผงเหลือไม่ถึง 7 เม็ดแล้วน้า แต่ยังมีกล่องสำรองอยู่ เปิดกล่องใหม่ได้เลย ♡",
+  buyNow: "ยาใกล้หมดแล้วน้า กล่องสำรองก็หมดแล้วด้วย ไปซื้อหรือรับยาเพิ่มนะ",
+  firstBox: "มีกล่องแล้ว เปิดกล่องแรกได้เลยนะ ♡",
+  empty: "ใส่จำนวนกล่องยาที่มี แล้วโมโม่จะนับให้นะ ♡",
+} as const;
+
 /** Every line Momo can say aloud (Praewa's name filled in), for `npm run voice`. */
 export function spokenLines(call = "แพรวา"): string[] {
-  const all = [...HOME_TAP_LINES, ...STOCK_TAP_LINES, ...HISTORY_TAP_LINES, ...TAKEN_LINES(call), ...Object.values(SAY).flat()];
+  const all = [...HOME_TAP_LINES, ...STOCK_TAP_LINES, ...HISTORY_TAP_LINES, ...TAKEN_LINES(call), ...Object.values(SAY).flat(), ...Object.values(STOCK_STATUS)];
   return [...new Set(all.map(speakable))];
 }
 
