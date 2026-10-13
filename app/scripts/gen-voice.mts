@@ -10,8 +10,9 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { VOICE_LINES } from "../src/lib/voice-lines.ts";
 import { synth, ttsInfo } from "./tts.mts";
+import { fileURLToPath } from "node:url";
 
-const OUT = new URL("../public/voice/", import.meta.url).pathname;
+const OUT = fileURLToPath(new URL("../public/voice/", import.meta.url));
 const info = ttsInfo();
 mkdirSync(OUT, { recursive: true });
 

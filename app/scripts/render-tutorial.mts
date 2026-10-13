@@ -8,9 +8,9 @@
 import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const DIR = new URL("../video/first-use/", import.meta.url).pathname;
+const DIR = fileURLToPath(new URL("../video/first-use/", import.meta.url));
 const OUT = `${DIR}out/`;
 const cfg = JSON.parse(readFileSync(`${DIR}script.json`, "utf8")) as {
   fps: number; width: number; height: number; tailPad: number; scenes: { id: string; min: number; say: string }[];
@@ -34,7 +34,7 @@ console.log(`${timeline.length} scenes · ${total.toFixed(1)} s · narration ${v
 // Playwright from the project, or the global install
 const require = createRequire(import.meta.url);
 let pw: typeof import("playwright");
-try { pw = require("playwright"); } catch { pw = require(`${execFileSync("npm", ["root", "-g"]).toString().trim()}/playwright`); }
+try { pw = require("playwright"); } catch { pw = require(`${execFileSync("npm", ["root", "-g"], { shell: process.platform === "win32" }).toString().trim()}/playwright`); }
 
 mkdirSync(OUT, { recursive: true });
 const browser = await pw.chromium.launch();

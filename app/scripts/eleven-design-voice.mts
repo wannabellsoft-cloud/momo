@@ -9,6 +9,7 @@
 // MOMO_VOICE_PROMPT overrides the description below.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { ELEVEN_API } from "./tts.mts";
+import { fileURLToPath } from "node:url";
 
 const key = process.env.ELEVENLABS_API_KEY;
 if (!key) throw new Error("Set ELEVENLABS_API_KEY first.");
@@ -39,7 +40,7 @@ if (save > -1) {
   });
   if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${await res.text()}`);
   const { previews } = (await res.json()) as { previews: { audio_base_64: string; generated_voice_id: string }[] };
-  const out = new URL("../voice-design/", import.meta.url).pathname;
+  const out = fileURLToPath(new URL("../voice-design/", import.meta.url));
   mkdirSync(out, { recursive: true });
   previews.forEach((p, i) => {
     writeFileSync(`${out}preview-${i + 1}.mp3`, Buffer.from(p.audio_base_64, "base64"));

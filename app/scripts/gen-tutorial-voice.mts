@@ -5,8 +5,9 @@
 //   ELEVENLABS_API_KEY=... MOMO_ELEVEN_VOICE=<voice_id> npm run tutorial:voice
 import { mkdirSync, readFileSync } from "node:fs";
 import { synth, ttsInfo } from "./tts.mts";
+import { fileURLToPath } from "node:url";
 
-const DIR = new URL("../video/first-use/", import.meta.url).pathname;
+const DIR = fileURLToPath(new URL("../video/first-use/", import.meta.url));
 const { scenes } = JSON.parse(readFileSync(`${DIR}script.json`, "utf8")) as { scenes: { id: string; say: string }[] };
 const info = ttsInfo();
 mkdirSync(`${DIR}voice`, { recursive: true });
