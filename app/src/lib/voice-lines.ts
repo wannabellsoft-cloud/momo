@@ -1,6 +1,6 @@
 // Momo's recorded lines. Audio lives in public/voice/<id>.mp3 (generate with `npm run voice`,
-// or replace any file with a real recording of the same name). Missing files fall back to the
-// device's text-to-speech, so the app works before any audio exists.
+// or replace any file with a real recording of the same name). Momo only ever speaks with these
+// clips: a line without one stays silent (no device text-to-speech).
 export const VOICE_LINES = {
   "greet-morning": "อรุณสวัสดิ์ แพรวา โมโม่มาแล้วน้า",
   "greet-afternoon": "สวัสดีแพรวา โมโม่คิดถึงจังเลย",

@@ -31,7 +31,7 @@ export function Welcome() {
     // The first tap unlocks audio on iOS — Momo says hello.
     const st = useMomo.getState().settings;
     if (st.greeting) {
-      playGreeting({ voice: st.ttsVoice, pitch: st.ttsPitch });
+      playGreeting();
       try {
         sessionStorage.setItem("momo:greeted", "1");
       } catch {}

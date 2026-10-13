@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { MomoBunny } from "@/components/momo/MomoBunny";
-import { VoicePicker } from "@/components/VoicePicker";
 import { BondBadge } from "@/components/BondBadge";
 import { StreakFlame } from "@/components/StreakFlame";
 import { EXP_RULES, TIERS, momoExp } from "@/lib/exp";
 import { useNow } from "@/lib/hooks";
 import { BackHeader, Card, OutlineButton, RowLabel, Segmented, Switch, KeepName, cx } from "@/components/ui";
-import { playGreeting, playTone } from "@/lib/sound";
+import { playClip, playGreeting, playTone } from "@/lib/sound";
 import { MED, useMomo, type Settings } from "@/lib/store";
 import { useUI } from "@/lib/ui";
+import { greetingId } from "@/lib/voice-lines";
 
 const TONE_TOAST = { sparkle: "กรุ๊งกริ๊ง ♪", bubble: "ป๊อป ป๊อป ♪", hop: "ปุ๊กปิ๊ก ♪" } as const;
 
@@ -82,13 +82,16 @@ export default function ProfilePage() {
         </div>
         <div className="flex items-center gap-3">
           <RowLabel title="โมโม่ทักทายตอนเปิดแอป" sub="เสียงกรุ๊งกริ๊ง + โมโม่พูดสวัสดีแพรวา" />
-          <span data-sound="none" className="contents"><Switch checked={greeting} onChange={(v) => { set({ greeting: v }); if (v) playGreeting({ voice: s.settings.ttsVoice, pitch: s.settings.ttsPitch }); }} label="โมโม่ทักทายตอนเปิดแอป" /></span>
+          <span data-sound="none" className="contents"><Switch checked={greeting} onChange={(v) => { set({ greeting: v }); if (v) playGreeting(); }} label="โมโม่ทักทายตอนเปิดแอป" /></span>
         </div>
         <div className="flex items-center gap-3">
           <RowLabel title="โมโม่พูดตอนแตะและตอนบันทึก" sub="แตะโมโม่ กินยาแล้ว เติมสต็อก เปิดกล่องใหม่" />
           <Switch checked={momoTalk} onChange={(v) => set({ momoTalk: v })} label="โมโม่พูดตอนแตะและตอนบันทึก" />
         </div>
-        <VoicePicker />
+        <div className="flex items-center gap-3">
+          <RowLabel title="เสียงของโมโม่" sub="เสียงการ์ตูนที่อัดไว้ · เหมือนกันทุกเครื่อง" />
+          <span data-sound="none" className="contents"><OutlineButton className="h-11 flex-none rounded-[14px] px-4 text-[14px]" onClick={() => void playClip(greetingId())}>ลองฟัง</OutlineButton></span>
+        </div>
         <div className="flex items-center gap-3 border-t border-solid border-(--border-subtle) pt-3">
           <RowLabel title="ลดการเคลื่อนไหว" sub="โมโม่จะนั่งนิ่ง ๆ ไม่ขยับหู ไม่กระพริบตา" />
           <Switch checked={reduceMotion} onChange={(v) => set({ reduceMotion: v })} label="ลดการเคลื่อนไหว" />

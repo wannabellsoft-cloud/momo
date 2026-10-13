@@ -21,8 +21,7 @@ export function SoundLayer() {
       try {
         sessionStorage.setItem(GREETED, "1");
       } catch {}
-      const st = useMomo.getState().settings;
-      playGreeting({ voice: st.ttsVoice, pitch: st.ttsPitch });
+      playGreeting();
       useUI.getState().setGreet(greetingLine());
     };
 

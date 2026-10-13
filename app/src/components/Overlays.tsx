@@ -102,7 +102,7 @@ export function Toast() {
   const toastKey = toast?.key;
   useEffect(() => {
     const t = useUI.getState().toast;
-    if (t && t.key === toastKey) momoSays(t.text, { clipOnly: true });
+    if (t && t.key === toastKey) momoSays(t.text);
   }, [toastKey]);
   useEffect(() => {
     if (!toast || paused) return;
