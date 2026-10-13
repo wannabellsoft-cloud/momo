@@ -164,16 +164,29 @@ function loadClip(id: string) {
 let speaking: AudioBufferSourceNode | null = null;
 let greetingUntil = 0; // performance.now() ms
 
+let quiet = false; // a video with Momo's narration is playing
+
+/** Momo stays quiet (and stops mid-line) while a video with her narration plays. */
+export function quietMomo(on: boolean) {
+  quiet = on;
+  if (!on) return;
+  try {
+    speaking?.stop();
+  } catch {}
+  speaking = null;
+  greetingUntil = 0;
+}
+
 /** True while Momo is saying hello: other lines are skipped. */
 export const momoGreeting = () => typeof performance !== "undefined" && performance.now() < greetingUntil;
 
 /** Play a recorded line through the (already unlocked) audio context. Resolves false if unavailable or skipped. */
 export async function playClip(id: string, delay = 0, greeting = false): Promise<boolean> {
-  if (!greeting && momoGreeting()) return false;
+  if (quiet || (!greeting && momoGreeting())) return false;
   const c = audio();
   if (!c || !(await availableClips()).has(id)) return false;
   const buf = await loadClip(id);
-  if (!buf || (!greeting && momoGreeting())) return false;
+  if (!buf || quiet || (!greeting && momoGreeting())) return false;
   try {
     speaking?.stop();
   } catch {}
