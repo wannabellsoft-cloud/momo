@@ -3,11 +3,11 @@
 /* Momo's sounds — all synthesized with Web Audio (no audio files), soft and short.
    - Notification tones: sparkle (กรุ๊งกริ๊ง), bubble (ป๊อปฟอง), hop (ปุ๊กปิ๊ก)
    - UI: tap · success · toggle · back, played from a single document listener (see SoundLayer)
-   - Greeting: a chime + Momo saying hello with the device's Thai voice
+   - Momo's voice: her recorded clips only (greeting, tap lines, reactions), never the device's TTS
    On iOS the page's audio session is "ambient", so the ring/silent switch mutes Momo. */
 
 import { BASE } from "./base";
-import { VOICE_LINES, greetingId, type VoiceLineId } from "./voice-lines";
+import { VOICE_LINES, greetingId } from "./voice-lines";
 
 export type Tone = "sparkle" | "bubble" | "hop" | "off";
 export type UiSound = "tap" | "success" | "toggle" | "back" | "giggle";
@@ -130,95 +130,8 @@ export function playUi(kind: UiSound) {
   play(UI[kind]);
 }
 
-/* ─── Momo's voice (Web Speech TTS) ──────────────────────────────────────
-   Voices depend on the device. The API has no gender field, so we rank by known Thai voice
-   names: female first (Momo is a girl), male voices last. */
-export type TtsPitch = "normal" | "cute" | "tiny";
-export const TTS_PITCH: Record<TtsPitch, number> = { normal: 1, cute: 1.35, tiny: 1.7 };
-
-const FEMALE = [/premwadee/i, /narisa/i, /kanya/i, /achara/i, /google/i, /female|ผู้หญิง/i];
-const MALE = [/pattara/i, /niwat/i, /\bmale\b|ผู้ชาย/i];
-
-export type MomoVoice = { name: string; label: string; gender: "female" | "male" | "unknown"; voice: SpeechSynthesisVoice };
-
-// iOS/macOS "Enhanced"/"Premium" downloads (Settings → Accessibility → Spoken Content → Voices) sound far
-// more natural than the built-in compact voice, so they go first. Siri voices are never offered to web apps.
-const HQ = /enhanced|premium|natural|neural/i;
-
-function rank(v: SpeechSynthesisVoice) {
-  const f = FEMALE.findIndex((r) => r.test(v.name));
-  const hq = HQ.test(v.name) || HQ.test(v.voiceURI) ? -0.5 : 0;
-  if (f >= 0) return f + hq;
-  if (MALE.some((r) => r.test(v.name))) return 90;
-  return 50;
-}
-
-/** Thai voices on this device, best (female, natural) first. */
-export function thaiVoices(): MomoVoice[] {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return [];
-  return speechSynthesis
-    .getVoices()
-    .filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith("th"))
-    .sort((a, b) => rank(a) - rank(b))
-    .filter((v, i, all) => all.findIndex((w) => w.name === v.name) === i) // compact + enhanced can share a name: keep the better one
-    .map((v) => {
-      const r = rank(v);
-      const hq = /enhanced|premium/i.test(v.voiceURI) && !/enhanced|premium/i.test(v.name) ? " (คุณภาพสูง)" : "";
-      const label = v.name.replace(/^Microsoft\s+/i, "").replace(/\s*-\s*Thai.*$/i, "").replace(/\s*\(Thailand\)/i, "").trim() + hq;
-      return { name: v.name, label, gender: r < 50 ? "female" : r >= 90 ? "male" : "unknown", voice: v };
-    });
-}
-
-/* For useSyncExternalStore: voices arrive asynchronously (voiceschanged). */
-let cache: { key: string; list: MomoVoice[] } = { key: "", list: [] };
-export function voicesSnapshot(): MomoVoice[] {
-  const list = thaiVoices();
-  const key = list.map((v) => v.name).join("|");
-  if (key !== cache.key) cache = { key, list };
-  return cache.list;
-}
-export function subscribeVoices(cb: () => void) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return () => {};
-  speechSynthesis.getVoices(); // kick off loading
-  speechSynthesis.addEventListener("voiceschanged", cb);
-  return () => speechSynthesis.removeEventListener("voiceschanged", cb);
-}
-
-function pickVoice(name: string | null): SpeechSynthesisVoice | undefined {
-  const list = thaiVoices();
-  return (name && list.find((v) => v.name === name)?.voice) || list[0]?.voice;
-}
-
-export function speak(text: string, opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  duck();
-  const go = () => {
-    try {
-      say();
-    } catch {
-      /* speech unavailable — Momo stays quiet, nothing else is affected */
-    }
-  };
-  const say = () => {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "th-TH";
-    const v = pickVoice(opts.voice ?? null);
-    if (v) u.voice = v;
-    u.pitch = TTS_PITCH[opts.pitch ?? "cute"];
-    u.rate = 1;
-    u.volume = 0.95;
-    speechSynthesis.cancel();
-    speechSynthesis.speak(u);
-  };
-  // iOS only allows speech started inside the tap itself, so speak right away when voices are ready.
-  try {
-    if (speechSynthesis.getVoices().length) go();
-    else speechSynthesis.addEventListener("voiceschanged", go, { once: true });
-  } catch {}
-}
-
-/* ─── Recorded clips (same voice on every device) ─────────────────────── */
-export const MOMO_CLIPS = "@momo"; // settings.ttsVoice value that selects the clips
+/* ─── Momo's voice: only her recorded clips (public/voice, from `npm run voice`) ─────────────
+   Momo never uses the device's text-to-speech: a line without a clip stays silent. */
 
 let clipSet: Promise<Set<string>> | null = null;
 /** Which clips exist in public/voice (from manifest.json). Empty when none were generated. */
@@ -261,27 +174,11 @@ export async function playClip(id: string, delay = 0): Promise<boolean> {
   return true;
 }
 
-/** Say a line: recorded clip when chosen/available, otherwise the device voice. */
-export async function sayLine(id: VoiceLineId, opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
-  const wantClips = opts.voice == null || opts.voice === MOMO_CLIPS;
-  if (wantClips && (await availableClips()).has(id)) {
-    if (await playClip(id, 0.45)) return;
-  }
-  speak(VOICE_LINES[id], { ...opts, voice: opts.voice === MOMO_CLIPS ? null : opts.voice });
-}
-
-/** Chime + Momo says hello in the chosen voice. */
-export function playGreeting(opts: { voice?: string | null; pitch?: TtsPitch } = {}) {
+/** Chime + Momo says hello (her recorded greeting for the time of day). */
+export function playGreeting() {
   duck(4000);
   playTone("sparkle");
-  const id = greetingId();
-  const wantClips = opts.voice == null || opts.voice === MOMO_CLIPS;
-  // Device speech must start inside the tap on iOS, so only go async when clips are known to exist.
-  if (wantClips && clipSet) {
-    void clipSet.then((set) => (set.has(id) ? playClip(id, 0.45).then((ok) => ok || speak(VOICE_LINES[id], opts)) : speak(VOICE_LINES[id], opts)));
-    return;
-  }
-  speak(VOICE_LINES[id], { ...opts, voice: opts.voice === MOMO_CLIPS ? null : opts.voice });
+  void playClip(greetingId(), 0.45);
 }
 
 const greetingLine = (now = new Date()) => VOICE_LINES[greetingId(now)];

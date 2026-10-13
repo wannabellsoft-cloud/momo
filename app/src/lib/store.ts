@@ -51,8 +51,6 @@ export type Settings = {
   music: boolean; // gentle background music while the app is open
   musicTrack: "box" | "lullaby" | "time"; // "time": music box by day, lullaby at night
   seenLevel: number; // Momo level already announced (0 = not yet), see lib/exp.ts
-  ttsVoice: string | null; // device voice name; null = best female Thai voice
-  ttsPitch: "normal" | "cute" | "tiny";
   reduceMotion: boolean;
   storageMode: "separate" | "combined";
   theme: "time" | "system" | "light" | "dark"; // "time": night theme 18:00–06:00
@@ -90,8 +88,6 @@ export const DEFAULT_SETTINGS: Settings = {
   music: true,
   musicTrack: "lullaby",
   seenLevel: 0,
-  ttsVoice: null,
-  ttsPitch: "cute",
   reduceMotion: false,
   storageMode: "separate",
   theme: "time",
@@ -409,6 +405,9 @@ export const useMomo = create<MomoStore>()(
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<MomoData>;
         const settings = { ...DEFAULT_SETTINGS, ...(p.settings ?? {}), call: "แพรวา" };
+        // device voices were removed: Momo only speaks with her recorded clips
+        delete (settings as Partial<Record<"ttsVoice" | "ttsPitch", unknown>>).ttsVoice;
+        delete (settings as Partial<Record<"ttsVoice" | "ttsPitch", unknown>>).ttsPitch;
         // older tone names
         const legacy = settings.tone as string;
         if (legacy === "bell") settings.tone = "sparkle";
