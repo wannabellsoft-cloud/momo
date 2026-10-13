@@ -12,10 +12,10 @@
     "icons": "node scripts/gen-icons.mts",
     "ios:sync": "next build && cap sync ios",
     "ios:open": "cap open ios",
-    "voice": "node scripts/gen-voice.mts",
-    "voice:design": "node scripts/eleven-design-voice.mts",
-    "tutorial:voice": "node scripts/gen-tutorial-voice.mts",
-    "tutorial:video": "node scripts/render-tutorial.mts"
+    "voice": "node --env-file-if-exists=.env.local scripts/gen-voice.mts",
+    "voice:design": "node --env-file-if-exists=.env.local scripts/eleven-design-voice.mts",
+    "tutorial:voice": "node --env-file-if-exists=.env.local scripts/gen-tutorial-voice.mts",
+    "tutorial:video": "node --env-file-if-exists=.env.local scripts/render-tutorial.mts"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",
