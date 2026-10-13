@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { dayKey, hm, parseDayKey, thShortDate } from "@/lib/date";
 import { pickLine } from "@/lib/derive";
+import { SAY } from "@/lib/voice-lines";
 import { tapFeedback } from "@/lib/native";
 import { LOCS, MED, nextIdx, snakeIndex, useMomo, type TabletRef } from "@/lib/store";
 import { useUI } from "@/lib/ui";
@@ -130,7 +131,7 @@ function SheetBody({ sheetRef, open }: { sheetRef: TabletRef; open: boolean }) {
             onClick={() => {
               s.restoreTablet(sheetRef);
               ui.closeSheet();
-              ui.showToast("แก้ไขแล้ว เม็ดนี้กลับเข้าแผงนะ", "idle");
+              ui.showToast(SAY.restored, "idle");
             }}
           >
             <Icon name="undo" size={18} />
@@ -175,12 +176,12 @@ function SheetBody({ sheetRef, open }: { sheetRef: TabletRef; open: boolean }) {
       const r = s.recordDose(sheetRef, time || hm(new Date()));
       ui.closeSheet();
       if (r.ok) ui.setCelebrate();
-      if (r.ok) ui.showToast(voice === "sweet" ? pickLine("taken", call) : "บันทึกการกินยาแล้ว", "taken");
-      else ui.showToast("วันนี้บันทึกไปแล้วนะ ไม่ต้องกินซ้ำ", "waiting");
+      if (r.ok) ui.showToast(voice === "sweet" ? pickLine("taken", call) : SAY.takenPlain, "taken");
+      else ui.showToast(SAY.alreadyTaken, "waiting");
     } else {
       s.removeOnly(sheetRef);
       ui.closeSheet();
-      ui.showToast("แกะเม็ดออกแล้ว ไม่ได้นับเป็นการกินยานะ", "waiting");
+      ui.showToast(SAY.removed, "waiting");
     }
   };
 

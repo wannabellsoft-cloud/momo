@@ -224,7 +224,7 @@ export function availableClips(): Promise<Set<string>> {
 }
 
 const buffers = new Map<string, Promise<AudioBuffer | null>>();
-function loadClip(id: VoiceLineId) {
+function loadClip(id: string) {
   const c = audio();
   if (!c) return Promise.resolve(null);
   if (!buffers.has(id))
@@ -239,7 +239,7 @@ function loadClip(id: VoiceLineId) {
 }
 
 /** Play a recorded line through the (already unlocked) audio context. Resolves false if unavailable. */
-export async function playClip(id: VoiceLineId, delay = 0): Promise<boolean> {
+export async function playClip(id: string, delay = 0): Promise<boolean> {
   const c = audio();
   if (!c || !(await availableClips()).has(id)) return false;
   const buf = await loadClip(id);

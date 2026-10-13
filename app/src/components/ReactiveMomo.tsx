@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { momoSays } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
+import { HOME_TAP_LINES } from "@/lib/voice-lines";
 import { KeepName, cx } from "./ui";
 import { TO_MASCOT, type MomoState } from "./momo/MomoBunny";
 import { MomoMascot, type MascotState } from "./momo/MomoMascot";
 
-// Things Momo says when tapped — affectionate only, never about whether a dose was taken.
-export const TAP_LINES = ["ปุ๊กปิ๊ก ♡", "จิ้มโมโม่ทำไมน้า~ ♡", "กอดหน่อยได้ไหม ♡", "โมโม่อยู่ตรงนี้นะ", "วันนี้ก็เป็นวันที่ดีน้า ✦", "แพรวาน่ารักที่สุดเลย ♡", "ฮึบ! สู้ ๆ น้า"];
+// Things Momo says when tapped — affectionate only, never about whether a dose was taken (lib/voice-lines.ts).
+export const TAP_LINES = HOME_TAP_LINES;
 
 type Burst = { id: number; x: number; d: number; s: number; glyph: string };
 
@@ -56,6 +58,7 @@ export function ReactiveMomo({ state, bubble, size = 170, lines = TAP_LINES, gre
     if (i === lastLine.current) i = (i + 1) % lines.length;
     lastLine.current = i;
     setOverride({ line: lines[i], momo: "success", until: Date.now() + 2800 });
+    momoSays(lines[i], { delay: 0.25 }); // after the giggle
     setJump((j) => j + 1);
     const now = Date.now();
     setBurst((b) => [

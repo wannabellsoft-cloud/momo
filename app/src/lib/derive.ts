@@ -1,6 +1,7 @@
 import { addDays, addMin, atTime, dayKey, isNight } from "./date";
 import { LOW_THRESHOLD, SUPPLY_WARN_DAYS, TABLETS_PER_BOX, left, type MomoData } from "./store";
 import type { MomoState } from "@/components/momo/MomoBunny";
+import { TAKEN_LINES } from "./voice-lines";
 
 export type DayStatus = "taken" | "pending" | "upcoming" | "missed" | "future" | "untracked";
 
@@ -83,7 +84,7 @@ export function derive(s: MomoData, now: Date) {
 export const VOICE = {
   reminder: (call: string) => [`${call}า ได้เวลากินยาแล้วน้า 🐰💕`, `ติ๊กต็อก ๆ ได้เวลาแล้วนะ${call}`, "โมโม่มาเตือนแล้วน้า ถึงเวลาดูแลตัวเองแล้ว ♡", `${call}จ๋า ได้เวลาแล้วนะ โมโม่รออยู่ตรงนี้`],
   follow: () => ["โมโม่แวะมาถามนิดนึง กินยาไปหรือยังเอ่ย?", "ถ้ากินแล้ว กดบอกโมโม่หน่อยน้า", "โมโม่ยังรออยู่นะ ไม่รีบ ๆ", "ถ้ากินไปแล้ว แตะบันทึกได้เลยนะ"],
-  taken: (call: string) => [`เย้ วันนี้${call}ดูแลตัวเองแล้ว ♡`, "เก่งมากเลย โมโม่จดไว้ให้แล้วนะ", "บันทึกแล้วน้า วันนี้เรียบร้อย ♡", "โมโม่ดีใจด้วยน้า"],
+  taken: TAKEN_LINES,
   bedtime: () => ["พักผ่อนเยอะ ๆ นะ ฝันดีน้า 🌙", "วันนี้เหนื่อยแล้ว นอนหลับฝันดีนะ", "โมโม่ไปนอนก่อนน้า เจอกันพรุ่งนี้ ♡"],
 } as const;
 

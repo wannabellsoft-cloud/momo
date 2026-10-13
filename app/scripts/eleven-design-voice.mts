@@ -8,10 +8,10 @@
 //
 // MOMO_VOICE_PROMPT overrides the description below.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { ELEVEN_API, elevenHeaders, useEleven } from "./tts.mts";
+import { ELEVEN_API, elevenHeaders, elevenEnabled } from "./tts.mts";
 import { fileURLToPath } from "node:url";
 
-if (!useEleven()) throw new Error("Set ELEVENLABS_API_KEY first (or MOMO_TTS=elevenlabs when a proxy adds the key).");
+if (!elevenEnabled()) throw new Error("Set ELEVENLABS_API_KEY first (or MOMO_TTS=elevenlabs when a proxy adds the key).");
 const headers = elevenHeaders();
 
 const DESCRIPTION =

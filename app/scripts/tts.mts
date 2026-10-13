@@ -16,7 +16,7 @@ import { writeFileSync } from "node:fs";
 export const ELEVEN_API = "https://api.elevenlabs.io/v1";
 
 /** ElevenLabs when the key is here, or when MOMO_TTS=elevenlabs says a proxy attaches it. */
-export const useEleven = () => !!process.env.ELEVENLABS_API_KEY || process.env.MOMO_TTS === "elevenlabs";
+export const elevenEnabled = () => !!process.env.ELEVENLABS_API_KEY || process.env.MOMO_TTS === "elevenlabs";
 
 /** Request headers for ElevenLabs; the key header is left out when a proxy adds it. */
 export function elevenHeaders(extra: Record<string, string> = {}): Record<string, string> {
@@ -27,7 +27,7 @@ export function elevenHeaders(extra: Record<string, string> = {}): Record<string
 export type TtsInfo = { provider: "elevenlabs"; voice: string; model: string } | { provider: "edge-tts"; voice: string; pitch: string; rate: string };
 
 export function ttsInfo(): TtsInfo {
-  if (useEleven()) {
+  if (elevenEnabled()) {
     const voice = process.env.MOMO_ELEVEN_VOICE;
     if (!voice) throw new Error("ElevenLabs is on but MOMO_ELEVEN_VOICE is not set. Run `npm run voice:design` or pick a voice id from ElevenLabs.");
     return { provider: "elevenlabs", voice, model: process.env.MOMO_ELEVEN_MODEL ?? "eleven_v3" };

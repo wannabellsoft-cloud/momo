@@ -9,10 +9,12 @@ import { thStamp } from "@/lib/date";
 import { derive } from "@/lib/derive";
 import { useNow } from "@/lib/hooks";
 import { LOCS, TABLETS_PER_PACK, left, nextIdx, useMomo } from "@/lib/store";
+import { momoSaysOneOf } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
+import { SAY, STOCK_TAP_LINES } from "@/lib/voice-lines";
 
 // What Momo says when tapped on Stock.
-const STOCK_LINES = ["โมโม่นับยาให้ทุกเม็ดเลยน้า ✎", "ยาอยู่ครบ โมโม่ดูแลให้ ♡", "เปิดกล่องใหม่เมื่อไหร่ บอกโมโม่ด้วยนะ", "นับยาทีไร โมโม่ตั้งใจสุด ๆ เลย ✦", "ปุ๊กปิ๊ก ♡"];
+const STOCK_LINES = STOCK_TAP_LINES;
 
 /** Screen 07 — opened packs, reserve boxes, storage mode, refill alert, stock log. */
 export default function InventoryPage() {
@@ -133,7 +135,7 @@ export default function InventoryPage() {
               <Icon name="minus" size={18} stroke={2.6} />
             </button>
             <span className="tnum min-w-5 text-center text-[18px] font-extrabold text-(--inv-box-num)" aria-live="polite">{s.reserve}</span>
-            <button type="button" onClick={() => s.changeReserve(1)} aria-label="เพิ่มกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--inv-plus) text-(--inv-plus-fg)">
+            <button type="button" onClick={() => { s.changeReserve(1); momoSaysOneOf("reserve", SAY.reserveAdded); }} aria-label="เพิ่มกล่องสำรอง" className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border-0 bg-(--inv-plus) text-(--inv-plus-fg)">
               <Icon name="plus" size={18} stroke={2.6} />
             </button>
           </div>
@@ -142,7 +144,7 @@ export default function InventoryPage() {
 
       <button
         type="button"
-        onClick={() => (canOpen ? router.push("/inventory/open-box/") : showToast("ยังไม่มีกล่องสำรอง เพิ่มกล่องก่อนนะ", "nostock"))}
+        onClick={() => (canOpen ? router.push("/inventory/open-box/") : showToast(SAY.noReserve, "nostock"))}
         aria-disabled={!canOpen}
         className={cx(
           "press relative flex h-16 items-center justify-center overflow-hidden rounded-[22px] border-0",

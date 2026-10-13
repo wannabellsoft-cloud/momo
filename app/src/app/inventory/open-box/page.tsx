@@ -7,7 +7,9 @@ import { MomoBunny } from "@/components/momo/MomoBunny";
 import { Icon } from "@/components/momo/Icon";
 import { BackHeader, Card, PrimaryButton, Segmented } from "@/components/ui";
 import { LOCS, LOC_KEYS, packLabel, useMomo, type LocationId } from "@/lib/store";
+import { momoSays, momoSaysOneOf } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
+import { SAY } from "@/lib/voice-lines";
 
 /** Screen 08 — confirm stock deduction, create two packs, assign storage locations. */
 export default function OpenBoxPage() {
@@ -31,6 +33,7 @@ export default function OpenBoxPage() {
     const r = s.openBox(locs);
     if (!r.ok) return;
     showToast(`เปิดกล่องแล้ว ได้แผง ${names[0]} กับ ${names[1]} ♡`, "refill");
+    momoSays(SAY.boxOpened);
     router.push("/blister/");
   };
 
@@ -41,7 +44,10 @@ export default function OpenBoxPage() {
         <EmptyState
           {...EMPTY.reserve}
           cta="เพิ่มกล่องสำรอง"
-          onClick={() => s.changeReserve(1)}
+          onClick={() => {
+            s.changeReserve(1);
+            momoSaysOneOf("reserve", SAY.reserveAdded);
+          }}
         />
       ) : (
         <>

@@ -5,7 +5,9 @@ import { useEffect } from "react";
 import { momoExp } from "@/lib/exp";
 import { useNow } from "@/lib/hooks";
 import { useMomo } from "@/lib/store";
+import { momoSays } from "@/lib/momo-voice";
 import { useUI } from "@/lib/ui";
+import { SAY } from "@/lib/voice-lines";
 import { BondBadge } from "./BondBadge";
 import { StreakFlame } from "./StreakFlame";
 import { cx } from "./ui";
@@ -22,7 +24,10 @@ export function LevelBar() {
 
   useEffect(() => {
     if (x.level === seen) return;
-    if (seen > 0 && x.level > seen) showToast(`สนิทกันขึ้นแล้ว! ความสนิท Lv.${x.level} · ${x.tier.name} ♡`, "welcome");
+    if (seen > 0 && x.level > seen) {
+      showToast(`สนิทกันขึ้นแล้ว! ความสนิท Lv.${x.level} · ${x.tier.name} ♡`, "welcome");
+      momoSays(SAY.levelUp);
+    }
     update({ seenLevel: x.level });
   }, [x.level, x.tier.name, seen, update, showToast]);
 

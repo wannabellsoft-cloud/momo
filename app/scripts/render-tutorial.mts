@@ -31,16 +31,21 @@ const total = start;
 const voiced = timeline.filter((s) => s.clip);
 console.log(`${timeline.length} scenes · ${total.toFixed(1)} s · narration ${voiced.length}/${timeline.length}`);
 
+/** What video/first-use/index.html exposes. */
+type Film = { setup: (tl: unknown[]) => number; render: (t: number) => void };
+
 // Playwright from the project, or the global install
 const require = createRequire(import.meta.url);
-let pw: typeof import("playwright");
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- optional dependency, typed loosely
+let pw: any;
 try { pw = require("playwright"); } catch { pw = require(`${execFileSync("npm", ["root", "-g"], { shell: process.platform === "win32" }).toString().trim()}/playwright`); }
 
 mkdirSync(OUT, { recursive: true });
 const browser = await pw.chromium.launch();
 const page = await browser.newPage({ viewport: { width: cfg.width, height: cfg.height }, deviceScaleFactor: 1 });
 await page.goto(pathToFileURL(`${DIR}index.html`).href);
-await page.evaluate((tl) => (window as any).setup(tl.map(({ clip, ...s }) => s)), timeline);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+await page.evaluate((tl: typeof timeline) => (window as unknown as Film).setup(tl.map(({ clip, ...s }) => s)), timeline);
 await page.evaluate(async () => {
   await document.fonts.ready;
   await Promise.all([...document.images].map((i) => (i.complete ? null : new Promise((r) => (i.onload = i.onerror = r)))));
@@ -50,7 +55,7 @@ const film = page.locator("#film");
 const still = process.argv.indexOf("--still");
 if (still > -1) {
   const t = Number(process.argv[still + 1] ?? 1);
-  await page.evaluate((t) => (window as any).render(t), t);
+  await page.evaluate((t: number) => (window as unknown as Film).render(t), t);
   await film.screenshot({ path: `${OUT}still-${t}.png` });
   console.log(`wrote video/first-use/out/still-${t}.png`);
   await browser.close();
@@ -63,7 +68,7 @@ const enc = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "image2pipe", "-f
   "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p", "-movflags", "+faststart", silent], { stdio: ["pipe", "inherit", "inherit"] });
 const frames = Math.ceil(total * cfg.fps);
 for (let i = 0; i < frames; i++) {
-  await page.evaluate((t) => (window as any).render(t), i / cfg.fps);
+  await page.evaluate((t: number) => (window as unknown as Film).render(t), i / cfg.fps);
   const jpg = await film.screenshot({ type: "jpeg", quality: 92 });
   if (!enc.stdin.write(jpg)) await new Promise((r) => enc.stdin.once("drain", r));
   if (i % 150 === 0) console.log(`frame ${i}/${frames}`);
