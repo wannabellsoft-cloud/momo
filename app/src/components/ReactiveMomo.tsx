@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { momoSays } from "@/lib/momo-voice";
+import { momoGreeting } from "@/lib/sound";
 import { useUI } from "@/lib/ui";
 import { HOME_TAP_LINES } from "@/lib/voice-lines";
 import { KeepName, cx } from "./ui";
@@ -57,8 +58,11 @@ export function ReactiveMomo({ state, bubble, size = 170, lines = TAP_LINES, gre
     let i = Math.floor(Math.random() * lines.length);
     if (i === lastLine.current) i = (i + 1) % lines.length;
     lastLine.current = i;
-    setOverride({ line: lines[i], momo: "success", until: Date.now() + 2800 });
-    momoSays(lines[i], { delay: 0.25 }); // after the giggle
+    // while Momo says hello (often the first tap of the session), keep her greeting: just hop and hearts
+    if (!momoGreeting()) {
+      setOverride({ line: lines[i], momo: "success", until: Date.now() + 2800 });
+      momoSays(lines[i], { delay: 0.25 }); // after the giggle
+    }
     setJump((j) => j + 1);
     const now = Date.now();
     setBurst((b) => [
