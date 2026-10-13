@@ -1,13 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { GuideVideo } from "@/components/GuideVideo";
 import { Icon } from "@/components/momo/Icon";
 import { MomoBunny } from "@/components/momo/MomoBunny";
 import { BackHeader, Card } from "@/components/ui";
-import { BASE } from "@/lib/base";
-import { isNight } from "@/lib/date";
-import { startMusic, stopMusic } from "@/lib/music";
-import { useMomo } from "@/lib/store";
 
 const STEPS = [
   ["ไปที่เมนู สต็อกยา", "แตะเมนู “สต็อกยา” ที่แถบด้านล่าง"],
@@ -20,31 +17,14 @@ const STEPS = [
   ["บันทึกการกินยา", "กินยาแล้ว กด “บันทึกว่ากินยาแล้ว ♡” ที่หน้าแรก"],
 ] as const;
 
-/** First-use guide: Momo's tutorial video (public/tutorial, from `npm run tutorial:video`) and the steps in text. */
+/** First-use guide: Momo's tutorial video and the steps in text. */
 export default function GuidePage() {
-  const { music, musicTrack } = useMomo((s) => s.settings);
-  // the video has Momo's narration: pause the background music while it plays
-  const resumeMusic = () => {
-    if (music) startMusic(musicTrack === "time" ? (isNight(new Date()) ? "lullaby" : "box") : musicTrack);
-  };
-
   return (
     <div className="flex flex-col gap-4">
       <BackHeader href="/" eyebrow="GUIDE" title="วิธีเริ่มใช้งาน" />
 
       <div className="overflow-hidden rounded-[28px] bg-(--surface-card) shadow-(--shadow-card)">
-        <video
-          className="block aspect-[9/16] max-h-[72vh] w-full bg-(--surface-soft) object-contain"
-          src={`${BASE}/tutorial/momo-first-use.mp4`}
-          poster={`${BASE}/tutorial/poster.jpg`}
-          controls
-          playsInline
-          preload="metadata"
-          aria-label="วิดีโอสอนเริ่มใช้งานโมโม่ ครั้งแรก"
-          onPlay={stopMusic}
-          onPause={resumeMusic}
-          onEnded={resumeMusic}
-        />
+        <GuideVideo className="max-h-[72vh]" />
       </div>
 
       <Card className="flex flex-col gap-3 p-4">
