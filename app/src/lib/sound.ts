@@ -158,19 +158,37 @@ function loadClip(id: string) {
   return buffers.get(id)!;
 }
 
-/** Play a recorded line through the (already unlocked) audio context. Resolves false if unavailable. */
-export async function playClip(id: string, delay = 0): Promise<boolean> {
+/* One voice: a new line cuts off the one Momo is saying, so lines never overlap. The greeting has the
+   floor: while it is loading or playing, other lines are skipped (the first tap that unlocks audio
+   often lands on Momo herself). */
+let speaking: AudioBufferSourceNode | null = null;
+let greetingUntil = 0; // performance.now() ms
+
+/** True while Momo is saying hello: other lines are skipped. */
+export const momoGreeting = () => typeof performance !== "undefined" && performance.now() < greetingUntil;
+
+/** Play a recorded line through the (already unlocked) audio context. Resolves false if unavailable or skipped. */
+export async function playClip(id: string, delay = 0, greeting = false): Promise<boolean> {
+  if (!greeting && momoGreeting()) return false;
   const c = audio();
   if (!c || !(await availableClips()).has(id)) return false;
   const buf = await loadClip(id);
-  if (!buf) return false;
+  if (!buf || (!greeting && momoGreeting())) return false;
+  try {
+    speaking?.stop();
+  } catch {}
   duck(buf.duration * 1000 + 1200);
   const src = c.createBufferSource();
   const g = c.createGain();
   g.gain.value = 1;
   src.buffer = buf;
   src.connect(g).connect(c.destination);
+  src.onended = () => {
+    if (speaking === src) speaking = null;
+  };
+  speaking = src;
   src.start(c.currentTime + delay);
+  if (greeting) greetingUntil = performance.now() + (delay + buf.duration) * 1000 + 150;
   return true;
 }
 
@@ -178,7 +196,10 @@ export async function playClip(id: string, delay = 0): Promise<boolean> {
 export function playGreeting() {
   duck(4000);
   playTone("sparkle");
-  void playClip(greetingId(), 0.45);
+  greetingUntil = performance.now() + 4000; // hold the floor while the clip loads
+  void playClip(greetingId(), 0.45, true).then((ok) => {
+    if (!ok) greetingUntil = 0;
+  });
 }
 
 const greetingLine = (now = new Date()) => VOICE_LINES[greetingId(now)];
