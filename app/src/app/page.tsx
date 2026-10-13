@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/momo/Icon";
+import { GuidePrompt } from "@/components/GuidePrompt";
 import { HomeMomo } from "@/components/HomeMomo";
 import { LevelBar } from "@/components/LevelBar";
 import { PropArt } from "@/components/momo/PropArt";
@@ -33,6 +34,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GuidePrompt />
       <div className="flex items-start justify-between gap-3 pt-2">
         <div>
           <h1 className="m-0 text-[28px] leading-[38px] font-extrabold">สวัสดี{d.call} {night ? "🌙" : "☀️"}</h1>
